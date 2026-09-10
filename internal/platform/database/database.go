@@ -12,10 +12,10 @@ import (
 
 type Database struct {
 	db  *pgxpool.Pool
-	log slog.Logger
+	log *slog.Logger
 }
 
-func New(ctx context.Context, cfg config.Config, log slog.Logger) (*Database, error) {
+func New(ctx context.Context, cfg config.Config, log *slog.Logger) (*Database, error) {
 	url := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		cfg.PostgresUser,
@@ -41,6 +41,7 @@ func New(ctx context.Context, cfg config.Config, log slog.Logger) (*Database, er
 	}
 
 	if err = dbPool.Ping(ctx); err != nil {
+		dbPool.Close()
 		return nil, err
 	}
 
@@ -50,4 +51,8 @@ func New(ctx context.Context, cfg config.Config, log slog.Logger) (*Database, er
 	}
 
 	return &db, nil
+}
+
+func (d *Database) Close() {
+	d.db.Close()
 }

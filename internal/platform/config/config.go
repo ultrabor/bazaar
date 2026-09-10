@@ -37,7 +37,7 @@ func EnvLoad() Config {
 
 	cfg.PostgresUser = cast.ToString(getOrReturnDefault("POSTGRES_USER", ""))
 	cfg.PostgresPassword = cast.ToString(getOrReturnDefault("POSTGRES_PASSWORD", ""))
-	cfg.PostgresHost = cast.ToString(getOrReturnDefault("POSTGRES_HOST", ""))
+	cfg.PostgresHost = cast.ToString(getOrReturnDefault("POSTGRES_HOST", "0.0.0.0"))
 	cfg.PostgresPort = cast.ToString(getOrReturnDefault("POSTGRES_PORT", ""))
 	cfg.PostgresDB = cast.ToString(getOrReturnDefault("POSTGRES_DB", ""))
 	cfg.PostgresMaxConn = cast.ToInt(getOrReturnDefault("POSTGRES_MAX_CONNS", ""))
