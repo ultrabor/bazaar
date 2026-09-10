@@ -22,7 +22,7 @@ func main() {
 		w.Write([]byte("OK"))
 	})
 
-	err := http.ListenAndServe(cfg.HttpHost+cfg.HttpPort, router)
+	err := http.ListenAndServe(cfg.HttpHost+":"+cfg.HttpPort, router)
 	if err != nil {
 		logger.Error("Error on listen", "err", err)
 	}
