@@ -65,8 +65,12 @@ func main() {
 	handler.Routes(middleware.New(logger))
 
 	server := http.Server{
-		Addr:    cfg.HttpHost + ":" + cfg.HttpPort,
-		Handler: router,
+		Addr:              cfg.HttpHost + ":" + cfg.HttpPort,
+		Handler:           router,
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       10 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       60 * time.Second,
 	}
 
 	go func() {

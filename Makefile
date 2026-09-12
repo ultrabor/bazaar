@@ -1,3 +1,6 @@
+-include .env
+export
+
 CURRENT_DIR=$(shell pwd)
 
 APP=$(shell basename ${CURRENT_DIR})
@@ -7,6 +10,8 @@ APP_CMD_DIR=${CURRENT_DIR}/cmd/api
 TAG=latest
 ENV_TAG=latest
 PROJECT_NAME=bazaar
+MIGRATION_DIR=${CURRENT_DIR}/migrations
+DB_URL="user=${POSTGRES_USER} dbname=${POSTGRES_DB} password=${POSTGRES_PASSWORD} host=${POSTGRES_HOST} port=${POSTGRES_PORT} sslmode=disable"
 
 run:
 	go run ./cmd/api/main.go
@@ -30,9 +35,10 @@ down:
 	docker compose down
 
 migrate-up:
-	docker run --mount type=bind,source="${CURRENT_DIR}/migrations,target=/migrations" --network ${NETWORK_NAME} migrate/migrate \
-		-path=/migrations/ -database=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable up
+	goose -dir ${MIGRATION_DIR} postgres ${DB_URL} up
 
 migrate-down:
-	docker run --mount type=bind,source="${CURRENT_DIR}/migrations,target=/migrations" --network ${NETWORK_NAME} migrate/migrate \
-		-path=/migrations/ -database=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable down
+	goose -dir ${MIGRATION_DIR} postgres ${DB_URL} down
+
+migrate-status:
+	goose -dir ${MIGRATION_DIR} postgres ${DB_URL} status
