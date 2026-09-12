@@ -3,6 +3,7 @@ package main
 import (
 	"bazaar/internal/platform/config"
 	"bazaar/internal/platform/database"
+	"bazaar/pkg/goose"
 	"context"
 	"log/slog"
 	"net/http"
@@ -27,6 +28,20 @@ func main() {
 
 	if err != nil {
 		logger.Error("failed to connect db", "error", err)
+		return
+	}
+
+	mig, err := goose.New(cfg)
+	if err != nil {
+		logger.Error("goose init", "err", err)
+		return
+	}
+
+	defer mig.Close()
+
+	err = mig.Up()
+	if err != nil {
+		logger.Error("migration up", "err", err)
 	}
 
 	defer db.Close()
