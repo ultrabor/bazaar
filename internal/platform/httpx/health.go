@@ -1,13 +1,15 @@
 package httpx
 
 import (
-	"bazaar/internal/platform/database"
+	"bazaar/pkg/app_errors"
 	"context"
 	"errors"
 	"log/slog"
 	"net/http"
 	"time"
 )
+
+var depErr *app_errors.DependencyError
 
 func (h *Handler) Ready(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
@@ -20,11 +22,10 @@ func (h *Handler) Ready(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusGatewayTimeout
 			msg = "deadline exceeded"
-		case errors.Is(err, database.ErrUnavailable):
+		case errors.As(err, &depErr):
 			status = http.StatusServiceUnavailable
-			msg = database.ErrUnavailable.Error()
+			msg = err.Error()
 		default:
-
 		}
 		w.WriteHeader(status)
 		_, _ = w.Write([]byte(msg))

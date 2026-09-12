@@ -1,7 +1,6 @@
-package errors
+package app_errors
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -19,5 +18,5 @@ func (e *DependencyError) Error() string {
 }
 
 func (e *DependencyError) Unwrap() error {
-	return errors.Unwrap(e.Err)
+	return e.Err
 }
