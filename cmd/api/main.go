@@ -6,6 +6,7 @@ import (
 	"bazaar/internal/platform/database"
 	"bazaar/internal/platform/httpx"
 	"bazaar/internal/platform/httpx/middleware"
+	"bazaar/internal/platform/logger"
 	"bazaar/internal/platform/support/goose"
 	"context"
 	"errors"
@@ -22,7 +23,17 @@ import (
 func main() {
 	cfg := config.EnvLoad()
 
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	// logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	logger := slog.New(logger.NewHandler(
+		&slog.HandlerOptions{
+			Level: logger.LogLevel(cfg.LogLevel),
+		},
+	).WithAttrs(
+		[]slog.Attr{
+			slog.String("service", "bazaar api"),
+			slog.String("env", cfg.AppEnv),
+		},
+	))
 
 	rootCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
