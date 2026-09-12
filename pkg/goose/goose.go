@@ -2,9 +2,11 @@ package goose
 
 import (
 	"bazaar/internal/platform/config"
+	"context"
 	"database/sql"
 	"fmt"
 
+	_ "github.com/lib/pq"
 	"github.com/pressly/goose/v3"
 )
 
@@ -22,8 +24,8 @@ func New(cfg config.Config) (*Goose, error) {
 	return &Goose{pool: db}, nil
 }
 
-func (g *Goose) Up() error {
-	if err := goose.Up(g.pool, "migrations"); err != nil {
+func (g *Goose) Up(ctx context.Context) error {
+	if err := goose.UpContext(ctx, g.pool, "migrations"); err != nil {
 		return err
 	}
 
