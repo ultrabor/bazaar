@@ -51,6 +51,7 @@ func main() {
 	err = mig.Up(ctx)
 	if err != nil {
 		logger.Error("migration up", slog.Any("err", err))
+		return
 	}
 
 	defer db.Close()

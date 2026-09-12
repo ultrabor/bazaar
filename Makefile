@@ -12,7 +12,7 @@ run:
 	go run ./cmd/api/main.go
 
 build:
-	CGO_ENABLED=0 GOOS=linux go build -mod=vendor -a -installsuffix cgo -o ${CURRENT_DIR}/bin/${APP} ${APP_CMD_DIR}/main.go
+	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ${CURRENT_DIR}/bin/${APP} ${APP_CMD_DIR}/main.go
 
 test:
 	go test ./...
