@@ -2,7 +2,7 @@ package database
 
 import (
 	"bazaar/internal/platform/config"
-	apperror "bazaar/internal/platform/supports/app_error"
+	"bazaar/internal/platform/supports/apperror"
 	"context"
 	"fmt"
 	"log/slog"
