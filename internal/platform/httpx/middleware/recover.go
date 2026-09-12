@@ -16,7 +16,7 @@ func (m *Middleware) Recover(next http.Handler) http.Handler {
 
 				m.logger.Error("Recover", slog.Any("error", err), slog.String("stack", string(debug.Stack())))
 
-				w.Header().Set("Connection", "closed")
+				w.Header().Set("Connection", "close")
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			}
 		}()

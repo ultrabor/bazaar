@@ -3,6 +3,7 @@ package main
 import (
 	"bazaar/internal/platform/config"
 	"bazaar/internal/platform/database"
+	"bazaar/internal/platform/httpx/middleware"
 	"bazaar/pkg/goose"
 	"context"
 	"errors"
@@ -57,6 +58,13 @@ func main() {
 	router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("OK"))
 	})
+
+	mw := middleware.New(*logger)
+
+	router.Use(
+		mw.Logger,
+		mw.Recover,
+	)
 
 	server := http.Server{
 		Addr:    cfg.HttpHost + ":" + cfg.HttpPort,

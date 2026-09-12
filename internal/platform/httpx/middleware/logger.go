@@ -30,7 +30,7 @@ func (m *Middleware) Logger(next http.Handler) http.Handler {
 		m.logger.Info("HTTP Request",
 			slog.String("method", r.Method),
 			slog.String("path", r.URL.Path),
-			slog.Int("status", r.Response.StatusCode),
+			slog.Int("status", recorder.statusCode),
 			slog.Duration("duration", time.Since(start)),
 		)
 	})
