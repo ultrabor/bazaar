@@ -6,7 +6,7 @@ import (
 	"bazaar/internal/platform/database"
 	"bazaar/internal/platform/httpx"
 	"bazaar/internal/platform/httpx/middleware"
-	"bazaar/internal/platform/supports/goose"
+	"bazaar/internal/platform/support/goose"
 	"context"
 	"errors"
 	"log/slog"

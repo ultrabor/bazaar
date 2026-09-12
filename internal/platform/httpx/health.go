@@ -1,7 +1,7 @@
 package httpx
 
 import (
-	"bazaar/internal/platform/supports/apperror"
+	"bazaar/internal/platform/support/apperror"
 	"context"
 	"errors"
 	"log/slog"
