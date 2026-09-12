@@ -3,6 +3,7 @@ package database
 import (
 	"bazaar/internal/platform/config"
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"time"
@@ -14,6 +15,8 @@ type Database struct {
 	db  *pgxpool.Pool
 	log *slog.Logger
 }
+
+var ErrUnavailable = errors.New("database unavailable")
 
 func New(ctx context.Context, cfg config.Config, log *slog.Logger) (*Database, error) {
 	url := fmt.Sprintf(
@@ -55,7 +58,7 @@ func New(ctx context.Context, cfg config.Config, log *slog.Logger) (*Database, e
 
 func (d *Database) Ping(ctx context.Context) error {
 	if err := d.db.Ping(ctx); err != nil {
-		return err
+		return fmt.Errorf("%w %v", err, ErrUnavailable)
 	}
 	return nil
 }
