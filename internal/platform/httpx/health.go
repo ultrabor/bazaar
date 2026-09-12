@@ -1,7 +1,7 @@
 package httpx
 
 import (
-	"bazaar/pkg/app_errors"
+	apperror "bazaar/internal/platform/supports/app_error"
 	"context"
 	"errors"
 	"log/slog"
@@ -9,22 +9,21 @@ import (
 	"time"
 )
 
-var depErr *app_errors.DependencyError
-
 func (h *Handler) Ready(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()
 
 	if err := h.sm.healthService.Ready(ctx); err != nil {
+		var depErr *apperror.DependencyError
 		status := http.StatusInternalServerError
 		msg := "DB closed"
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
-			status = http.StatusGatewayTimeout
+			status = http.StatusServiceUnavailable
 			msg = "deadline exceeded"
 		case errors.As(err, &depErr):
 			status = http.StatusServiceUnavailable
-			msg = err.Error()
+			msg = "service unavailable"
 		default:
 		}
 		w.WriteHeader(status)

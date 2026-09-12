@@ -2,7 +2,7 @@ package database
 
 import (
 	"bazaar/internal/platform/config"
-	"bazaar/pkg/app_errors"
+	apperror "bazaar/internal/platform/supports/app_error"
 	"context"
 	"fmt"
 	"log/slog"
@@ -56,7 +56,7 @@ func New(ctx context.Context, cfg config.Config, log *slog.Logger) (*Database, e
 
 func (d *Database) Ping(ctx context.Context) error {
 	if err := d.db.Ping(ctx); err != nil {
-		return app_errors.New("database unavailable", err)
+		return apperror.New("database unavailable", err)
 	}
 	return nil
 }

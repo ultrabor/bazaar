@@ -1,4 +1,4 @@
-package app_errors
+package apperror
 
 import (
 	"fmt"
