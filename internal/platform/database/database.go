@@ -53,6 +53,13 @@ func New(ctx context.Context, cfg config.Config, log *slog.Logger) (*Database, e
 	return &db, nil
 }
 
+func (d *Database) Ping(ctx context.Context) error {
+	if err := d.db.Ping(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (d *Database) Close() {
 	d.db.Close()
 }

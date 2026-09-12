@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bazaar/internal/app/health"
 	"bazaar/internal/platform/config"
 	"bazaar/internal/platform/database"
+	"bazaar/internal/platform/httpx"
 	"bazaar/internal/platform/httpx/middleware"
 	"bazaar/pkg/goose"
 	"context"
@@ -55,16 +57,11 @@ func main() {
 
 	router := chi.NewRouter()
 
-	router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("OK"))
-	})
+	handler := httpx.New(logger, router, httpx.NewServiceManager(
+		health.New(db),
+	))
 
-	mw := middleware.New(*logger)
-
-	router.Use(
-		mw.Logger,
-		mw.Recover,
-	)
+	handler.Routes(middleware.New(logger))
 
 	server := http.Server{
 		Addr:    cfg.HttpHost + ":" + cfg.HttpPort,
