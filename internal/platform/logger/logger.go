@@ -79,7 +79,7 @@ const (
 	timeFormat = "[15:04:05.000]"
 )
 
-func New(cfg config.Config) *slog.Logger {
+func New(cfg config.Config, serviceName string) *slog.Logger {
 
 	b := &bytes.Buffer{}
 
@@ -88,7 +88,7 @@ func New(cfg config.Config) *slog.Logger {
 			Level: LogLevel(cfg.LogLevel),
 		}),
 	}).With(
-		slog.String("service", "bazaar api"),
+		slog.String("service", serviceName),
 		slog.String("env", cfg.AppEnv),
 	)
 }

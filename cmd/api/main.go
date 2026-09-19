@@ -23,7 +23,7 @@ import (
 func main() {
 	cfg := config.EnvLoad()
 
-	log := logger.New(cfg)
+	log := logger.New(cfg, "bazaar api")
 
 	rootCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
