@@ -23,17 +23,7 @@ import (
 func main() {
 	cfg := config.EnvLoad()
 
-	// logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	logger := slog.New(logger.NewHandler(
-		&slog.HandlerOptions{
-			Level: logger.LogLevel(cfg.LogLevel),
-		},
-	).WithAttrs(
-		[]slog.Attr{
-			slog.String("service", "bazaar api"),
-			slog.String("env", cfg.AppEnv),
-		},
-	))
+	log := logger.New(cfg)
 
 	rootCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -44,16 +34,16 @@ func main() {
 	)
 	defer cancel()
 
-	db, err := database.New(ctx, cfg, logger)
+	db, err := database.New(ctx, cfg, log)
 
 	if err != nil {
-		logger.Error("failed to connect db", "error", err)
+		log.Error("failed to connect db", slog.Any("err", err))
 		return
 	}
 
 	mig, err := goose.New(cfg)
 	if err != nil {
-		logger.Error("goose init", slog.Any("err", err))
+		log.Error("goose init", slog.Any("err", err))
 		return
 	}
 
@@ -61,7 +51,7 @@ func main() {
 
 	err = mig.Up(ctx)
 	if err != nil {
-		logger.Error("migration up", slog.Any("err", err))
+		log.Error("migration up", slog.Any("err", err))
 		return
 	}
 
@@ -69,11 +59,11 @@ func main() {
 
 	router := chi.NewRouter()
 
-	handler := httpx.New(logger, router, httpx.NewServiceManager(
+	handler := httpx.New(log, router, httpx.NewServiceManager(
 		health.New(db),
 	))
 
-	handler.Routes(middleware.New(logger))
+	handler.Routes(middleware.New(log))
 
 	server := http.Server{
 		Addr:              cfg.HttpHost + ":" + cfg.HttpPort,
@@ -85,24 +75,24 @@ func main() {
 	}
 
 	go func() {
-		logger.Info("Starting HTTP server",
+		log.Info("Starting HTTP server",
 			slog.String("host", cfg.HttpHost),
 			slog.String("port", cfg.HttpPort),
 		)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.Error("Server forced to shutdown", slog.Any("err", err))
+			log.Error("Server forced to shutdown", slog.Any("err", err))
 			panic(err)
 		}
 	}()
 
 	<-rootCtx.Done()
-	logger.Info("Shut downing ...")
+	log.Info("Shut downing ...")
 
 	shutdownCtx, cancelShutdown := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancelShutdown()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {
-		logger.Error("server shutdown", slog.Any("err", err))
+		log.Error("server shutdown", slog.Any("err", err))
 	}
 
 }
