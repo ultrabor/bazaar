@@ -31,15 +31,19 @@ func New(ctx context.Context, log *slog.Logger, maxW int) *Pool {
 }
 
 func (p *Pool) Start() {
-	for range p.maxW {
-		p.wg.Go(p.worker)
+	for i := range p.maxW {
+		p.wg.Add(1)
+		go func(index int) {
+			defer p.wg.Done()
+			p.worker(index)
+		}(i)
 	}
-	p.wg.Wait()
 }
 
 func (p *Pool) Close() {
 	p.log.Info("Closing pool for workers")
 	close(p.jobs)
+	p.wg.Wait()
 }
 
 func (p *Pool) Add(job Job) {
@@ -52,7 +56,7 @@ func (p *Pool) Add(job Job) {
 	}
 }
 
-func (p *Pool) worker() {
+func (p *Pool) worker(workerId int) {
 
 	for {
 		select {
@@ -62,11 +66,10 @@ func (p *Pool) worker() {
 			if !ok {
 				return
 			}
-			p.wg.Add(1)
-
+			p.log.Info("running new job", slog.Int("workerId", workerId))
 			err := job(p.ctx)
 			if err != nil {
-				p.log.Error("fail worker", slog.Any("err", err))
+				p.log.Error("fail worker", slog.Any("err", err), slog.Int("workerId", workerId))
 				return
 			}
 		}
