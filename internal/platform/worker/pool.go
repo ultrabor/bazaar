@@ -13,27 +13,28 @@ type Pool struct {
 	log *slog.Logger
 	wg  sync.WaitGroup
 
-	workers int
-	jobs    chan Job
-	maxW    int
+	jobs chan Job
+	maxW int
 }
 
 func New(ctx context.Context, log *slog.Logger, maxW int) *Pool {
 	log.Info("pool created successfully")
 	pool := &Pool{
-		ctx:     ctx,
-		log:     log,
-		workers: maxW,
-		jobs:    make(chan Job),
-		maxW:    maxW,
-		wg:      sync.WaitGroup{},
-	}
-
-	for range maxW {
-		go pool.worker()
+		ctx:  ctx,
+		log:  log,
+		jobs: make(chan Job),
+		maxW: maxW,
+		wg:   sync.WaitGroup{},
 	}
 
 	return pool
+}
+
+func (p *Pool) Start() {
+	for range p.maxW {
+		p.wg.Go(p.worker)
+	}
+	p.wg.Wait()
 }
 
 func (p *Pool) Close() {

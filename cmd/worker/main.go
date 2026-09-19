@@ -23,6 +23,7 @@ func main() {
 
 	pool := worker.New(poolCtx, log, 3)
 	defer pool.Close()
+	pool.Start()
 
 	<-rootCtx.Done()
 
