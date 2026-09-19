@@ -57,7 +57,7 @@ func (p *Pool) Add(job Job) {
 }
 
 func (p *Pool) worker(workerId int) {
-
+	count := 1
 	for {
 		select {
 		case <-p.ctx.Done():
@@ -66,12 +66,13 @@ func (p *Pool) worker(workerId int) {
 			if !ok {
 				return
 			}
-			p.log.Info("worker start", slog.Int("workerId", workerId))
+			p.log.Info("worker start", slog.Int("worker_id", workerId), slog.Int("job_id", count))
 			err := job(p.ctx)
 			if err != nil {
-				p.log.Error("worker failure", slog.Any("err", err), slog.Int("workerId", workerId))
+				p.log.Error("worker failure", slog.Int("worker_id", workerId), slog.Int("job_id", count), slog.Any("err", err))
 			}
-			p.log.Info("worker finish", slog.Int("workerId", workerId))
+			p.log.Info("worker finish", slog.Int("worker_id", workerId), slog.Int("job_id", count))
+			count++
 		}
 	}
 }
