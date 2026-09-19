@@ -8,12 +8,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 )
 
 func main() {
 	cfg := config.EnvLoad()
 	log := logger.New(cfg, "bazaar worker")
+	log.Info("worker runtime started")
 
 	rootCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -28,7 +28,7 @@ func main() {
 
 	log.Info("Shut downing workers")
 
-	shutdownCtx, cancelShutdown := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancelShutdown()
-	<-shutdownCtx.Done()
+	// shutdownCtx, cancelShutdown := context.WithTimeout(context.Background(), 5*time.Second)
+	// defer cancelShutdown()
+	// <-shutdownCtx.Done()
 }
