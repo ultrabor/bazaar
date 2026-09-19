@@ -8,24 +8,27 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
 	cfg := config.EnvLoad()
 	log := logger.New(cfg, "bazaar worker")
 
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	rootCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	pool := worker.New(3, log)
+	poolCtx, cancel := context.WithCancel(rootCtx)
+	defer cancel()
+
+	pool := worker.New(poolCtx, 3, log)
 	defer pool.Close()
 
-	go func(p worker.Pool) {
-		for {
-			select {
-			case <-ctx.Done:
+	<-rootCtx.Done()
 
-			}
-		}
-	}(pool)
+	log.Info("Shut downing workers")
+
+	shutdownCtx, cancelShutdown := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelShutdown()
+	<-shutdownCtx.Done()
 }
