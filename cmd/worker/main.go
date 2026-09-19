@@ -28,22 +28,20 @@ func main() {
 
 	for range 40 {
 		pool.Add(func(ctx context.Context) error {
-			time.Sleep(3 * time.Second)
 			log.Info("added some work")
-			return nil
+
+			select {
+			case <-time.After(5 * time.Second):
+				return nil
+			case <-ctx.Done():
+				return ctx.Err()
+			}
 		})
 	}
 
 	<-rootCtx.Done()
 
 	log.Info("Shut downing workers")
-
-	select {
-	case <-time.After(5 * time.Second):
-		return
-	case <-poolCtx.Done():
-		return
-	}
 
 	// shutdownCtx, cancelShutdown := context.WithTimeout(context.Background(), 5*time.Second)
 	// defer cancelShutdown()
