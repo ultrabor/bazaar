@@ -11,7 +11,6 @@ type Job func(ctx context.Context) error
 type Pool struct {
 	ctx context.Context
 	log *slog.Logger
-	mux sync.Mutex
 	wg  sync.WaitGroup
 
 	workers int
@@ -21,16 +20,20 @@ type Pool struct {
 
 func New(ctx context.Context, log *slog.Logger, maxW int) *Pool {
 	log.Info("pool created successfully")
-	return &Pool{
+	pool := &Pool{
 		ctx:     ctx,
 		log:     log,
 		workers: maxW,
 		jobs:    make(chan Job),
 		maxW:    maxW,
 		wg:      sync.WaitGroup{},
-		mux:     sync.Mutex{},
 	}
 
+	for range maxW {
+		go pool.worker()
+	}
+
+	return pool
 }
 
 func (p *Pool) Close() {
@@ -50,30 +53,21 @@ func (p *Pool) Add(job Job) {
 
 func (p *Pool) worker() {
 
-	for job := range p.jobs {
+	for {
 		select {
 		case <-p.ctx.Done():
-			p.log.Error("context done")
 			return
-		default:
+		case job, ok := <-p.jobs:
+			if !ok {
+				return
+			}
 			p.wg.Add(1)
-			p.mux.Lock()
-			p.workers--
-			p.mux.Unlock()
-			go func(j Job) {
-				defer p.wg.Done()
 
-				err := j
-				if err != nil {
-					p.log.Error("job fail", slog.Any("err", err))
-					return
-				}
-				p.mux.Lock()
-				p.workers++
-				p.mux.Unlock()
-			}(job)
+			err := job(p.ctx)
+			if err != nil {
+				p.log.Error("fail worker", slog.Any("err", err))
+				return
+			}
 		}
 	}
-
-	p.wg.Wait()
 }
