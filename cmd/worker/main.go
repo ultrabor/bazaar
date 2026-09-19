@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -24,6 +25,14 @@ func main() {
 	pool := worker.New(poolCtx, log, 3)
 	defer pool.Close()
 	pool.Start()
+
+	for range 40 {
+		pool.Add(func(ctx context.Context) error {
+			time.Sleep(3 * time.Second)
+			log.Info("added some work")
+			return nil
+		})
+	}
 
 	<-rootCtx.Done()
 

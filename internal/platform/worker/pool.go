@@ -35,7 +35,7 @@ func (p *Pool) Start() {
 		p.wg.Add(1)
 		go func(index int) {
 			defer p.wg.Done()
-			p.worker(index)
+			p.worker(index + 1)
 		}(i)
 	}
 }
@@ -66,12 +66,12 @@ func (p *Pool) worker(workerId int) {
 			if !ok {
 				return
 			}
-			p.log.Info("running new job", slog.Int("workerId", workerId))
+			p.log.Info("worker start", slog.Int("workerId", workerId))
 			err := job(p.ctx)
 			if err != nil {
-				p.log.Error("fail worker", slog.Any("err", err), slog.Int("workerId", workerId))
-				return
+				p.log.Error("worker failure", slog.Any("err", err), slog.Int("workerId", workerId))
 			}
+			p.log.Info("worker finish", slog.Int("workerId", workerId))
 		}
 	}
 }
