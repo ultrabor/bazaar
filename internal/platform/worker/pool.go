@@ -19,12 +19,12 @@ type Pool struct {
 	maxW    int
 }
 
-func New(ctx context.Context, maxWorkers int, log *slog.Logger, maxW int) *Pool {
+func New(ctx context.Context, log *slog.Logger, maxW int) *Pool {
 	log.Info("pool created successfully")
 	return &Pool{
 		ctx:     ctx,
 		log:     log,
-		workers: maxWorkers,
+		workers: maxW,
 		jobs:    make(chan Job),
 		maxW:    maxW,
 		wg:      sync.WaitGroup{},
@@ -76,21 +76,4 @@ func (p *Pool) worker() {
 	}
 
 	p.wg.Wait()
-
-	// go func() {
-	// 	select {
-	// 	case <-p.ctx.Done():
-	// 		p.log.Error("context done")
-	// 		return
-	// 	case job := <-p.jobs:
-	// 		for {
-	// 			go func(ctx context.Context) {
-	// 				err := job(p.ctx)
-	// 				if err != nil {
-	// 					p.log.Info("")
-	// 				}
-	// 			}(p.ctx)
-	// 		}
-	// 	}
-	// }()
 }

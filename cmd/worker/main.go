@@ -21,7 +21,7 @@ func main() {
 	poolCtx, cancel := context.WithCancel(rootCtx)
 	defer cancel()
 
-	pool := worker.New(poolCtx, 3, log)
+	pool := worker.New(poolCtx, log, 3)
 	defer pool.Close()
 
 	<-rootCtx.Done()
