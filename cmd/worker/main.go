@@ -26,7 +26,7 @@ func main() {
 	defer pool.Close()
 	pool.Start()
 
-	for range 40 {
+	for range 6 {
 		pool.Add(func(ctx context.Context) error {
 			log.Info("added some work")
 

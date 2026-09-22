@@ -46,18 +46,18 @@ func (p *Pool) Close() {
 	p.wg.Wait()
 }
 
-func (p *Pool) Add(job Job) {
+func (p *Pool) Add(job Job) error {
 	select {
 	case <-p.ctx.Done():
 		p.log.Error("context done when added job")
-		return
+		return p.ctx.Err()
 	case p.jobs <- job:
 		p.log.Info("Added Job")
+		return nil
 	}
 }
 
 func (p *Pool) worker(workerId int) {
-	count := 1
 	for {
 		select {
 		case <-p.ctx.Done():
@@ -66,13 +66,13 @@ func (p *Pool) worker(workerId int) {
 			if !ok {
 				return
 			}
-			p.log.Info("worker start", slog.Int("worker_id", workerId), slog.Int("job_id", count))
+			p.log.Info("worker start", slog.Int("worker_id", workerId))
 			err := job(p.ctx)
 			if err != nil {
-				p.log.Error("worker failure", slog.Int("worker_id", workerId), slog.Int("job_id", count), slog.Any("err", err))
+				p.log.Error("worker failure", slog.Int("worker_id", workerId), slog.Any("err", err))
+			} else {
+				p.log.Info("worker finish", slog.Int("worker_id", workerId))
 			}
-			p.log.Info("worker finish", slog.Int("worker_id", workerId), slog.Int("job_id", count))
-			count++
 		}
 	}
 }
