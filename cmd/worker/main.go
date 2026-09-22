@@ -5,6 +5,7 @@ import (
 	"bazaar/internal/platform/logger"
 	"bazaar/internal/platform/worker"
 	"context"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -27,7 +28,7 @@ func main() {
 	pool.Start()
 
 	for range 6 {
-		pool.Add(func(ctx context.Context) error {
+		err := pool.Add(func(ctx context.Context) error {
 			log.Info("added some work")
 
 			select {
@@ -37,13 +38,14 @@ func main() {
 				return ctx.Err()
 			}
 		})
+
+		if err != nil {
+			log.Error("pool adding fail", slog.Any("err", err))
+			break
+		}
 	}
 
 	<-rootCtx.Done()
 
 	log.Info("Shut downing workers")
-
-	// shutdownCtx, cancelShutdown := context.WithTimeout(context.Background(), 5*time.Second)
-	// defer cancelShutdown()
-	// <-shutdownCtx.Done()
 }
