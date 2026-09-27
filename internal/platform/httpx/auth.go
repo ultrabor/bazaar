@@ -16,6 +16,7 @@ import (
 // @Produce json
 // @Param request body auth.RegisterRequest true "Registration data"
 // @Success 201 {object} auth.RegisterResponse
+// @Failure 400 {string} string "Invalid credential"
 // @Failure 400 {string} string "Invalid phone number"
 // @Failure 409 {string} string "Phone already registered"
 // @Failure 422 {string} string "Invalid input"
@@ -46,6 +47,9 @@ func (h *Handler) RegisterOwner(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
 			msg = "deadline exceeded"
+		case errors.Is(err, auth.ErrInvalidCred):
+			status = http.StatusBadRequest
+			msg = "invalid credential"
 		case errors.Is(err, auth.ErrInvalidPhone):
 			status = http.StatusBadRequest
 			msg = "not valid phone number"
