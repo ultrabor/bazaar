@@ -21,6 +21,10 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// @title Bazaar API
+// @version 1.0
+// @description Bazaar backend HTTP API.
+// @BasePath /
 func main() {
 	cfg := config.EnvLoad()
 

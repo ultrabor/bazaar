@@ -10,6 +10,18 @@ import (
 	"time"
 )
 
+// @Summary Register a company owner
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body auth.RegisterRequest true "Registration data"
+// @Success 201 {object} auth.RegisterResponse
+// @Failure 400 {string} string "Invalid phone number"
+// @Failure 409 {string} string "Phone already registered"
+// @Failure 422 {string} string "Invalid input"
+// @Failure 500 {string} string "Internal error"
+// @Failure 503 {string} string "Service unavailable"
+// @Router /auth/register-owner [post]
 func (h *Handler) RegisterOwner(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()

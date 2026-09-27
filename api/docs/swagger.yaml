@@ -1,4 +1,103 @@
+basePath: /
+definitions:
+  auth.RegisterRequest:
+    properties:
+      company_name:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    type: object
+  auth.RegisterResponse:
+    properties:
+      company_id:
+        type: string
+      user_id:
+        type: string
+    type: object
 info:
   contact: {}
-paths: {}
+  description: Bazaar backend HTTP API.
+  title: Bazaar API
+  version: "1.0"
+paths:
+  /auth/register-owner:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Registration data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/auth.RegisterResponse'
+        "400":
+          description: Invalid phone number
+          schema:
+            type: string
+        "409":
+          description: Phone already registered
+          schema:
+            type: string
+        "422":
+          description: Invalid input
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "503":
+          description: Service unavailable
+          schema:
+            type: string
+      summary: Register a company owner
+      tags:
+      - Auth
+  /healthz:
+    get:
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Liveness probe
+      tags:
+      - Health
+  /readyz:
+    get:
+      description: Checks database connectivity
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: DB is OK
+          schema:
+            type: string
+        "500":
+          description: DB closed
+          schema:
+            type: string
+        "503":
+          description: Service unavailable
+          schema:
+            type: string
+      summary: Readiness probe
+      tags:
+      - Health
 swagger: "2.0"
