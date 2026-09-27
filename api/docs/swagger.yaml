@@ -22,7 +22,7 @@ definitions:
     type: object
 info:
   contact: {}
-  description: This is a manager api gateway
+  description: Bazaar inventory and sales API
   title: Bazaar
   version: "1.0"
 paths:

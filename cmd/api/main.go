@@ -23,7 +23,7 @@ import (
 
 // @title Bazaar
 // @version 1.0
-// @description This is a manager api gateway
+// @description Bazaar inventory and sales API
 // @BasePath /
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header

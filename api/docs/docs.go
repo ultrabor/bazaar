@@ -179,7 +179,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Bazaar",
-	Description:      "This is a manager api gateway",
+	Description:      "Bazaar inventory and sales API",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
