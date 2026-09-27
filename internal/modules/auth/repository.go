@@ -12,7 +12,7 @@ type Repository struct{}
 func (r *Repository) CreateCompany(ctx context.Context, tx pgx.Tx, name string) (string, error) {
 	var id string
 
-	err := tx.QueryRow(ctx, "INSERT INTO companies(id, label) VALUES(gen_random_uuid(), $1)",
+	err := tx.QueryRow(ctx, "INSERT INTO companies(id, label) VALUES(gen_random_uuid(), $1) RETURNING id",
 		name).Scan(&id)
 
 	if err != nil {
@@ -25,7 +25,7 @@ func (r *Repository) CreateCompany(ctx context.Context, tx pgx.Tx, name string) 
 func (r *Repository) CreateOwnerRole(ctx context.Context, tx pgx.Tx, companyId string) (string, error) {
 	var id string
 
-	err := tx.QueryRow(ctx, "INSERT INTO user_roles(id, company_id, name) VALUES(gen_random_uuid(), $1, 'owner')",
+	err := tx.QueryRow(ctx, "INSERT INTO user_roles(id, company_id, name) VALUES(gen_random_uuid(), $1, 'owner') RETURNING id",
 		companyId).Scan(&id)
 
 	if err != nil {
