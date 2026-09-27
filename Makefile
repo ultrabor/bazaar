@@ -42,3 +42,6 @@ migrate-down:
 
 migrate-status:
 	goose -dir ${MIGRATION_DIR} postgres ${DB_URL} status
+
+swag_init:
+	swag init -g cmd/api/main.go -o api/docs
