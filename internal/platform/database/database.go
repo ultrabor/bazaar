@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -59,6 +60,10 @@ func (d *Database) Ping(ctx context.Context) error {
 		return apperror.New("database unavailable", err)
 	}
 	return nil
+}
+
+func (d *Database) Begin(ctx context.Context) (pgx.Tx, error) {
+	return d.db.Begin(ctx)
 }
 
 func (d *Database) Close() {
