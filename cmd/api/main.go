@@ -2,6 +2,7 @@ package main
 
 import (
 	"bazaar/internal/app/health"
+	"bazaar/internal/modules/auth"
 	"bazaar/internal/platform/config"
 	"bazaar/internal/platform/database"
 	"bazaar/internal/platform/httpx"
@@ -61,6 +62,7 @@ func main() {
 
 	handler := httpx.New(log, router, httpx.NewServiceManager(
 		health.New(db),
+		auth.New(db),
 	))
 
 	handler.Routes(middleware.New(log))
