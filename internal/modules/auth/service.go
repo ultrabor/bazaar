@@ -2,9 +2,11 @@ package auth
 
 import (
 	"bazaar/internal/platform/database"
-	"bazaar/internal/platform/support/apperror"
 	"bazaar/internal/platform/support/validator"
 	"context"
+	"errors"
+
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type Service struct {
@@ -18,7 +20,7 @@ func New(db *database.Database) *Service {
 func (s *Service) RegisterOwner(ctx context.Context, rq RegisterRequest) (*RegisterResponse, error) {
 
 	if !validator.PhoneValid(rq.Phone) {
-		return nil, apperror.New("phone is not valid", nil)
+		return nil, ErrInvalidPhone
 	}
 
 	hash, err := validator.HashPassword(rq.Password)
@@ -46,7 +48,14 @@ func (s *Service) RegisterOwner(ctx context.Context, rq RegisterRequest) (*Regis
 
 	userId, err := repo.CreateUser(ctx, tx, companyId, roleId, rq.FirstName, rq.LastName, rq.Phone, hash)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) &&
+			pgErr.Code == "23505" &&
+			pgErr.ConstraintName == "users_active_phone_unique" {
+			return nil, ErrPhoneTaken
+		}
 		return nil, err
+
 	}
 
 	err = tx.Commit(ctx)

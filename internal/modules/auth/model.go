@@ -1,5 +1,7 @@
 package auth
 
+import "errors"
+
 type RegisterRequest struct {
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
@@ -12,3 +14,6 @@ type RegisterResponse struct {
 	CompanyId string `json:"company_id"`
 	UserId    string `json:"user_id"`
 }
+
+var ErrPhoneTaken = errors.New("phone already registered")
+var ErrInvalidPhone = errors.New("invalid phone")
