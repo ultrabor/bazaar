@@ -17,7 +17,7 @@ func New(db *database.Database) *Service {
 
 func (s *Service) RegisterOwner(ctx context.Context, rq RegisterRequest) (*RegisterResponse, error) {
 
-	if validator.PhoneValid(rq.Phone) {
+	if !validator.PhoneValid(rq.Phone) {
 		return nil, apperror.New("phone is not valid", nil)
 	}
 

@@ -29,7 +29,7 @@ func (r *Repository) CreateOwnerRole(ctx context.Context, tx pgx.Tx, companyId s
 		companyId).Scan(&id)
 
 	if err != nil {
-		return "", apperror.New("failed to create company", err)
+		return "", apperror.New("failed to create owner role", err)
 	}
 
 	return id, nil
@@ -52,7 +52,7 @@ func (r *Repository) CreateUser(
     `, companyID, roleID, firstName, lastName, phone, passwordHash).Scan(&id)
 
 	if err != nil {
-		return "", apperror.New("failed to create company", err)
+		return "", apperror.New("failed to create user", err)
 	}
 
 	return id, nil

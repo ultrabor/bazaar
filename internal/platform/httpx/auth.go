@@ -2,8 +2,10 @@ package httpx
 
 import (
 	"bazaar/internal/modules/auth"
+	"bazaar/internal/platform/support/apperror"
 	"context"
 	"encoding/json"
+	"errors"
 	"log/slog"
 	"net/http"
 	"time"
@@ -27,8 +29,20 @@ func (h *Handler) RegisterOwner(w http.ResponseWriter, r *http.Request) {
 	res, err := h.sm.authService.RegisterOwner(ctx, rq)
 
 	if err != nil {
-		w.WriteHeader(http.StatusServiceUnavailable)
-		_, _ = w.Write([]byte("service unavailable"))
+		var depErr *apperror.DependencyError
+		status := http.StatusInternalServerError
+		msg := "DB closed"
+		switch {
+		case errors.Is(err, context.DeadlineExceeded):
+			status = http.StatusServiceUnavailable
+			msg = "deadline exceeded"
+		case errors.As(err, &depErr):
+			status = http.StatusBadRequest
+			msg = "not valid phone number"
+		}
+
+		w.WriteHeader(status)
+		_, _ = w.Write([]byte(msg))
 		h.logger.Error("service unavailable", slog.Any("err", err))
 		return
 	}
@@ -43,5 +57,7 @@ func (h *Handler) RegisterOwner(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+
 	_, _ = w.Write(re)
 }
