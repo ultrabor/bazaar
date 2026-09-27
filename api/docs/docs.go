@@ -46,7 +46,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid phone number",
+                        "description": "Invalid registration data",
                         "schema": {
                             "type": "string"
                         }
@@ -162,6 +162,13 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
@@ -171,8 +178,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Bazaar API",
-	Description:      "Bazaar backend HTTP API.",
+	Title:            "Bazaar",
+	Description:      "This is a manager api gateway",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

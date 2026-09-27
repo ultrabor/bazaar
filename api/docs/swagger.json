@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Bazaar backend HTTP API.",
-        "title": "Bazaar API",
+        "description": "This is a manager api gateway",
+        "title": "Bazaar",
         "contact": {},
         "version": "1.0"
     },
@@ -39,7 +39,7 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid phone number",
+                        "description": "Invalid registration data",
                         "schema": {
                             "type": "string"
                         }
@@ -154,6 +154,13 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

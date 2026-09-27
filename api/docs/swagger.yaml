@@ -22,8 +22,8 @@ definitions:
     type: object
 info:
   contact: {}
-  description: Bazaar backend HTTP API.
-  title: Bazaar API
+  description: This is a manager api gateway
+  title: Bazaar
   version: "1.0"
 paths:
   /auth/register-owner:
@@ -45,7 +45,7 @@ paths:
           schema:
             $ref: '#/definitions/auth.RegisterResponse'
         "400":
-          description: Invalid phone number
+          description: Invalid registration data
           schema:
             type: string
         "409":
@@ -100,4 +100,9 @@ paths:
       summary: Readiness probe
       tags:
       - Health
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

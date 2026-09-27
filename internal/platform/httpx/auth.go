@@ -16,8 +16,7 @@ import (
 // @Produce json
 // @Param request body auth.RegisterRequest true "Registration data"
 // @Success 201 {object} auth.RegisterResponse
-// @Failure 400 {string} string "Invalid credential"
-// @Failure 400 {string} string "Invalid phone number"
+// @Failure 400 {string} string "Invalid registration data"
 // @Failure 409 {string} string "Phone already registered"
 // @Failure 422 {string} string "Invalid input"
 // @Failure 500 {string} string "Internal error"

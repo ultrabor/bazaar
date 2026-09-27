@@ -21,10 +21,13 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// @title Bazaar API
+// @title Bazaar
 // @version 1.0
-// @description Bazaar backend HTTP API.
+// @description This is a manager api gateway
 // @BasePath /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	cfg := config.EnvLoad()
 

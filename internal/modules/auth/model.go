@@ -17,3 +17,4 @@ type RegisterResponse struct {
 
 var ErrPhoneTaken = errors.New("phone already registered")
 var ErrInvalidPhone = errors.New("invalid phone")
+var ErrInvalidCred = errors.New("invalid registration data")
