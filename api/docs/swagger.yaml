@@ -1,5 +1,17 @@
 basePath: /
 definitions:
+  auth.LoginRequest:
+    properties:
+      password:
+        type: string
+      phone:
+        type: string
+    type: object
+  auth.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
   auth.RegisterRequest:
     properties:
       company_name:
@@ -26,6 +38,47 @@ info:
   title: Bazaar
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.LoginResponse'
+        "400":
+          description: Invalid login data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Invalid input
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "503":
+          description: Service unavailable
+          schema:
+            type: string
+      summary: Login a user
+      tags:
+      - Auth
   /auth/register-owner:
     post:
       consumes:

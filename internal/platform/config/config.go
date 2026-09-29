@@ -20,6 +20,8 @@ type Config struct {
 	PostgresPort     string
 	PostgresDB       string
 	PostgresMaxConn  int
+
+	JWTSecret string
 }
 
 func EnvLoad() Config {
@@ -41,6 +43,8 @@ func EnvLoad() Config {
 	cfg.PostgresPort = cast.ToString(getOrReturnDefault("POSTGRES_PORT", ""))
 	cfg.PostgresDB = cast.ToString(getOrReturnDefault("POSTGRES_DB", ""))
 	cfg.PostgresMaxConn = cast.ToInt(getOrReturnDefault("POSTGRES_MAX_CONNS", ""))
+
+	cfg.JWTSecret = cast.ToString(getOrReturnDefault("JWT_SECRET", ""))
 
 	return cfg
 }

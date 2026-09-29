@@ -69,7 +69,7 @@ func main() {
 
 	handler := httpx.New(log, router, httpx.NewServiceManager(
 		health.New(db),
-		auth.New(db),
+		auth.New(db, []byte(cfg.JWTSecret)),
 	))
 
 	handler.Routes(middleware.New(log))
