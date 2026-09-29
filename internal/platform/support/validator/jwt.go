@@ -40,6 +40,13 @@ func ValidateToken(tokenString string, secretKey []byte) (string, error) {
 		if !ok {
 			return "", ErrInvalidToken
 		}
+		exp, ok := claims["exp"].(float64)
+		if !ok {
+			return "", ErrInvalidToken
+		}
+		if time.Now().Unix() > int64(exp) {
+			return "", ErrTokenExpired
+		}
 		return userId, nil
 	}
 

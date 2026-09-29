@@ -44,16 +44,25 @@ func EnvLoad() Config {
 	cfg.PostgresDB = cast.ToString(getOrReturnDefault("POSTGRES_DB", ""))
 	cfg.PostgresMaxConn = cast.ToInt(getOrReturnDefault("POSTGRES_MAX_CONNS", ""))
 
-	cfg.JWTSecret = cast.ToString(getOrReturnDefault("JWT_SECRET", ""))
+	cfg.JWTSecret = cast.ToString(getOrStop("JWT_SECRET"))
 
 	return cfg
 }
 
-func getOrReturnDefault(key string, defaultValue interface{}) interface{} {
+func getOrReturnDefault(key string, defaultValue any) any {
 	_, exists := os.LookupEnv(key)
 	if exists {
 		return os.Getenv(key)
 	}
 
 	return defaultValue
+}
+
+func getOrStop(key string) string {
+	value, exists := os.LookupEnv(key)
+	if !exists {
+		log.Fatalf("Environment variable %s not set", key)
+	}
+
+	return value
 }

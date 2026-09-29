@@ -63,7 +63,7 @@ func (r *Repository) CreateUser(
 func (r *Repository) GetUserByPhone(ctx context.Context, db *pgxpool.Pool, phone string) (*user.User, error) {
 	var u user.User
 
-	err := db.QueryRow(ctx, "SELECT id, company_id, user_role_id, first_name, last_name, phone, password_hash FROM users WHERE phone = $1", phone).Scan(&u.Id, &u.CompanyId, &u.RoleId, &u.FirstName, &u.LastName, &u.Phone, &u.PasswordHash)
+	err := db.QueryRow(ctx, "SELECT id, company_id, user_role_id, first_name, last_name, phone, password_hash FROM users WHERE phone = $1 and deleted_at = 0", phone).Scan(&u.Id, &u.CompanyId, &u.RoleId, &u.FirstName, &u.LastName, &u.Phone, &u.PasswordHash)
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
