@@ -56,6 +56,9 @@ func (h *Handler) RegisterOwner(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, auth.ErrPhoneTaken):
 			status = http.StatusConflict
 			msg = "phone is taken"
+		case errors.Is(err, validator.ErrPasswordInvalid):
+			status = http.StatusBadRequest
+			msg = "password is invalid"
 		}
 
 		w.WriteHeader(status)
