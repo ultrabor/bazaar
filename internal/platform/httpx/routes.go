@@ -13,6 +13,7 @@ func (h *Handler) Routes(mw *middleware.Middleware) {
 	h.router.Get("/healthz", h.Health)
 	h.router.Get("/readyz", h.Ready)
 	h.router.Post("/auth/register-owner", h.RegisterOwner)
+	h.router.Post("/auth/login", h.Login)
 	h.router.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})

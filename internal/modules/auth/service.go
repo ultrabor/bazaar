@@ -5,16 +5,18 @@ import (
 	"bazaar/internal/platform/support/validator"
 	"context"
 	"errors"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type Service struct {
-	db *database.Database
+	db        *database.Database
+	jwtSecret []byte
 }
 
-func New(db *database.Database) *Service {
-	return &Service{db: db}
+func New(db *database.Database, jwtSecret []byte) *Service {
+	return &Service{db: db, jwtSecret: jwtSecret}
 }
 
 func (s *Service) RegisterOwner(ctx context.Context, rq RegisterRequest) (*RegisterResponse, error) {
@@ -68,4 +70,24 @@ func (s *Service) RegisterOwner(ctx context.Context, rq RegisterRequest) (*Regis
 	}
 
 	return &RegisterResponse{CompanyId: companyId, UserId: userId}, nil
+}
+
+func (s *Service) Login(ctx context.Context, rq LoginRequest) (*LoginResponse, error) {
+	var repo Repository
+
+	user, err := repo.GetUserByPhone(ctx, s.db.GetDB(), rq.Phone)
+	if err != nil {
+		return nil, ErrInvalidCred
+	}
+
+	if !validator.CheckPasswordHash(rq.Password, user.PasswordHash) {
+		return nil, ErrInvalidCred
+	}
+
+	token, err := validator.GenerateToken(user, time.Hour*24, s.jwtSecret)
+	if err != nil {
+		return nil, err
+	}
+
+	return &LoginResponse{Token: token}, nil
 }

@@ -69,3 +69,7 @@ func (d *Database) Begin(ctx context.Context) (pgx.Tx, error) {
 func (d *Database) Close() {
 	d.db.Close()
 }
+
+func (d *Database) GetDB() *pgxpool.Pool {
+	return d.db
+}
