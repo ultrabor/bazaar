@@ -27,6 +27,4 @@ type LoginResponse struct {
 var ErrPhoneTaken = errors.New("phone already registered")
 var ErrInvalidPhone = errors.New("invalid phone")
 var ErrInvalidCred = errors.New("invalid credentials")
-var ErrInvalidToken = errors.New("invalid token")
-var ErrTokenExpired = errors.New("token expired")
 var ErrUnauthorized = errors.New("unauthorized")

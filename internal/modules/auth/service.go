@@ -77,14 +77,14 @@ func (s *Service) Login(ctx context.Context, rq LoginRequest) (*LoginResponse, e
 
 	user, err := repo.GetUserByPhone(ctx, s.db.GetDB(), rq.Phone)
 	if err != nil {
-		return nil, ErrInvalidCred
+		return nil, err
 	}
 
 	if !validator.CheckPasswordHash(rq.Password, user.PasswordHash) {
 		return nil, ErrInvalidCred
 	}
 
-	token, err := validator.GenerateToken(user, time.Hour*24, s.jwtSecret)
+	token, err := validator.GenerateToken(user, time.Minute*30, s.jwtSecret)
 	if err != nil {
 		return nil, err
 	}
