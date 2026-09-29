@@ -25,9 +25,10 @@ import (
 // @version 1.0
 // @description Bazaar inventory and sales API
 // @BasePath /
-// @securityDefinitions.apikey ApiKeyAuth
+// @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 func main() {
 	cfg := config.EnvLoad()
 
@@ -72,7 +73,7 @@ func main() {
 		auth.New(db, []byte(cfg.JWTSecret)),
 	))
 
-	handler.Routes(middleware.New(log))
+	handler.Routes(middleware.New(log, cfg.JWTSecret))
 
 	server := http.Server{
 		Addr:              cfg.HttpHost + ":" + cfg.HttpPort,

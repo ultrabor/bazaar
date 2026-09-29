@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"bazaar/internal/modules/user"
 	"bazaar/internal/platform/database"
 	"bazaar/internal/platform/support/validator"
 	"context"
@@ -90,4 +91,15 @@ func (s *Service) Login(ctx context.Context, rq LoginRequest) (*LoginResponse, e
 	}
 
 	return &LoginResponse{Token: token}, nil
+}
+
+func (s *Service) GetUserById(ctx context.Context, userId string) (*user.User, error) {
+	var repo Repository
+
+	user, err := repo.GetUserById(ctx, s.db.GetDB(), userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }

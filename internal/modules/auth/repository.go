@@ -74,3 +74,18 @@ func (r *Repository) GetUserByPhone(ctx context.Context, db *pgxpool.Pool, phone
 
 	return &u, nil
 }
+
+func (r *Repository) GetUserById(ctx context.Context, db *pgxpool.Pool, userId string) (*user.User, error) {
+	var u user.User
+
+	err := db.QueryRow(ctx, "SELECT id, company_id, user_role_id, first_name, last_name, phone FROM users WHERE id = $1 and deleted_at = 0", userId).Scan(&u.Id, &u.CompanyId, &u.RoleId, &u.FirstName, &u.LastName, &u.Phone)
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, ErrInvalidCred
+		}
+		return nil, apperror.New("failed to get user by id", err)
+	}
+
+	return &u, nil
+}
