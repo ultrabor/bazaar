@@ -2,6 +2,7 @@ package httpx
 
 import (
 	"bazaar/internal/modules/auth"
+	"bazaar/internal/platform/support/validator"
 	"context"
 	"encoding/json"
 	"errors"
@@ -120,6 +121,12 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, auth.ErrInvalidPhone):
 			status = http.StatusBadRequest
 			msg = "not valid phone number"
+		case errors.Is(err, auth.ErrUnauthorized):
+			status = http.StatusUnauthorized
+			msg = "unauthorized"
+		case errors.Is(err, validator.ErrPasswordInvalid):
+			status = http.StatusBadRequest
+			msg = "invalid password"
 		}
 
 		w.WriteHeader(status)

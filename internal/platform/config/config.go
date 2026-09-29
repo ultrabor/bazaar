@@ -60,7 +60,7 @@ func getOrReturnDefault(key string, defaultValue any) any {
 
 func getOrStop(key string) string {
 	value, exists := os.LookupEnv(key)
-	if !exists {
+	if !exists || value == "" {
 		log.Fatalf("Environment variable %s not set", key)
 	}
 
