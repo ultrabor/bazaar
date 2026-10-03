@@ -1,7 +1,11 @@
 package middleware
 
 import (
+	"bazaar/internal/modules/auth"
 	"bazaar/internal/platform/support/validator"
+	"context"
+	"errors"
+	"log/slog"
 	"net/http"
 	"strings"
 )
@@ -20,8 +24,21 @@ func (m *Middleware) Auth(next http.Handler) http.Handler {
 			return
 		}
 
-		r.Header.Set("X-User-ID", userId)
+		u, err := m.loadUser(r.Context(), userId)
+		if err != nil {
+			if errors.Is(err, auth.ErrInvalidCred) {
+				http.Error(w, "Unathorized", http.StatusUnauthorized)
+				return
+			}
 
-		next.ServeHTTP(w, r)
+			m.logger.Error("load authorization error", slog.Any("err", err))
+
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), currentUserKey, u)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

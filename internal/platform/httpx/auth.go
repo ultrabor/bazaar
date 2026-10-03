@@ -2,6 +2,8 @@ package httpx
 
 import (
 	"bazaar/internal/modules/auth"
+	"bazaar/internal/modules/user"
+	"bazaar/internal/platform/httpx/middleware"
 	"bazaar/internal/platform/support/validator"
 	"context"
 	"encoding/json"
@@ -157,33 +159,19 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 // @Tags Auth
 // @Produce plain
 // @Security BearerAuth
-// @Success 200 {string} string "OK"
+// @Success 200 {object} user.User
 // @Failure 401 {string} string "Unauthorized"
 // @Failure 500 {string} string "Internal error"
 // @Failure 503 {string} string "Service unavailable"
 // @Router /auth/me [get]
 func (h *Handler) Me(w http.ResponseWriter, r *http.Request) {
-	userId := r.Header.Get("X-User-ID")
-
-	u, err := h.sm.authService.GetUserById(r.Context(), userId)
-	if err != nil {
-		status := http.StatusInternalServerError
-		msg := "DB closed"
-		switch {
-		case errors.Is(err, context.DeadlineExceeded):
-			status = http.StatusServiceUnavailable
-			msg = "deadline exceeded"
-		case errors.Is(err, auth.ErrInvalidCred):
-			status = http.StatusUnauthorized
-			msg = "invalid credential"
-		}
-
-		w.WriteHeader(status)
-		_, _ = w.Write([]byte(msg))
-		h.logger.Error("service unavailable", slog.Any("err", err))
+	var u *user.User
+	u, ok := middleware.CurrentUser(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	_, _ = w.Write([]byte("Hello It's " + u.FirstName + " " + u.LastName))
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(u)
 }

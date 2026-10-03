@@ -34,7 +34,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginRequest"
+                            "$ref": "#/definitions/bazaar_internal_modules_auth.LoginRequest"
                         }
                     }
                 ],
@@ -42,7 +42,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginResponse"
+                            "$ref": "#/definitions/bazaar_internal_modules_auth.LoginResponse"
                         }
                     },
                     "400": {
@@ -96,7 +96,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_modules_user.User"
                         }
                     },
                     "401": {
@@ -139,7 +139,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.RegisterRequest"
+                            "$ref": "#/definitions/bazaar_internal_modules_auth.RegisterRequest"
                         }
                     }
                 ],
@@ -147,7 +147,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/auth.RegisterResponse"
+                            "$ref": "#/definitions/bazaar_internal_modules_auth.RegisterResponse"
                         }
                     },
                     "400": {
@@ -236,7 +236,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "auth.LoginRequest": {
+        "bazaar_internal_modules_auth.LoginRequest": {
             "type": "object",
             "properties": {
                 "password": {
@@ -247,7 +247,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.LoginResponse": {
+        "bazaar_internal_modules_auth.LoginResponse": {
             "type": "object",
             "properties": {
                 "token": {
@@ -255,7 +255,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.RegisterRequest": {
+        "bazaar_internal_modules_auth.RegisterRequest": {
             "type": "object",
             "properties": {
                 "company_name": {
@@ -275,13 +275,36 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.RegisterResponse": {
+        "bazaar_internal_modules_auth.RegisterResponse": {
             "type": "object",
             "properties": {
                 "company_id": {
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "bazaar_internal_modules_user.User": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "role_id": {
                     "type": "string"
                 }
             }
