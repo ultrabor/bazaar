@@ -1,5 +1,7 @@
 package user
 
+import "errors"
+
 type User struct {
 	Id           string `json:"id"`
 	CompanyId    string `json:"company_id"`
@@ -9,3 +11,17 @@ type User struct {
 	Phone        string `json:"phone"`
 	PasswordHash string `json:"-"`
 }
+
+type CreateUserRequest struct {
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Phone        string `json:"phone"`
+	Password     string `json:"password"`
+	PasswordHash string `json:"-"`
+	CompanyId    string `json:"company_id"`
+	RoleId       string `json:"role_id"`
+}
+
+var ErrPhoneTaken = errors.New("phone already registered")
+var ErrInvalidPhone = errors.New("invalid phone")
+var ErrInvalidCred = errors.New("invalid credentials")
