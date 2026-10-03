@@ -20,7 +20,7 @@ import (
 // @Produce json
 // @Security BearerAuth
 // @Param request body user.CreateUserRequest true "User creation data"
-// @Success 201 {object} user.User
+// @Success 201 {string} string "userId"
 // @Failure 400 {string} string "Invalid credential data"
 // @Failure 409 {string} string "Phone already registered"
 // @Failure 422 {string} string "Invalid input"
@@ -130,7 +130,7 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, user.ErrInvalidCred):
 			status = http.StatusBadRequest
 			msg = "invalid credential"
-		case errors.Is(err, user.ErrUserNotFound):
+		case errors.Is(err, user.ErrNotFound):
 			status = http.StatusNotFound
 			msg = "user not found"
 		}

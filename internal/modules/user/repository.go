@@ -26,12 +26,43 @@ func (r *Repository) GetUserById(ctx context.Context, userId, companyId string) 
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, ErrUserNotFound
+			return nil, ErrNotFound
 		}
 		return nil, err
 	}
 
 	return &user, nil
+}
+
+func (r *Repository) GetCompanyRoles(ctx context.Context, companyId string) ([]string, error) {
+	rows, err := r.db.GetDB().Query(ctx, `
+		SELECT name
+		FROM user_roles
+		WHERE company_id = $1 and deleted_at = 0
+	`, companyId)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var roles []string
+	for rows.Next() {
+		var role string
+		if err := rows.Scan(&role); err != nil {
+			return nil, err
+		}
+		roles = append(roles, role)
+	}
+
+	if err := rows.Err(); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, ErrNotFound
+		}
+		return nil, err
+	}
+
+	return roles, nil
 }
 
 func (r *Repository) CreateUser(ctx context.Context, req *CreateUserRequest) (string, error) {

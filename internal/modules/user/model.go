@@ -25,4 +25,4 @@ type CreateUserRequest struct {
 var ErrPhoneTaken = errors.New("phone already registered")
 var ErrInvalidPhone = errors.New("invalid phone")
 var ErrInvalidCred = errors.New("invalid credentials")
-var ErrUserNotFound = errors.New("no rows in result set")
+var ErrNotFound = errors.New("no rows in result set")

@@ -264,9 +264,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "userId",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_user.User"
+                            "type": "string"
                         }
                     },
                     "400": {
@@ -423,7 +423,7 @@ const docTemplate = `{
                 "phone": {
                     "type": "string"
                 },
-                "role_id": {
+                "user_role_id": {
                     "type": "string"
                 }
             }
@@ -446,7 +446,7 @@ const docTemplate = `{
                 "phone": {
                     "type": "string"
                 },
-                "role_id": {
+                "user_role_id": {
                     "type": "string"
                 }
             }
