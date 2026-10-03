@@ -44,4 +44,4 @@ migrate-status:
 	goose -dir ${MIGRATION_DIR} postgres ${DB_URL} status
 
 swag_init:
-	swag init -d ./cmd/api,./internal/platform/httpx,./internal/modules/auth -g main.go -o api/docs
+	swag init -g cmd/api/main.go -o api/docs --parseDependency --parseInternal

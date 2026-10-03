@@ -1,18 +1,18 @@
 basePath: /
 definitions:
-  auth.LoginRequest:
+  bazaar_internal_modules_auth.LoginRequest:
     properties:
       password:
         type: string
       phone:
         type: string
     type: object
-  auth.LoginResponse:
+  bazaar_internal_modules_auth.LoginResponse:
     properties:
       token:
         type: string
     type: object
-  auth.RegisterRequest:
+  bazaar_internal_modules_auth.RegisterRequest:
     properties:
       company_name:
         type: string
@@ -25,11 +25,26 @@ definitions:
       phone:
         type: string
     type: object
-  auth.RegisterResponse:
+  bazaar_internal_modules_auth.RegisterResponse:
     properties:
       company_id:
         type: string
       user_id:
+        type: string
+    type: object
+  bazaar_internal_modules_user.User:
+    properties:
+      company_id:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+      role_id:
         type: string
     type: object
 info:
@@ -48,14 +63,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/auth.LoginRequest'
+          $ref: '#/definitions/bazaar_internal_modules_auth.LoginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/auth.LoginResponse'
+            $ref: '#/definitions/bazaar_internal_modules_auth.LoginResponse'
         "400":
           description: Invalid login data
           schema:
@@ -87,7 +102,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_modules_user.User'
         "401":
           description: Unauthorized
           schema:
@@ -115,14 +130,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/auth.RegisterRequest'
+          $ref: '#/definitions/bazaar_internal_modules_auth.RegisterRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/auth.RegisterResponse'
+            $ref: '#/definitions/bazaar_internal_modules_auth.RegisterResponse'
         "400":
           description: Invalid registration data
           schema:

@@ -73,7 +73,9 @@ func main() {
 		auth.New(db, []byte(cfg.JWTSecret)),
 	))
 
-	handler.Routes(middleware.New(log, cfg.JWTSecret))
+	authService := auth.New(db, []byte(cfg.JWTSecret))
+
+	handler.Routes(middleware.New(log, cfg.JWTSecret, authService.GetUserById))
 
 	server := http.Server{
 		Addr:              cfg.HttpHost + ":" + cfg.HttpPort,

@@ -27,7 +27,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginRequest"
+                            "$ref": "#/definitions/bazaar_internal_modules_auth.LoginRequest"
                         }
                     }
                 ],
@@ -35,7 +35,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginResponse"
+                            "$ref": "#/definitions/bazaar_internal_modules_auth.LoginResponse"
                         }
                     },
                     "400": {
@@ -89,7 +89,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_modules_user.User"
                         }
                     },
                     "401": {
@@ -132,7 +132,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.RegisterRequest"
+                            "$ref": "#/definitions/bazaar_internal_modules_auth.RegisterRequest"
                         }
                     }
                 ],
@@ -140,7 +140,7 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/auth.RegisterResponse"
+                            "$ref": "#/definitions/bazaar_internal_modules_auth.RegisterResponse"
                         }
                     },
                     "400": {
@@ -229,7 +229,7 @@
         }
     },
     "definitions": {
-        "auth.LoginRequest": {
+        "bazaar_internal_modules_auth.LoginRequest": {
             "type": "object",
             "properties": {
                 "password": {
@@ -240,7 +240,7 @@
                 }
             }
         },
-        "auth.LoginResponse": {
+        "bazaar_internal_modules_auth.LoginResponse": {
             "type": "object",
             "properties": {
                 "token": {
@@ -248,7 +248,7 @@
                 }
             }
         },
-        "auth.RegisterRequest": {
+        "bazaar_internal_modules_auth.RegisterRequest": {
             "type": "object",
             "properties": {
                 "company_name": {
@@ -268,13 +268,36 @@
                 }
             }
         },
-        "auth.RegisterResponse": {
+        "bazaar_internal_modules_auth.RegisterResponse": {
             "type": "object",
             "properties": {
                 "company_id": {
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "bazaar_internal_modules_user.User": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "role_id": {
                     "type": "string"
                 }
             }
