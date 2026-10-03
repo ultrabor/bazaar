@@ -23,11 +23,12 @@ func (h *Handler) Routes(mw *middleware.Middleware) {
 		})
 	})
 
-	h.router.Route("/users", func(r chi.Router) {
+	h.router.Route("/user", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(mw.Auth)
 
 			r.Post("/", h.CreateUser)
+			r.Get("/{id}", h.GetUserById)
 		})
 	})
 

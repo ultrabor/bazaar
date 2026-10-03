@@ -9,15 +9,18 @@ import (
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/go-chi/chi/v5"
 )
 
 // @Summary Create a new user
-// @Tags Auth
+// @Tags User
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param request body user.CreateUserRequest true "User creation data"
 // @Success 201 {object} user.User
-// @Failure 400 {string} string "Invalid creditial data"
+// @Failure 400 {string} string "Invalid credential data"
 // @Failure 409 {string} string "Phone already registered"
 // @Failure 422 {string} string "Invalid input"
 // @Failure 500 {string} string "Internal error"
@@ -78,6 +81,66 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+
+	_, _ = w.Write(re)
+}
+
+// @Summary Get user info
+// @Tags User
+// @Produce json
+// @Param id path string true "User ID"
+// @Security BearerAuth
+// @Success 200 {object} user.User
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 500 {string} string "Internal error"
+// @Failure 503 {string} string "Service unavailable"
+// @Router /user/{id} [get]
+func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
+	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
+	defer stop()
+
+	userId := chi.URLParam(r, "id")
+	if userId == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = w.Write([]byte("user id is required"))
+		h.logger.Error("user id is required")
+		return
+	}
+
+	res, err := h.sm.userService.GetUserById(ctx, userId)
+
+	if err != nil {
+		status := http.StatusInternalServerError
+		msg := "DB closed"
+		switch {
+		case errors.Is(err, context.DeadlineExceeded):
+			status = http.StatusServiceUnavailable
+			msg = "deadline exceeded"
+		case errors.Is(err, user.ErrInvalidCred):
+			status = http.StatusBadRequest
+			msg = "invalid credential"
+		case errors.Is(err, user.ErrUserNotFound):
+			status = http.StatusNotFound
+			msg = "user not found"
+		}
+
+		w.WriteHeader(status)
+		_, _ = w.Write([]byte(msg))
+		h.logger.Error("service unavailable", slog.Any("err", err))
+		return
+	}
+
+	re, err := json.Marshal(res)
+
+	if err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		_, _ = w.Write([]byte("service unavailable"))
+		h.logger.Error("service unavailable", slog.Any("err", err))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 
 	_, _ = w.Write(re)
 }
