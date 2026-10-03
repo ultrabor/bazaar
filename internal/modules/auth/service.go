@@ -85,7 +85,7 @@ func (s *Service) Login(ctx context.Context, rq LoginRequest) (*LoginResponse, e
 		return nil, ErrInvalidCred
 	}
 
-	token, err := validator.GenerateToken(user.Id, user.CompanyId, user.RoleId, time.Minute*30, s.jwtSecret)
+	token, err := validator.GenerateToken(user.Id, user.CompanyId, user.UserRoleId, time.Minute*30, s.jwtSecret)
 	if err != nil {
 		return nil, err
 	}
