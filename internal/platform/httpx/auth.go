@@ -157,7 +157,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 // @Summary Get current user info
 // @Tags Auth
-// @Produce plain
+// @Produce json
 // @Security BearerAuth
 // @Success 200 {object} user.User
 // @Failure 401 {string} string "Unauthorized"
