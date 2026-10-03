@@ -257,9 +257,9 @@
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "userId",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_user.User"
+                            "type": "string"
                         }
                     },
                     "400": {
@@ -416,7 +416,7 @@
                 "phone": {
                     "type": "string"
                 },
-                "role_id": {
+                "user_role_id": {
                     "type": "string"
                 }
             }
@@ -439,7 +439,7 @@
                 "phone": {
                     "type": "string"
                 },
-                "role_id": {
+                "user_role_id": {
                     "type": "string"
                 }
             }

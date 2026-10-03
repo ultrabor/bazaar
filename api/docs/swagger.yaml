@@ -44,7 +44,7 @@ definitions:
         type: string
       phone:
         type: string
-      role_id:
+      user_role_id:
         type: string
     type: object
   bazaar_internal_modules_user.User:
@@ -59,7 +59,7 @@ definitions:
         type: string
       phone:
         type: string
-      role_id:
+      user_role_id:
         type: string
     type: object
 info:
@@ -224,9 +224,9 @@ paths:
       - application/json
       responses:
         "201":
-          description: Created
+          description: userId
           schema:
-            $ref: '#/definitions/bazaar_internal_modules_user.User'
+            type: string
         "400":
           description: Invalid credential data
           schema:
