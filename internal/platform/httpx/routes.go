@@ -21,7 +21,14 @@ func (h *Handler) Routes(mw *middleware.Middleware) {
 
 			r.Get("/me", h.Me)
 		})
+	})
 
+	h.router.Route("/users", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			r.Use(mw.Auth)
+
+			r.Post("/", h.CreateUser)
+		})
 	})
 
 	h.router.Get("/healthz", h.Health)

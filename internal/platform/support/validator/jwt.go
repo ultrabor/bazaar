@@ -1,7 +1,6 @@
 package validator
 
 import (
-	"bazaar/internal/modules/user"
 	"errors"
 	"time"
 
@@ -11,11 +10,11 @@ import (
 var ErrInvalidToken = errors.New("invalid token")
 var ErrTokenExpired = errors.New("token expired")
 
-func GenerateToken(user *user.User, expiration time.Duration, secretKey []byte) (string, error) {
+func GenerateToken(userId, companyId, roleId string, expiration time.Duration, secretKey []byte) (string, error) {
 	claims := jwt.MapClaims{
-		"user_id":    user.Id,
-		"company_id": user.CompanyId,
-		"role_id":    user.RoleId,
+		"user_id":    userId,
+		"company_id": companyId,
+		"role_id":    roleId,
 		"exp":        time.Now().Add(expiration).Unix(),
 	}
 

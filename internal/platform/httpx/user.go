@@ -1,0 +1,83 @@
+package httpx
+
+import (
+	"bazaar/internal/modules/user"
+	"bazaar/internal/platform/support/validator"
+	"context"
+	"encoding/json"
+	"errors"
+	"log/slog"
+	"net/http"
+	"time"
+)
+
+// @Summary Create a new user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body user.CreateUserRequest true "User creation data"
+// @Success 201 {object} user.User
+// @Failure 400 {string} string "Invalid creditial data"
+// @Failure 409 {string} string "Phone already registered"
+// @Failure 422 {string} string "Invalid input"
+// @Failure 500 {string} string "Internal error"
+// @Failure 503 {string} string "Service unavailable"
+// @Router /user [post]
+func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
+	defer stop()
+
+	var rq user.CreateUserRequest
+
+	err := json.NewDecoder(r.Body).Decode(&rq)
+
+	if err != nil {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		_, _ = w.Write([]byte("invalid input"))
+		h.logger.Error("invalid input", slog.Any("err", err))
+		return
+	}
+
+	res, err := h.sm.userService.CreateUser(ctx, &rq)
+
+	if err != nil {
+		status := http.StatusInternalServerError
+		msg := "DB closed"
+		switch {
+		case errors.Is(err, context.DeadlineExceeded):
+			status = http.StatusServiceUnavailable
+			msg = "deadline exceeded"
+		case errors.Is(err, user.ErrInvalidPhone):
+			status = http.StatusBadRequest
+			msg = "not valid phone number"
+		case errors.Is(err, user.ErrPhoneTaken):
+			status = http.StatusConflict
+			msg = "phone is taken"
+		case errors.Is(err, user.ErrInvalidCred):
+			status = http.StatusBadRequest
+			msg = "invalid credential"
+		case errors.Is(err, validator.ErrPasswordInvalid):
+			status = http.StatusBadRequest
+			msg = "password is invalid"
+		}
+
+		w.WriteHeader(status)
+		_, _ = w.Write([]byte(msg))
+		h.logger.Error("service unavailable", slog.Any("err", err))
+		return
+	}
+
+	re, err := json.Marshal(res)
+
+	if err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		_, _ = w.Write([]byte("service unavailable"))
+		h.logger.Error("service unavailable", slog.Any("err", err))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+
+	_, _ = w.Write(re)
+}
