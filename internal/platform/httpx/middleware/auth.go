@@ -13,7 +13,7 @@ import (
 func (m *Middleware) Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Fields(r.Header.Get("Authorization"))
-		if len(parts) < 2 || !strings.EqualFold(parts[0], "Bearer") {
+		if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
 			http.Error(w, "Authorization header is missing", http.StatusUnauthorized)
 			return
 		}
