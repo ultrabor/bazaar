@@ -16,9 +16,9 @@ func NewService(repo *Repository) *Service {
 	return &Service{repo: repo}
 }
 
-func (s *Service) GetUserById(ctx context.Context, userId string) (*User, error) {
+func (s *Service) GetUserById(ctx context.Context, userId, companyId string) (*User, error) {
 
-	return s.repo.GetUserById(ctx, userId)
+	return s.repo.GetUserById(ctx, userId, companyId)
 }
 
 func (s *Service) CreateUser(ctx context.Context, r *CreateUserRequest) (string, error) {
@@ -38,12 +38,6 @@ func (s *Service) CreateUser(ctx context.Context, r *CreateUserRequest) (string,
 
 	r.PasswordHash = hash
 
-	tx, err := s.repo.db.Begin(ctx)
-	if err != nil {
-		return "", err
-	}
-	defer tx.Rollback(ctx)
-
 	userId, err := s.repo.CreateUser(ctx, r)
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -52,11 +46,6 @@ func (s *Service) CreateUser(ctx context.Context, r *CreateUserRequest) (string,
 			pgErr.ConstraintName == "users_active_phone_unique" {
 			return "", ErrPhoneTaken
 		}
-		return "", err
-	}
-
-	err = tx.Commit(ctx)
-	if err != nil {
 		return "", err
 	}
 

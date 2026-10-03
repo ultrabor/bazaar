@@ -15,14 +15,14 @@ func NewRepository(db *database.Database) *Repository {
 	return &Repository{db: db}
 }
 
-func (r *Repository) GetUserById(ctx context.Context, userId string) (*User, error) {
+func (r *Repository) GetUserById(ctx context.Context, userId, companyId string) (*User, error) {
 	var user User
 
 	err := r.db.GetDB().QueryRow(ctx, `
 		SELECT id, company_id, user_role_id, first_name, last_name, phone, password_hash
 		FROM users
-		WHERE id = $1
-	`, userId).Scan(&user.Id, &user.CompanyId, &user.UserRoleId, &user.FirstName, &user.LastName, &user.Phone, &user.PasswordHash)
+		WHERE id = $1 and company_id = $2 and deleted_at = 0
+	`, userId, companyId).Scan(&user.Id, &user.CompanyId, &user.UserRoleId, &user.FirstName, &user.LastName, &user.Phone, &user.PasswordHash)
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
