@@ -2,6 +2,7 @@ package httpx
 
 import (
 	"bazaar/internal/modules/user"
+	"bazaar/internal/platform/httpx/middleware"
 	"bazaar/internal/platform/support/validator"
 	"context"
 	"encoding/json"
@@ -41,6 +42,16 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	u, ok := middleware.CurrentUser(r.Context())
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		_, _ = w.Write([]byte("unauthorized"))
+		h.logger.Error("unauthorized")
+		return
+	}
+
+	rq.CompanyId = u.CompanyId
+
 	res, err := h.sm.userService.CreateUser(ctx, &rq)
 
 	if err != nil {
@@ -70,19 +81,10 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	re, err := json.Marshal(res)
-
-	if err != nil {
-		w.WriteHeader(http.StatusServiceUnavailable)
-		_, _ = w.Write([]byte("service unavailable"))
-		h.logger.Error("service unavailable", slog.Any("err", err))
-		return
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 
-	_, _ = w.Write(re)
+	_, _ = w.Write([]byte(`{"user_id":"` + res + `"}`))
 }
 
 // @Summary Get user info
@@ -107,7 +109,16 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.sm.userService.GetUserById(ctx, userId)
+	u, ok := middleware.CurrentUser(r.Context())
+
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		_, _ = w.Write([]byte("unauthorized"))
+		h.logger.Error("unauthorized")
+		return
+	}
+
+	res, err := h.sm.userService.GetUserById(ctx, userId, u.CompanyId)
 
 	if err != nil {
 		status := http.StatusInternalServerError
