@@ -94,7 +94,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 
 	_, _ = w.Write(re)
 }
@@ -106,6 +106,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Success 200 {object} user.User
 // @Failure 401 {string} string "Unauthorized"
+// @Failure 404 {string} string "User not found"
 // @Failure 500 {string} string "Internal error"
 // @Failure 503 {string} string "Service unavailable"
 // @Router /user/{id} [get]

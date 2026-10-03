@@ -49,7 +49,7 @@ func (r *Repository) GetCompanyRoles(ctx context.Context, companyId string) ([]U
 	var roles []UserRole
 	for rows.Next() {
 		var role UserRole
-		if err := rows.Scan(&role.Id, role.CompanyId, role.Name); err != nil {
+		if err := rows.Scan(&role.Id, &role.CompanyId, &role.Name); err != nil {
 			return nil, err
 		}
 		roles = append(roles, role)
