@@ -20,7 +20,7 @@ import (
 // @Produce json
 // @Security BearerAuth
 // @Param request body user.CreateUserRequest true "User creation data"
-// @Success 201 {string} string "userId"
+// @Success 201 {object} user.CreateUserResponse
 // @Failure 400 {string} string "Invalid credential data"
 // @Failure 409 {string} string "Phone already registered"
 // @Failure 422 {string} string "Invalid input"
@@ -73,6 +73,9 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, validator.ErrPasswordInvalid):
 			status = http.StatusBadRequest
 			msg = "password is invalid"
+		case errors.Is(err, user.ErrInvalidRole):
+			status = http.StatusBadRequest
+			msg = "invalid role for company"
 		}
 
 		w.WriteHeader(status)
@@ -81,10 +84,19 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	re, err := json.Marshal(res)
 
-	_, _ = w.Write([]byte(`{"user_id":"` + res + `"}`))
+	if err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		_, _ = w.Write([]byte("service unavailable"))
+		h.logger.Error("service unavailable", slog.Any("err", err))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	_, _ = w.Write(re)
 }
 
 // @Summary Get user info

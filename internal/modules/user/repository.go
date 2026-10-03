@@ -34,9 +34,9 @@ func (r *Repository) GetUserById(ctx context.Context, userId, companyId string) 
 	return &user, nil
 }
 
-func (r *Repository) GetCompanyRoles(ctx context.Context, companyId string) ([]string, error) {
+func (r *Repository) GetCompanyRoles(ctx context.Context, companyId string) ([]UserRole, error) {
 	rows, err := r.db.GetDB().Query(ctx, `
-		SELECT name
+		SELECT id, company_id, name
 		FROM user_roles
 		WHERE company_id = $1 and deleted_at = 0
 	`, companyId)
@@ -46,10 +46,10 @@ func (r *Repository) GetCompanyRoles(ctx context.Context, companyId string) ([]s
 	}
 	defer rows.Close()
 
-	var roles []string
+	var roles []UserRole
 	for rows.Next() {
-		var role string
-		if err := rows.Scan(&role); err != nil {
+		var role UserRole
+		if err := rows.Scan(&role.Id, role.CompanyId, role.Name); err != nil {
 			return nil, err
 		}
 		roles = append(roles, role)
@@ -65,7 +65,7 @@ func (r *Repository) GetCompanyRoles(ctx context.Context, companyId string) ([]s
 	return roles, nil
 }
 
-func (r *Repository) CreateUser(ctx context.Context, req *CreateUserRequest) (string, error) {
+func (r *Repository) CreateUser(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, error) {
 	var userId string
 	err := r.db.GetDB().QueryRow(ctx, `
 		INSERT INTO users (id, company_id, user_role_id, first_name, last_name, phone, password_hash)
@@ -74,8 +74,8 @@ func (r *Repository) CreateUser(ctx context.Context, req *CreateUserRequest) (st
 	`, req.CompanyId, req.UserRoleId, req.FirstName, req.LastName, req.Phone, req.PasswordHash).Scan(&userId)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return userId, nil
+	return &CreateUserResponse{userId}, nil
 }

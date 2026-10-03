@@ -20,50 +20,50 @@ func (s *Service) GetUserById(ctx context.Context, userId, companyId string) (*U
 	return s.repo.GetUserById(ctx, userId, companyId)
 }
 
-func (s *Service) CreateUser(ctx context.Context, r *CreateUserRequest) (string, error) {
+func (s *Service) CreateUser(ctx context.Context, r *CreateUserRequest) (*CreateUserResponse, error) {
 
 	if r.CompanyId == "" || r.FirstName == "" || r.Password == "" {
-		return "", ErrInvalidCred
+		return nil, ErrInvalidCred
 	}
 
 	if !validator.PhoneValid(r.Phone) {
-		return "", ErrInvalidPhone
+		return nil, ErrInvalidPhone
 	}
 
-	roleIds, err := s.repo.GetCompanyRoles(ctx, r.CompanyId)
+	roles, err := s.repo.GetCompanyRoles(ctx, r.CompanyId)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	ok := false
-	for _, roleId := range roleIds {
-		if roleId == r.UserRoleId {
+	for _, role := range roles {
+		if role.Id == r.UserRoleId {
 			ok = true
 			break
 		}
 	}
 
 	if !ok {
-		return "", errors.New("invalid role for company")
+		return nil, ErrInvalidRole
 	}
 
 	hash, err := validator.HashPassword(r.Password)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	r.PasswordHash = hash
 
-	userId, err := s.repo.CreateUser(ctx, r)
+	res, err := s.repo.CreateUser(ctx, r)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) &&
 			pgErr.Code == "23505" &&
 			pgErr.ConstraintName == "users_active_phone_unique" {
-			return "", ErrPhoneTaken
+			return nil, ErrPhoneTaken
 		}
-		return "", err
+		return nil, err
 	}
 
-	return userId, nil
+	return res, nil
 }

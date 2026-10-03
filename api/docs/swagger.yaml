@@ -47,6 +47,11 @@ definitions:
       user_role_id:
         type: string
     type: object
+  bazaar_internal_modules_user.CreateUserResponse:
+    properties:
+      user_id:
+        type: string
+    type: object
   bazaar_internal_modules_user.User:
     properties:
       company_id:
@@ -224,9 +229,9 @@ paths:
       - application/json
       responses:
         "201":
-          description: userId
+          description: Created
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_modules_user.CreateUserResponse'
         "400":
           description: Invalid credential data
           schema:
