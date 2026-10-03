@@ -264,9 +264,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "userId",
+                        "description": "Created",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_modules_user.CreateUserResponse"
                         }
                     },
                     "400": {
@@ -424,6 +424,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_role_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "bazaar_internal_modules_user.CreateUserResponse": {
+            "type": "object",
+            "properties": {
+                "user_id": {
                     "type": "string"
                 }
             }
