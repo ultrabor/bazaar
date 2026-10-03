@@ -86,7 +86,7 @@ const docTemplate = `{
                     }
                 ],
                 "produces": [
-                    "text/plain"
+                    "application/json"
                 ],
                 "tags": [
                     "Auth"

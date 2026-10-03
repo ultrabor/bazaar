@@ -79,7 +79,7 @@
                     }
                 ],
                 "produces": [
-                    "text/plain"
+                    "application/json"
                 ],
                 "tags": [
                     "Auth"

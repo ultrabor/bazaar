@@ -97,7 +97,7 @@ paths:
   /auth/me:
     get:
       produces:
-      - text/plain
+      - application/json
       responses:
         "200":
           description: OK
