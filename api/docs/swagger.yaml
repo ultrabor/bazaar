@@ -1,28 +1,8 @@
 basePath: /
 definitions:
-  bazaar_internal_modules_auth.LoginRequest:
-    properties:
-      password:
-        type: string
-      phone:
-        type: string
-    type: object
   bazaar_internal_modules_auth.LoginResponse:
     properties:
       token:
-        type: string
-    type: object
-  bazaar_internal_modules_auth.RegisterRequest:
-    properties:
-      company_name:
-        type: string
-      first_name:
-        type: string
-      last_name:
-        type: string
-      password:
-        type: string
-      phone:
         type: string
     type: object
   bazaar_internal_modules_auth.RegisterResponse:
@@ -32,19 +12,37 @@ definitions:
       user_id:
         type: string
     type: object
-  bazaar_internal_modules_user.CreateUserRequest:
+  bazaar_internal_modules_location.CreateLocationResponse:
     properties:
+      location_id:
+        type: string
+    type: object
+  bazaar_internal_modules_location.Location:
+    properties:
+      address:
+        type: string
+      archived:
+        type: boolean
       company_id:
         type: string
-      first_name:
+      id:
         type: string
-      last_name:
+      name:
         type: string
-      password:
-        type: string
-      phone:
-        type: string
-      user_role_id:
+      type:
+        $ref: '#/definitions/bazaar_internal_modules_location.Type'
+    type: object
+  bazaar_internal_modules_location.Type:
+    enum:
+    - store
+    - warehouse
+    type: string
+    x-enum-varnames:
+    - TypeStore
+    - TypeWarehouse
+  bazaar_internal_modules_location.UpdateLocationResponse:
+    properties:
+      location_id:
         type: string
     type: object
   bazaar_internal_modules_user.CreateUserResponse:
@@ -67,6 +65,57 @@ definitions:
       user_role_id:
         type: string
     type: object
+  bazaar_internal_platform_httpx_dto.CreateLocationRequest:
+    properties:
+      address:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/bazaar_internal_modules_location.Type'
+    type: object
+  bazaar_internal_platform_httpx_dto.CreateUserRequest:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      user_role_id:
+        type: string
+    type: object
+  bazaar_internal_platform_httpx_dto.LoginRequest:
+    properties:
+      password:
+        type: string
+      phone:
+        type: string
+    type: object
+  bazaar_internal_platform_httpx_dto.RegisterOwnerRequest:
+    properties:
+      company_name:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    type: object
+  bazaar_internal_platform_httpx_dto.UpdateLocationRequest:
+    properties:
+      address:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/bazaar_internal_modules_location.Type'
+    type: object
 info:
   contact: {}
   description: Bazaar inventory and sales API
@@ -83,7 +132,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_modules_auth.LoginRequest'
+          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.LoginRequest'
       produces:
       - application/json
       responses:
@@ -150,7 +199,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_modules_auth.RegisterRequest'
+          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.RegisterOwnerRequest'
       produces:
       - application/json
       responses:
@@ -193,6 +242,187 @@ paths:
       summary: Liveness probe
       tags:
       - Health
+  /location:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/bazaar_internal_modules_location.Location'
+            type: array
+        "400":
+          description: Invalid credential data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Location not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "503":
+          description: Service unavailable
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all locations for the current user's company
+      tags:
+      - Location
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Location creation data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.CreateLocationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/bazaar_internal_modules_location.CreateLocationResponse'
+        "400":
+          description: Invalid credential data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "409":
+          description: Location already exists
+          schema:
+            type: string
+        "422":
+          description: Invalid input
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "503":
+          description: Service unavailable
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new location
+      tags:
+      - Location
+  /location/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/bazaar_internal_modules_location.Location'
+        "400":
+          description: Invalid credential data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Location not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "503":
+          description: Service unavailable
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get location by ID
+      tags:
+      - Location
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Location update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.UpdateLocationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/bazaar_internal_modules_location.UpdateLocationResponse'
+        "400":
+          description: Invalid credential data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Location not found
+          schema:
+            type: string
+        "409":
+          description: Location already exists
+          schema:
+            type: string
+        "422":
+          description: Invalid input
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "503":
+          description: Service unavailable
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update location by ID
+      tags:
+      - Location
   /readyz:
     get:
       description: Checks database connectivity
@@ -224,7 +454,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_modules_user.CreateUserRequest'
+          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.CreateUserRequest'
       produces:
       - application/json
       responses:

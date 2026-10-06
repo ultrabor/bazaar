@@ -23,13 +23,16 @@ func (h *Handler) Routes(mw *middleware.Middleware) {
 		})
 	})
 
-	h.router.Route("/user", func(r chi.Router) {
-		r.Group(func(r chi.Router) {
-			r.Use(mw.Auth)
+	h.router.Group(func(r chi.Router) {
+		r.Use(mw.Auth)
 
-			r.Post("/", h.CreateUser)
-			r.Get("/{id}", h.GetUserById)
-		})
+		r.Post("/user", h.CreateUser)
+		r.Get("/user/{id}", h.GetUserById)
+
+		r.Post("/location", h.CreateLocation)
+		r.Get("/location", h.GetAllLocations)
+		r.Get("/location/{id}", h.GetLocationById)
+		r.Put("/location/{id}", h.UpdateLocation)
 	})
 
 	h.router.Get("/healthz", h.Health)

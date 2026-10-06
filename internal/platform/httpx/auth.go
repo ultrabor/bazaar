@@ -3,6 +3,7 @@ package httpx
 import (
 	"bazaar/internal/modules/auth"
 	"bazaar/internal/modules/user"
+	"bazaar/internal/platform/httpx/dto"
 	"bazaar/internal/platform/httpx/middleware"
 	"bazaar/internal/platform/support/validator"
 	"context"
@@ -17,7 +18,7 @@ import (
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param request body auth.RegisterRequest true "Registration data"
+// @Param request body dto.RegisterOwnerRequest true "Registration data"
 // @Success 201 {object} auth.RegisterResponse
 // @Failure 400 {string} string "Invalid registration data"
 // @Failure 409 {string} string "Phone already registered"
@@ -29,15 +30,23 @@ func (h *Handler) RegisterOwner(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()
 
-	var rq auth.RegisterRequest
+	var body dto.RegisterOwnerRequest
 
-	err := json.NewDecoder(r.Body).Decode(&rq)
+	err := json.NewDecoder(r.Body).Decode(&body)
 
 	if err != nil {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		_, _ = w.Write([]byte("invalid input"))
 		h.logger.Error("invalid input", slog.Any("err", err))
 		return
+	}
+
+	rq := auth.RegisterRequest{
+		FirstName:   body.FirstName,
+		LastName:    body.LastName,
+		CompanyName: body.CompanyName,
+		Phone:       body.Phone,
+		Password:    body.Password,
 	}
 
 	res, err := h.sm.authService.RegisterOwner(ctx, rq)
@@ -88,7 +97,7 @@ func (h *Handler) RegisterOwner(w http.ResponseWriter, r *http.Request) {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param request body auth.LoginRequest true "Login data"
+// @Param request body dto.LoginRequest true "Login data"
 // @Success 200 {object} auth.LoginResponse
 // @Failure 400 {string} string "Invalid login data"
 // @Failure 401 {string} string "Unauthorized"
@@ -100,15 +109,20 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()
 
-	var rq auth.LoginRequest
+	var body dto.LoginRequest
 
-	err := json.NewDecoder(r.Body).Decode(&rq)
+	err := json.NewDecoder(r.Body).Decode(&body)
 
 	if err != nil {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		_, _ = w.Write([]byte("invalid input"))
 		h.logger.Error("invalid input", slog.Any("err", err))
 		return
+	}
+
+	rq := auth.LoginRequest{
+		Phone:    body.Phone,
+		Password: body.Password,
 	}
 
 	res, err := h.sm.authService.Login(ctx, rq)

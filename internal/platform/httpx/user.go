@@ -2,6 +2,7 @@ package httpx
 
 import (
 	"bazaar/internal/modules/user"
+	"bazaar/internal/platform/httpx/dto"
 	"bazaar/internal/platform/httpx/middleware"
 	"bazaar/internal/platform/support/validator"
 	"context"
@@ -19,7 +20,7 @@ import (
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param request body user.CreateUserRequest true "User creation data"
+// @Param request body dto.CreateUserRequest true "User creation data"
 // @Success 201 {object} user.CreateUserResponse
 // @Failure 400 {string} string "Invalid credential data"
 // @Failure 409 {string} string "Phone already registered"
@@ -31,9 +32,9 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()
 
-	var rq user.CreateUserRequest
+	var body dto.CreateUserRequest
 
-	err := json.NewDecoder(r.Body).Decode(&rq)
+	err := json.NewDecoder(r.Body).Decode(&body)
 
 	if err != nil {
 		w.WriteHeader(http.StatusUnprocessableEntity)
@@ -50,7 +51,14 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rq.CompanyId = u.CompanyId
+	rq := user.CreateUserRequest{
+		FirstName:  body.FirstName,
+		LastName:   body.LastName,
+		Phone:      body.Phone,
+		Password:   body.Password,
+		CompanyId:  u.CompanyId,
+		UserRoleId: body.UserRoleId,
+	}
 
 	res, err := h.sm.userService.CreateUser(ctx, &rq)
 

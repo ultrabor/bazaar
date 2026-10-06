@@ -27,8 +27,11 @@ func (s *Service) GetLocationById(ctx context.Context, locationId, companyId str
 
 func (s *Service) CreateLocation(ctx context.Context, r *CreateLocationRequest) (*CreateLocationResponse, error) {
 
-	if r.CompanyId == "" || r.Name == "" || r.Address == "" {
+	if r == nil || r.CompanyId == "" || r.Name == "" || r.Address == "" {
 		return nil, ErrInvalidCred
+	}
+	if r.Type != TypeStore && r.Type != TypeWarehouse {
+		return nil, ErrInvalidType
 	}
 
 	res, err := s.repo.CreateLocation(ctx, r)
@@ -41,8 +44,11 @@ func (s *Service) CreateLocation(ctx context.Context, r *CreateLocationRequest) 
 
 func (s *Service) UpdateLocation(ctx context.Context, r *UpdateLocationRequest) (*UpdateLocationResponse, error) {
 
-	if r.CompanyId == "" || r.LocationId == "" || r.Name == "" || r.Address == "" {
+	if r == nil || r.CompanyId == "" || r.LocationId == "" || r.Name == "" || r.Address == "" {
 		return nil, ErrInvalidCred
+	}
+	if r.Type != TypeStore && r.Type != TypeWarehouse {
+		return nil, ErrInvalidType
 	}
 
 	res, err := s.repo.UpdateLocation(ctx, r)
