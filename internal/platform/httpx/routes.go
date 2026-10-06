@@ -5,10 +5,12 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
 func (h *Handler) Routes(mw *middleware.Middleware) {
 
+	h.router.Use(chimiddleware.RedirectSlashes)
 	h.router.Use(mw.Logger)
 	h.router.Use(mw.Recover)
 
