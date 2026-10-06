@@ -3,6 +3,7 @@ package httpx
 import (
 	"bazaar/internal/app/health"
 	"bazaar/internal/modules/auth"
+	"bazaar/internal/modules/location"
 	"bazaar/internal/modules/user"
 	"log/slog"
 
@@ -16,20 +17,23 @@ type Handler struct {
 }
 
 type ServiceManager struct {
-	healthService *health.Service
-	authService   *auth.Service
-	userService   *user.Service
+	healthService   *health.Service
+	authService     *auth.Service
+	userService     *user.Service
+	locationService *location.Service
 }
 
 func NewServiceManager(
 	healthService *health.Service,
 	authService *auth.Service,
 	userService *user.Service,
+	locationService *location.Service,
 ) *ServiceManager {
 	return &ServiceManager{
-		healthService: healthService,
-		authService:   authService,
-		userService:   userService,
+		healthService:   healthService,
+		authService:     authService,
+		userService:     userService,
+		locationService: locationService,
 	}
 }
 
