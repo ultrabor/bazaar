@@ -1,6 +1,9 @@
 package product
 
-import "context"
+import (
+	"context"
+	"strings"
+)
 
 type Service struct {
 	repo *Repository
@@ -19,8 +22,8 @@ func (s *Service) GetProductById(ctx context.Context, productId, companyId strin
 	return product, nil
 }
 
-func (s *Service) GetCompanyProducts(ctx context.Context, companyId string) ([]Product, error) {
-	products, err := s.repo.GetCompanyProducts(ctx, companyId)
+func (s *Service) GetCompanyProducts(ctx context.Context, rq GetCompanyProductsRequest) ([]Product, error) {
+	products, err := s.repo.GetCompanyProducts(ctx, rq)
 	if err != nil {
 		return nil, err
 	}
@@ -29,9 +32,16 @@ func (s *Service) GetCompanyProducts(ctx context.Context, companyId string) ([]P
 }
 
 func (s *Service) CreateProduct(ctx context.Context, r *CreateProductRequest) (*CreateProductResponse, error) {
-	if r == nil || r.CompanyId == "" || r.Name == "" {
+	if r == nil || r.CompanyId == "" || r.Name == "" || r.SKU == "" {
 		return nil, ErrInvalidCred
 	}
+
+	if r.Unit != UnitKg && r.Unit != UnitLiter && r.Unit != UnitMeter && r.Unit != UnitPiece {
+		return nil, ErrInvalidUnitType
+	}
+
+	r.Name = strings.TrimSpace(r.Name)
+	r.SKU = strings.TrimSpace(r.SKU)
 
 	res, err := s.repo.CreateProduct(ctx, r)
 	if err != nil {
@@ -42,9 +52,16 @@ func (s *Service) CreateProduct(ctx context.Context, r *CreateProductRequest) (*
 }
 
 func (s *Service) UpdateProduct(ctx context.Context, r *UpdateProductRequest) (*UpdateProductResponse, error) {
-	if r == nil || r.CompanyId == "" || r.ProductId == "" || r.Name == "" {
+	if r == nil || r.CompanyId == "" || r.ProductId == "" || r.Name == "" || r.SKU == "" {
 		return nil, ErrInvalidCred
 	}
+
+	if r.Unit != UnitKg && r.Unit != UnitLiter && r.Unit != UnitMeter && r.Unit != UnitPiece {
+		return nil, ErrInvalidUnitType
+	}
+
+	r.Name = strings.TrimSpace(r.Name)
+	r.SKU = strings.TrimSpace(r.SKU)
 
 	res, err := s.repo.UpdateProduct(ctx, r)
 	if err != nil {
