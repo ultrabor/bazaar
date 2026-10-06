@@ -568,6 +568,22 @@ const docTemplate = `{
                     "Product"
                 ],
                 "summary": "Get all Products for the current user's company",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Items per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1158,12 +1174,27 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "unit": {
-                    "type": "string"
+                    "$ref": "#/definitions/bazaar_internal_modules_product.Unit"
                 },
                 "updated_at": {
                     "type": "string"
                 }
             }
+        },
+        "bazaar_internal_modules_product.Unit": {
+            "type": "string",
+            "enum": [
+                "kg",
+                "meter",
+                "piece",
+                "liter"
+            ],
+            "x-enum-varnames": [
+                "UnitKg",
+                "UnitMeter",
+                "UnitPiece",
+                "UnitLiter"
+            ]
         },
         "bazaar_internal_modules_product.UpdateProductResponse": {
             "type": "object",
@@ -1228,7 +1259,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "unit": {
-                    "type": "string"
+                    "$ref": "#/definitions/bazaar_internal_modules_product.Unit"
                 }
             }
         },
@@ -1307,7 +1338,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "unit": {
-                    "type": "string"
+                    "$ref": "#/definitions/bazaar_internal_modules_product.Unit"
                 }
             }
         }

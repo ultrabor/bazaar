@@ -32,7 +32,7 @@ func (s *Service) GetCompanyProducts(ctx context.Context, rq GetCompanyProductsR
 }
 
 func (s *Service) CreateProduct(ctx context.Context, r *CreateProductRequest) (*CreateProductResponse, error) {
-	if r == nil || r.CompanyId == "" || r.Name == "" || r.SKU == "" {
+	if r == nil || r.CompanyId == "" {
 		return nil, ErrInvalidCred
 	}
 
@@ -42,6 +42,10 @@ func (s *Service) CreateProduct(ctx context.Context, r *CreateProductRequest) (*
 
 	r.Name = strings.TrimSpace(r.Name)
 	r.SKU = strings.TrimSpace(r.SKU)
+
+	if r.Name == "" || r.SKU == "" {
+		return nil, ErrInvalidCred
+	}
 
 	res, err := s.repo.CreateProduct(ctx, r)
 	if err != nil {
@@ -52,7 +56,7 @@ func (s *Service) CreateProduct(ctx context.Context, r *CreateProductRequest) (*
 }
 
 func (s *Service) UpdateProduct(ctx context.Context, r *UpdateProductRequest) (*UpdateProductResponse, error) {
-	if r == nil || r.CompanyId == "" || r.ProductId == "" || r.Name == "" || r.SKU == "" {
+	if r == nil || r.CompanyId == "" || r.ProductId == "" {
 		return nil, ErrInvalidCred
 	}
 
@@ -62,6 +66,10 @@ func (s *Service) UpdateProduct(ctx context.Context, r *UpdateProductRequest) (*
 
 	r.Name = strings.TrimSpace(r.Name)
 	r.SKU = strings.TrimSpace(r.SKU)
+
+	if r.Name == "" || r.SKU == "" {
+		return nil, ErrInvalidCred
+	}
 
 	res, err := s.repo.UpdateProduct(ctx, r)
 	if err != nil {
