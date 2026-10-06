@@ -91,8 +91,8 @@ func (r *Repository) CreateProduct(ctx context.Context, rq *CreateProductRequest
 	var productId string
 
 	err := r.db.GetDB().QueryRow(ctx, `
-	INSERT INTO products (id, company_id, name, sku, unit)
-	VALUES(gen_random(), $1, $2, $3, $4)
+	INSERT INTO products (company_id, name, sku, unit)
+	VALUES($1, $2, $3, $4)
 	RETURNING id
 	`, rq.CompanyId, rq.Name, rq.SKU, rq.Unit,
 	).Scan(&productId)
@@ -116,7 +116,7 @@ func (r *Repository) UpdateProduct(ctx context.Context, rq *UpdateProductRequest
 	err := r.db.GetDB().QueryRow(ctx, `
 	UPDATE products
 	SET name = $1, sku = $2, unit = $3, updated_at = now()
-	where id = $4, and company_id = $5 and archived = false
+	where id = $4 and company_id = $5 and archived = false
 	RETURNING id
 	`, rq.Name, rq.SKU, rq.Unit, rq.ProductId, rq.CompanyId,
 	).Scan(&productId)
@@ -141,8 +141,8 @@ func (r *Repository) ArchiveProduct(ctx context.Context, productId, companyId st
 	res, err := r.db.GetDB().Exec(ctx, `
 	UPDATE products 
 	SET archived = true, updated_at = now()	
-	where id = $1 and companyId = $2 and archived = false
-	`,
+	where id = $1 and company_id = $2 and archived = false
+	`, productId, companyId,
 	)
 
 	if err != nil {

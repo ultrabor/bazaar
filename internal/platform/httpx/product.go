@@ -27,7 +27,7 @@ import (
 // @Failure 422 {string} string "Invalid input"
 // @Failure 500 {string} string "Internal error"
 // @Failure 503 {string} string "Service unavailable"
-// @Router /Product [post]
+// @Router /product [post]
 func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()
@@ -72,7 +72,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 			msg = "Product already exists"
 		case errors.Is(err, product.ErrInvalidUnitType):
 			status = http.StatusBadRequest
-			msg = "invalid Product type"
+			msg = "invalid product unit type"
 		}
 
 		w.WriteHeader(status)
@@ -107,7 +107,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {string} string "Product not found"
 // @Failure 500 {string} string "Internal error"
 // @Failure 503 {string} string "Service unavailable"
-// @Router /Product/{id} [get]
+// @Router /product/{id} [get]
 func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()
@@ -178,7 +178,7 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {string} string "Product not found"
 // @Failure 500 {string} string "Internal error"
 // @Failure 503 {string} string "Service unavailable"
-// @Router /Product [get]
+// @Router /product [get]
 func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()
@@ -243,7 +243,7 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 // @Failure 422 {string} string "Invalid input"
 // @Failure 500 {string} string "Internal error"
 // @Failure 503 {string} string "Service unavailable"
-// @Router /Product/{id} [put]
+// @Router /product/{id} [put]
 func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()
@@ -302,7 +302,7 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 			msg = "Product already exists"
 		case errors.Is(err, product.ErrInvalidUnitType):
 			status = http.StatusBadRequest
-			msg = "invalid Product type"
+			msg = "invalid product unit type"
 		}
 
 		w.WriteHeader(status)
@@ -339,7 +339,7 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {string} string "Product not found"
 // @Failure 500 {string} string "Internal error"
 // @Failure 503 {string} string "Service unavailable"
-// @Router /Product/{id}/archive [patch]
+// @Router /product/{id}/archive [patch]
 func (h *Handler) ArchiveProduct(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()
