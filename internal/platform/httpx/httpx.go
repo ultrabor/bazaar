@@ -4,6 +4,7 @@ import (
 	"bazaar/internal/app/health"
 	"bazaar/internal/modules/auth"
 	"bazaar/internal/modules/location"
+	"bazaar/internal/modules/product"
 	"bazaar/internal/modules/user"
 	"log/slog"
 
@@ -21,6 +22,7 @@ type ServiceManager struct {
 	authService     *auth.Service
 	userService     *user.Service
 	locationService *location.Service
+	productService  *product.Service
 }
 
 func NewServiceManager(
@@ -28,12 +30,14 @@ func NewServiceManager(
 	authService *auth.Service,
 	userService *user.Service,
 	locationService *location.Service,
+	productService *product.Service,
 ) *ServiceManager {
 	return &ServiceManager{
 		healthService:   healthService,
 		authService:     authService,
 		userService:     userService,
 		locationService: locationService,
+		productService:  productService,
 	}
 }
 
