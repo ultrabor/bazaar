@@ -195,15 +195,24 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
-	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	page, limit := 1, 20
 
-	if page <= 0 {
-		page = 1
+	if raw := r.URL.Query().Get("page"); raw != "" {
+		value, err := strconv.Atoi(raw)
+		if err != nil || value < 1 {
+			http.Error(w, "invalid page", http.StatusBadRequest)
+			return
+		}
+		page = value
 	}
 
-	if limit <= 0 {
-		limit = 1
+	if raw := r.URL.Query().Get("limit"); raw != "" {
+		value, err := strconv.Atoi(raw)
+		if err != nil || value < 1 || value > 100 {
+			http.Error(w, "invalid limit", http.StatusBadRequest)
+			return
+		}
+		limit = value
 	}
 
 	rq := product.GetCompanyProductsRequest{
