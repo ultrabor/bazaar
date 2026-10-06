@@ -336,7 +336,7 @@ func (h *Handler) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {string} string "Location not found"
 // @Failure 500 {string} string "Internal error"
 // @Failure 503 {string} string "Service unavailable"
-// @Router /location/{id}/archive [post]
+// @Router /location/{id}/archive [patch]
 func (h *Handler) ArchiveLocation(w http.ResponseWriter, r *http.Request) {
 	var locationId = chi.URLParam(r, "id")
 
