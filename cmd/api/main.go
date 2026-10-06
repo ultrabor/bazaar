@@ -76,7 +76,7 @@ func main() {
 		auth.New(db, []byte(cfg.JWTSecret)),
 		user.NewService(user.NewRepository(db)),
 		location.NewService(location.NewRepository(db)),
-		product.NewService(*product.NewRepository(db)),
+		product.NewService(product.NewRepository(db)),
 	))
 
 	authService := auth.New(db, []byte(cfg.JWTSecret))

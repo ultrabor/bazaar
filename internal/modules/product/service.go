@@ -3,13 +3,11 @@ package product
 import "context"
 
 type Service struct {
-	repo Repository
+	repo *Repository
 }
 
-func NewService(repo Repository) *Service {
-	return &Service{
-		repo: repo,
-	}
+func NewService(repo *Repository) *Service {
+	return &Service{repo: repo}
 }
 
 func (s *Service) GetProductById(ctx context.Context, productId, companyId string) (*Product, error) {
