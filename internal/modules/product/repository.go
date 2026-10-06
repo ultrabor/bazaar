@@ -4,6 +4,7 @@ import (
 	"bazaar/internal/platform/database"
 	"context"
 	"errors"
+	"strconv"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -21,7 +22,7 @@ func (r *Repository) GetProductById(ctx context.Context, productId, companyId st
 	var product Product
 
 	err := r.db.GetDB().QueryRow(ctx, `
-		SELECT id, company_id, name, sku, unit, archived
+		SELECT id, company_id, name, sku, unit, archived, created_at, updated_at
 		FROM products
 		where id = $1 and company_id = $2 and archived = false
 		`, productId, companyId,
@@ -32,6 +33,8 @@ func (r *Repository) GetProductById(ctx context.Context, productId, companyId st
 		&product.SKU,
 		&product.Unit,
 		&product.Archived,
+		&product.CreatedAt,
+		&product.UpdatedAt,
 	)
 
 	if err != nil {
@@ -46,13 +49,22 @@ func (r *Repository) GetProductById(ctx context.Context, productId, companyId st
 
 //GetCompanyProducts, CreateProduct, UpdateProduct
 
-func (r *Repository) GetCompanyProducts(ctx context.Context, companyId string) ([]Product, error) {
-	rows, err := r.db.GetDB().Query(ctx, `
-	SELECT id, company_id, name, sku, unit, archived
+func (r *Repository) GetCompanyProducts(ctx context.Context, rq GetCompanyProductsRequest) ([]Product, error) {
+	query := `
+	SELECT id, company_id, name, sku, unit, archived, created_at, updated_at
 		FROM products
 		where company_id = $1 and archived = false
-		`, companyId,
-	)
+		`
+
+	if rq.Limit != 0 {
+		query += " limit " + strconv.Itoa(rq.Limit)
+	}
+
+	if rq.Page != 0 {
+		query += " OFFSET " + strconv.Itoa((rq.Page-1)*rq.Limit)
+	}
+
+	rows, err := r.db.GetDB().Query(ctx, query, rq.CompanyId)
 
 	if err != nil {
 		return nil, err
@@ -71,6 +83,8 @@ func (r *Repository) GetCompanyProducts(ctx context.Context, companyId string) (
 			&product.SKU,
 			&product.Unit,
 			&product.Archived,
+			&product.CreatedAt,
+			&product.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}

@@ -192,7 +192,22 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.sm.productService.GetCompanyProducts(ctx, u.CompanyId)
+	var body dto.GetAllProductsRequest
+
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		_, _ = w.Write([]byte("invalid input"))
+		return
+	}
+
+	rq := product.GetCompanyProductsRequest{
+		CompanyId: u.CompanyId,
+		Page:      body.Page,
+		Limit:     body.Limit,
+	}
+
+	res, err := h.sm.productService.GetCompanyProducts(ctx, rq)
 
 	if err != nil {
 		status := http.StatusInternalServerError
