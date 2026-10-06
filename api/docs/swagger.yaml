@@ -45,6 +45,35 @@ definitions:
       location_id:
         type: string
     type: object
+  bazaar_internal_modules_product.CreateProductResponse:
+    properties:
+      product_id:
+        type: string
+    type: object
+  bazaar_internal_modules_product.Product:
+    properties:
+      archived:
+        type: boolean
+      company_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      sku:
+        type: string
+      unit:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  bazaar_internal_modules_product.UpdateProductResponse:
+    properties:
+      product_id:
+        type: string
+    type: object
   bazaar_internal_modules_user.CreateUserResponse:
     properties:
       user_id:
@@ -73,6 +102,15 @@ definitions:
         type: string
       type:
         $ref: '#/definitions/bazaar_internal_modules_location.Type'
+    type: object
+  bazaar_internal_platform_httpx_dto.CreateProductRequest:
+    properties:
+      name:
+        type: string
+      sku:
+        type: string
+      unit:
+        type: string
     type: object
   bazaar_internal_platform_httpx_dto.CreateUserRequest:
     properties:
@@ -116,12 +154,244 @@ definitions:
       type:
         $ref: '#/definitions/bazaar_internal_modules_location.Type'
     type: object
+  bazaar_internal_platform_httpx_dto.UpdateProductRequest:
+    properties:
+      name:
+        type: string
+      sku:
+        type: string
+      unit:
+        type: string
+    type: object
 info:
   contact: {}
   description: Bazaar inventory and sales API
   title: Bazaar
   version: "1.0"
 paths:
+  /Product:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/bazaar_internal_modules_product.Product'
+            type: array
+        "400":
+          description: Invalid credential data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Product not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "503":
+          description: Service unavailable
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all Products for the current user's company
+      tags:
+      - Product
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product creation data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/bazaar_internal_modules_product.CreateProductResponse'
+        "400":
+          description: Invalid credential data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "409":
+          description: Product already exists
+          schema:
+            type: string
+        "422":
+          description: Invalid input
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "503":
+          description: Service unavailable
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new Product
+      tags:
+      - Product
+  /Product/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/bazaar_internal_modules_product.Product'
+        "400":
+          description: Invalid credential data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Product not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "503":
+          description: Service unavailable
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get Product by ID
+      tags:
+      - Product
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Product update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.UpdateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/bazaar_internal_modules_product.UpdateProductResponse'
+        "400":
+          description: Invalid credential data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Product not found
+          schema:
+            type: string
+        "409":
+          description: Product already exists
+          schema:
+            type: string
+        "422":
+          description: Invalid input
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "503":
+          description: Service unavailable
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update Product by ID
+      tags:
+      - Product
+  /Product/{id}/archive:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Invalid credential data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Product not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "503":
+          description: Service unavailable
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Archive Product by ID
+      tags:
+      - Product
   /auth/login:
     post:
       consumes:
@@ -424,7 +694,7 @@ paths:
       tags:
       - Location
   /location/{id}/archive:
-    post:
+    patch:
       consumes:
       - application/json
       parameters:
