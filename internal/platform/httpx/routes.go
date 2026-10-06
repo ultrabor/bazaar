@@ -35,7 +35,7 @@ func (h *Handler) Routes(mw *middleware.Middleware) {
 		r.Get("/location", h.GetAllLocations)
 		r.Get("/location/{id}", h.GetLocationById)
 		r.Put("/location/{id}", h.UpdateLocation)
-		r.Post("/location/{id}/archive", h.ArchiveLocation)
+		r.Patch("/location/{id}/archive", h.ArchiveLocation)
 	})
 
 	h.router.Get("/healthz", h.Health)
