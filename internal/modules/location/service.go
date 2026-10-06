@@ -58,3 +58,16 @@ func (s *Service) UpdateLocation(ctx context.Context, r *UpdateLocationRequest) 
 
 	return res, nil
 }
+
+func (s *Service) ArchiveLocation(ctx context.Context, locationId, companyId string) error {
+	if locationId == "" || companyId == "" {
+		return ErrInvalidCred
+	}
+
+	err := s.repo.ArchiveLocation(ctx, locationId, companyId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -423,6 +423,48 @@ paths:
       summary: Update location by ID
       tags:
       - Location
+  /location/{id}/archive:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Invalid credential data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Location not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "503":
+          description: Service unavailable
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Archive location by ID
+      tags:
+      - Location
   /readyz:
     get:
       description: Checks database connectivity

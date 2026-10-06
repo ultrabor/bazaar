@@ -128,3 +128,24 @@ func (r *Repository) UpdateLocation(ctx context.Context, req *UpdateLocationRequ
 
 	return &UpdateLocationResponse{LocationID: locationId}, nil
 }
+
+func (r *Repository) ArchiveLocation(ctx context.Context, locationId, companyId string) error {
+	cmdTag, err := r.db.GetDB().Exec(ctx, `
+		UPDATE locations
+		SET archived = true, updated_at = now()
+		WHERE id = $1 AND company_id = $2 AND archived = false
+	`, locationId, companyId)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrNotFound
+		}
+		return err
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return ErrNotFound
+	}
+
+	return nil
+}

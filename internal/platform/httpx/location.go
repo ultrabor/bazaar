@@ -323,3 +323,60 @@ func (h *Handler) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(re)
 
 }
+
+// @Summary Archive location by ID
+// @Tags Location
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Location ID"
+// @Success 204 {string} string "No Content"
+// @Failure 400 {string} string "Invalid credential data"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 404 {string} string "Location not found"
+// @Failure 500 {string} string "Internal error"
+// @Failure 503 {string} string "Service unavailable"
+// @Router /location/{id}/archive [post]
+func (h *Handler) ArchiveLocation(w http.ResponseWriter, r *http.Request) {
+	var locationId = chi.URLParam(r, "id")
+
+	if locationId == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = w.Write([]byte("location id is required"))
+		h.logger.Error("location id is required")
+		return
+	}
+
+	u, ok := middleware.CurrentUser(r.Context())
+
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		_, _ = w.Write([]byte("unauthorized"))
+		h.logger.Error("unauthorized")
+		return
+	}
+
+	err := h.sm.locationService.ArchiveLocation(r.Context(), locationId, u.CompanyId)
+	if err != nil {
+		status := http.StatusInternalServerError
+		msg := "DB closed"
+		switch {
+		case errors.Is(err, context.DeadlineExceeded):
+			status = http.StatusServiceUnavailable
+			msg = "deadline exceeded"
+		case errors.Is(err, location.ErrInvalidCred):
+			status = http.StatusBadRequest
+			msg = "invalid credential"
+		case errors.Is(err, location.ErrNotFound):
+			status = http.StatusNotFound
+			msg = "location not found"
+		}
+
+		w.WriteHeader(status)
+		_, _ = w.Write([]byte(msg))
+		h.logger.Error("service unavailable", slog.Any("err", err))
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
