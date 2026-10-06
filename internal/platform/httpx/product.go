@@ -9,6 +9,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -172,6 +173,8 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Items per page" default(20)
 // @Success 200 {array} product.Product
 // @Failure 400 {string} string "Invalid credential data"
 // @Failure 401 {string} string "Unauthorized"
@@ -192,19 +195,13 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var body dto.GetAllProductsRequest
-
-	err := json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		_, _ = w.Write([]byte("invalid input"))
-		return
-	}
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	limit, _ := strconv.Atoi(r.URL.Query().Get("page"))
 
 	rq := product.GetCompanyProductsRequest{
 		CompanyId: u.CompanyId,
-		Page:      body.Page,
-		Limit:     body.Limit,
+		Page:      page,
+		Limit:     limit,
 	}
 
 	res, err := h.sm.productService.GetCompanyProducts(ctx, rq)

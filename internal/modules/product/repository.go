@@ -4,7 +4,6 @@ import (
 	"bazaar/internal/platform/database"
 	"context"
 	"errors"
-	"strconv"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -50,21 +49,23 @@ func (r *Repository) GetProductById(ctx context.Context, productId, companyId st
 //GetCompanyProducts, CreateProduct, UpdateProduct
 
 func (r *Repository) GetCompanyProducts(ctx context.Context, rq GetCompanyProductsRequest) ([]Product, error) {
+
+	if rq.Limit != 0 {
+		rq.Limit = 20
+	}
+
+	if rq.Page != 0 {
+		rq.Page = 1
+	}
+
 	query := `
 	SELECT id, company_id, name, sku, unit, archived, created_at, updated_at
 		FROM products
 		where company_id = $1 and archived = false
+		LIMIT $2 OFFSET $3
 		`
 
-	if rq.Limit != 0 {
-		query += " limit " + strconv.Itoa(rq.Limit)
-	}
-
-	if rq.Page != 0 {
-		query += " OFFSET " + strconv.Itoa((rq.Page-1)*rq.Limit)
-	}
-
-	rows, err := r.db.GetDB().Query(ctx, query, rq.CompanyId)
+	rows, err := r.db.GetDB().Query(ctx, query, rq.CompanyId, rq.Limit, (rq.Page-1)*rq.Limit)
 
 	if err != nil {
 		return nil, err
