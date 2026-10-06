@@ -41,7 +41,7 @@ func (h *Handler) CreateLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, ok := middleware.CurrentUser(r.Context())
+	u, ok := middleware.CurrentUser(ctx)
 	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
 		_, _ = w.Write([]byte("unauthorized"))
@@ -120,7 +120,7 @@ func (h *Handler) GetLocationById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, ok := middleware.CurrentUser(r.Context())
+	u, ok := middleware.CurrentUser(ctx)
 
 	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -183,7 +183,7 @@ func (h *Handler) GetAllLocations(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()
 
-	u, ok := middleware.CurrentUser(r.Context())
+	u, ok := middleware.CurrentUser(ctx)
 
 	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -245,6 +245,9 @@ func (h *Handler) GetAllLocations(w http.ResponseWriter, r *http.Request) {
 // @Failure 503 {string} string "Service unavailable"
 // @Router /location/{id} [put]
 func (h *Handler) UpdateLocation(w http.ResponseWriter, r *http.Request) {
+	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
+	defer stop()
+
 	var body dto.UpdateLocationRequest
 
 	var locationId = chi.URLParam(r, "id")
@@ -263,7 +266,7 @@ func (h *Handler) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, ok := middleware.CurrentUser(r.Context())
+	u, ok := middleware.CurrentUser(ctx)
 
 	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -280,7 +283,7 @@ func (h *Handler) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 		Type:       body.Type,
 	}
 
-	res, err := h.sm.locationService.UpdateLocation(r.Context(), &rq)
+	res, err := h.sm.locationService.UpdateLocation(ctx, &rq)
 	if err != nil {
 		status := http.StatusInternalServerError
 		msg := "DB closed"
@@ -338,6 +341,9 @@ func (h *Handler) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 // @Failure 503 {string} string "Service unavailable"
 // @Router /location/{id}/archive [patch]
 func (h *Handler) ArchiveLocation(w http.ResponseWriter, r *http.Request) {
+	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
+	defer stop()
+
 	var locationId = chi.URLParam(r, "id")
 
 	if locationId == "" {
@@ -347,7 +353,7 @@ func (h *Handler) ArchiveLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, ok := middleware.CurrentUser(r.Context())
+	u, ok := middleware.CurrentUser(ctx)
 
 	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -356,7 +362,7 @@ func (h *Handler) ArchiveLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.sm.locationService.ArchiveLocation(r.Context(), locationId, u.CompanyId)
+	err := h.sm.locationService.ArchiveLocation(ctx, locationId, u.CompanyId)
 	if err != nil {
 		status := http.StatusInternalServerError
 		msg := "DB closed"

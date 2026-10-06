@@ -137,9 +137,6 @@ func (r *Repository) ArchiveLocation(ctx context.Context, locationId, companyId 
 	`, locationId, companyId)
 
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return ErrNotFound
-		}
 		return err
 	}
 
