@@ -21,10 +21,17 @@ func (r *Repository) GetLocationById(ctx context.Context, locationId, companyId 
 	var location Location
 
 	err := r.db.GetDB().QueryRow(ctx, `
-		SELECT id, company_id, name, address
+		SELECT id, company_id, name, address, type, archived
 		FROM locations
-		WHERE id = $1, company_id = $2 and deleted_at = 0
-	`, locationId, companyId).Scan(&location.Id, &location.CompanyId, &location.Name, &location.Address)
+		WHERE id = $1 AND company_id = $2 AND archived = false
+	`, locationId, companyId).Scan(
+		&location.Id,
+		&location.CompanyId,
+		&location.Name,
+		&location.Address,
+		&location.Type,
+		&location.Archived,
+	)
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -38,9 +45,9 @@ func (r *Repository) GetLocationById(ctx context.Context, locationId, companyId 
 
 func (r *Repository) GetCompanyLocations(ctx context.Context, companyId string) ([]Location, error) {
 	rows, err := r.db.GetDB().Query(ctx, `
-		SELECT id, company_id, name, address
+		SELECT id, company_id, name, address, type, archived
 		FROM locations
-		WHERE company_id = $1 and deleted_at = 0
+		WHERE company_id = $1 AND archived = false
 	`, companyId)
 
 	if err != nil {
@@ -48,10 +55,17 @@ func (r *Repository) GetCompanyLocations(ctx context.Context, companyId string) 
 	}
 	defer rows.Close()
 
-	var locations []Location
+	locations := make([]Location, 0)
 	for rows.Next() {
 		var location Location
-		if err := rows.Scan(&location.Id, &location.CompanyId, &location.Name, &location.Address); err != nil {
+		if err := rows.Scan(
+			&location.Id,
+			&location.CompanyId,
+			&location.Name,
+			&location.Address,
+			&location.Type,
+			&location.Archived,
+		); err != nil {
 			return nil, err
 		}
 		locations = append(locations, location)
@@ -80,7 +94,7 @@ func (r *Repository) CreateLocation(ctx context.Context, req *CreateLocationRequ
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) &&
 			pgErr.Code == "23505" &&
-			pgErr.ConstraintName == "locations_company_id_name_key" {
+			pgErr.ConstraintName == "locations_unique_active_name_idx" {
 			return nil, ErrLocationAlreadyExists
 		}
 		return nil, err
@@ -94,8 +108,8 @@ func (r *Repository) UpdateLocation(ctx context.Context, req *UpdateLocationRequ
 
 	err := r.db.GetDB().QueryRow(ctx, `
 		UPDATE locations
-		SET name = $1, address = $2, type = $3
-		WHERE id = $4 AND company_id = $5
+		SET name = $1, address = $2, type = $3, updated_at = now()
+		WHERE id = $4 AND company_id = $5 AND archived = false
 		RETURNING id
 	`, req.Name, req.Address, req.Type, req.LocationId, req.CompanyId).Scan(&locationId)
 
@@ -103,8 +117,11 @@ func (r *Repository) UpdateLocation(ctx context.Context, req *UpdateLocationRequ
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) &&
 			pgErr.Code == "23505" &&
-			pgErr.ConstraintName == "locations_company_id_name_key" {
+			pgErr.ConstraintName == "locations_unique_active_name_idx" {
 			return nil, ErrLocationAlreadyExists
+		}
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrNotFound
 		}
 		return nil, err
 	}

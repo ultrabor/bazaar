@@ -15,7 +15,14 @@ type Goose struct {
 }
 
 func New(cfg config.Config) (*Goose, error) {
-	connStr := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", cfg.PostgresHost, cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDB)
+	connStr := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		cfg.PostgresHost,
+		cfg.PostgresPort,
+		cfg.PostgresUser,
+		cfg.PostgresPassword,
+		cfg.PostgresDB,
+	)
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
