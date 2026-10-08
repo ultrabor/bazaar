@@ -22,11 +22,11 @@ import (
 // @Security BearerAuth
 // @Param request body dto.CreateUserRequest true "User creation data"
 // @Success 201 {object} user.CreateUserResponse
-// @Failure 400 {string} string "Invalid credential data"
-// @Failure 409 {string} string "Phone already registered"
-// @Failure 422 {string} string "Invalid input"
-// @Failure 500 {string} string "Internal error"
-// @Failure 503 {string} string "Service unavailable"
+// @Failure 400 {object} dto.Error "Invalid credential data"
+// @Failure 409 {object} dto.Error "Phone already registered"
+// @Failure 422 {object} dto.Error "Invalid input"
+// @Failure 500 {object} dto.Error "Internal error"
+// @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /user [post]
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
@@ -37,16 +37,14 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&body)
 
 	if err != nil {
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		_, _ = w.Write([]byte("invalid input"))
+		dto.WriteError(w, http.StatusUnprocessableEntity, "invalid_input", "invalid input")
 		h.logger.Error("invalid input", slog.Any("err", err))
 		return
 	}
 
 	u, ok := middleware.CurrentUser(r.Context())
 	if !ok {
-		w.WriteHeader(http.StatusUnauthorized)
-		_, _ = w.Write([]byte("unauthorized"))
+		dto.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 		h.logger.Error("unauthorized")
 		return
 	}
@@ -64,30 +62,36 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		status := http.StatusInternalServerError
-		msg := "DB closed"
+		code := "internal_error"
+		msg := "internal error"
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
+			code = "deadline_exceeded"
 			msg = "deadline exceeded"
 		case errors.Is(err, user.ErrInvalidPhone):
 			status = http.StatusBadRequest
+			code = "invalid_phone"
 			msg = "not valid phone number"
 		case errors.Is(err, user.ErrPhoneTaken):
 			status = http.StatusConflict
+			code = "phone_taken"
 			msg = "phone is taken"
 		case errors.Is(err, user.ErrInvalidCred):
 			status = http.StatusBadRequest
+			code = "invalid_credential"
 			msg = "invalid credential"
 		case errors.Is(err, validator.ErrPasswordInvalid):
 			status = http.StatusBadRequest
+			code = "invalid_password"
 			msg = "password is invalid"
 		case errors.Is(err, user.ErrInvalidRole):
 			status = http.StatusBadRequest
+			code = "invalid_role"
 			msg = "invalid role for company"
 		}
 
-		w.WriteHeader(status)
-		_, _ = w.Write([]byte(msg))
+		dto.WriteError(w, status, code, msg)
 		h.logger.Error("service unavailable", slog.Any("err", err))
 		return
 	}
@@ -95,8 +99,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	re, err := json.Marshal(res)
 
 	if err != nil {
-		w.WriteHeader(http.StatusServiceUnavailable)
-		_, _ = w.Write([]byte("service unavailable"))
+		dto.WriteError(w, http.StatusInternalServerError, "internal_error", "internal error")
 		h.logger.Error("service unavailable", slog.Any("err", err))
 		return
 	}
@@ -113,10 +116,11 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Param id path string true "User ID"
 // @Security BearerAuth
 // @Success 200 {object} user.User
-// @Failure 401 {string} string "Unauthorized"
-// @Failure 404 {string} string "User not found"
-// @Failure 500 {string} string "Internal error"
-// @Failure 503 {string} string "Service unavailable"
+// @Failure 400 {object} dto.Error "Invalid user ID"
+// @Failure 401 {object} dto.Error "Unauthorized"
+// @Failure 404 {object} dto.Error "User not found"
+// @Failure 500 {object} dto.Error "Internal error"
+// @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /user/{id} [get]
 func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
@@ -124,8 +128,7 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 
 	userId := chi.URLParam(r, "id")
 	if userId == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		_, _ = w.Write([]byte("user id is required"))
+		dto.WriteError(w, http.StatusBadRequest, "user_id_required", "user id is required")
 		h.logger.Error("user id is required")
 		return
 	}
@@ -133,8 +136,7 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	u, ok := middleware.CurrentUser(r.Context())
 
 	if !ok {
-		w.WriteHeader(http.StatusUnauthorized)
-		_, _ = w.Write([]byte("unauthorized"))
+		dto.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 		h.logger.Error("unauthorized")
 		return
 	}
@@ -143,21 +145,24 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		status := http.StatusInternalServerError
-		msg := "DB closed"
+		code := "internal_error"
+		msg := "internal error"
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
+			code = "deadline_exceeded"
 			msg = "deadline exceeded"
 		case errors.Is(err, user.ErrInvalidCred):
 			status = http.StatusBadRequest
+			code = "invalid_credential"
 			msg = "invalid credential"
 		case errors.Is(err, user.ErrNotFound):
 			status = http.StatusNotFound
+			code = "user_not_found"
 			msg = "user not found"
 		}
 
-		w.WriteHeader(status)
-		_, _ = w.Write([]byte(msg))
+		dto.WriteError(w, status, code, msg)
 		h.logger.Error("service unavailable", slog.Any("err", err))
 		return
 	}
@@ -165,8 +170,7 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	re, err := json.Marshal(res)
 
 	if err != nil {
-		w.WriteHeader(http.StatusServiceUnavailable)
-		_, _ = w.Write([]byte("service unavailable"))
+		dto.WriteError(w, http.StatusInternalServerError, "internal_error", "internal error")
 		h.logger.Error("service unavailable", slog.Any("err", err))
 		return
 	}

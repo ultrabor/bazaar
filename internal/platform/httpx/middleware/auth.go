@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"bazaar/internal/modules/auth"
+	"bazaar/internal/platform/httpx/dto"
 	"bazaar/internal/platform/support/validator"
 	"context"
 	"errors"
@@ -14,7 +15,7 @@ func (m *Middleware) Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Fields(r.Header.Get("Authorization"))
 		if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
-			http.Error(w, "Authorization header is missing", http.StatusUnauthorized)
+			dto.WriteError(w, http.StatusUnauthorized, "authorization_header_missing", "authorization header is missing")
 			return
 		}
 
@@ -22,20 +23,20 @@ func (m *Middleware) Auth(next http.Handler) http.Handler {
 
 		userId, err := validator.ValidateToken(token, []byte(m.secretKey))
 		if err != nil {
-			http.Error(w, "Invalid token: "+err.Error(), http.StatusUnauthorized)
+			dto.WriteError(w, http.StatusUnauthorized, "invalid_token", "invalid token")
 			return
 		}
 
 		u, err := m.loadUser(r.Context(), userId)
 		if err != nil {
 			if errors.Is(err, auth.ErrInvalidCred) {
-				http.Error(w, "Unathorized", http.StatusUnauthorized)
+				dto.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 				return
 			}
 
 			m.logger.Error("load authorization error", slog.Any("err", err))
 
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			dto.WriteError(w, http.StatusInternalServerError, "internal_error", "internal error")
 			return
 		}
 

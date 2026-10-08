@@ -1,6 +1,7 @@
 package httpx
 
 import (
+	"bazaar/internal/platform/httpx/dto"
 	"bazaar/internal/platform/support/apperror"
 	"context"
 	"errors"
@@ -14,8 +15,8 @@ import (
 // @Tags Health
 // @Produce plain
 // @Success 200 {string} string "DB is OK"
-// @Failure 500 {string} string "DB closed"
-// @Failure 503 {string} string "Service unavailable"
+// @Failure 500 {object} dto.Error "Internal error"
+// @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /readyz [get]
 func (h *Handler) Ready(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
@@ -24,18 +25,20 @@ func (h *Handler) Ready(w http.ResponseWriter, r *http.Request) {
 	if err := h.sm.healthService.Ready(ctx); err != nil {
 		var depErr *apperror.DependencyError
 		status := http.StatusInternalServerError
-		msg := "DB closed"
+		code := "internal_error"
+		msg := "internal error"
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
+			code = "deadline_exceeded"
 			msg = "deadline exceeded"
 		case errors.As(err, &depErr):
 			status = http.StatusServiceUnavailable
+			code = "service_unavailable"
 			msg = "service unavailable"
 		default:
 		}
-		w.WriteHeader(status)
-		_, _ = w.Write([]byte(msg))
+		dto.WriteError(w, status, code, msg)
 		h.logger.Error("ready handler", slog.Any("err", err))
 		return
 	}
