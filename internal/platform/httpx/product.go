@@ -22,12 +22,12 @@ import (
 // @Security BearerAuth
 // @Param request body dto.CreateProductRequest true "Product creation data"
 // @Success 201 {object} product.CreateProductResponse
-// @Failure 400 {string} string "Invalid credential data"
-// @Failure 401 {string} string "Unauthorized"
-// @Failure 409 {string} string "Product already exists"
-// @Failure 422 {string} string "Invalid input"
-// @Failure 500 {string} string "Internal error"
-// @Failure 503 {string} string "Service unavailable"
+// @Failure 400 {object} dto.Error "Invalid credential data"
+// @Failure 401 {object} dto.Error "Unauthorized"
+// @Failure 409 {object} dto.Error "Product already exists"
+// @Failure 422 {object} dto.Error "Invalid input"
+// @Failure 500 {object} dto.Error "Internal error"
+// @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /product [post]
 func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
@@ -37,15 +37,13 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		_, _ = w.Write([]byte("invalid input"))
+		dto.WriteError(w, http.StatusUnprocessableEntity, "invalid_input", "invalid input")
 		return
 	}
 
 	u, ok := middleware.CurrentUser(ctx)
 	if !ok {
-		w.WriteHeader(http.StatusUnauthorized)
-		_, _ = w.Write([]byte("unauthorized"))
+		dto.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 		h.logger.Error("unauthorized")
 		return
 	}
@@ -60,32 +58,35 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	res, err := h.sm.productService.CreateProduct(ctx, &rq)
 	if err != nil {
 		status := http.StatusInternalServerError
-		msg := "DB closed"
+		code := "internal_error"
+		msg := "internal error"
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
+			code = "deadline_exceeded"
 			msg = "deadline exceeded"
 		case errors.Is(err, product.ErrInvalidCred):
 			status = http.StatusBadRequest
+			code = "invalid_credential"
 			msg = "invalid credential"
 		case errors.Is(err, product.ErrProductAlreadyExists):
 			status = http.StatusConflict
-			msg = "Product already exists"
+			code = "product_already_exists"
+			msg = "product already exists"
 		case errors.Is(err, product.ErrInvalidUnitType):
 			status = http.StatusBadRequest
+			code = "invalid_product_unit_type"
 			msg = "invalid product unit type"
 		}
 
-		w.WriteHeader(status)
-		_, _ = w.Write([]byte(msg))
+		dto.WriteError(w, status, code, msg)
 		h.logger.Error("service unavailable", slog.Any("err", err))
 		return
 	}
 
 	re, err := json.Marshal(res)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte("internal error"))
+		dto.WriteError(w, http.StatusInternalServerError, "internal_error", "internal error")
 		return
 	}
 
@@ -103,11 +104,11 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param id path string true "Product ID"
 // @Success 200 {object} product.Product
-// @Failure 400 {string} string "Invalid credential data"
-// @Failure 401 {string} string "Unauthorized"
-// @Failure 404 {string} string "Product not found"
-// @Failure 500 {string} string "Internal error"
-// @Failure 503 {string} string "Service unavailable"
+// @Failure 400 {object} dto.Error "Invalid credential data"
+// @Failure 401 {object} dto.Error "Unauthorized"
+// @Failure 404 {object} dto.Error "Product not found"
+// @Failure 500 {object} dto.Error "Internal error"
+// @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /product/{id} [get]
 func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
@@ -115,8 +116,7 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 
 	ProductId := chi.URLParam(r, "id")
 	if ProductId == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		_, _ = w.Write([]byte("Product id is required"))
+		dto.WriteError(w, http.StatusBadRequest, "product_id_required", "product id is required")
 		h.logger.Error("Product id is required")
 		return
 	}
@@ -124,8 +124,7 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 	u, ok := middleware.CurrentUser(ctx)
 
 	if !ok {
-		w.WriteHeader(http.StatusUnauthorized)
-		_, _ = w.Write([]byte("unauthorized"))
+		dto.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 		h.logger.Error("unauthorized")
 		return
 	}
@@ -134,21 +133,24 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		status := http.StatusInternalServerError
-		msg := "DB closed"
+		code := "internal_error"
+		msg := "internal error"
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
+			code = "deadline_exceeded"
 			msg = "deadline exceeded"
 		case errors.Is(err, product.ErrInvalidCred):
 			status = http.StatusBadRequest
+			code = "invalid_credential"
 			msg = "invalid credential"
 		case errors.Is(err, product.ErrNotFound):
 			status = http.StatusNotFound
-			msg = "Product not found"
+			code = "product_not_found"
+			msg = "product not found"
 		}
 
-		w.WriteHeader(status)
-		_, _ = w.Write([]byte(msg))
+		dto.WriteError(w, status, code, msg)
 		h.logger.Error("service unavailable", slog.Any("err", err))
 		return
 	}
@@ -156,8 +158,7 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 	re, err := json.Marshal(res)
 
 	if err != nil {
-		w.WriteHeader(http.StatusServiceUnavailable)
-		_, _ = w.Write([]byte("service unavailable"))
+		dto.WriteError(w, http.StatusInternalServerError, "internal_error", "internal error")
 		h.logger.Error("service unavailable", slog.Any("err", err))
 		return
 	}
@@ -176,11 +177,11 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 // @Param page query int false "Page number" default(1)
 // @Param limit query int false "Items per page" default(20)
 // @Success 200 {array} product.Product
-// @Failure 400 {string} string "Invalid credential data"
-// @Failure 401 {string} string "Unauthorized"
-// @Failure 404 {string} string "Product not found"
-// @Failure 500 {string} string "Internal error"
-// @Failure 503 {string} string "Service unavailable"
+// @Failure 400 {object} dto.Error "Invalid credential data"
+// @Failure 401 {object} dto.Error "Unauthorized"
+// @Failure 404 {object} dto.Error "Product not found"
+// @Failure 500 {object} dto.Error "Internal error"
+// @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /product [get]
 func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
@@ -189,8 +190,7 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	u, ok := middleware.CurrentUser(ctx)
 
 	if !ok {
-		w.WriteHeader(http.StatusUnauthorized)
-		_, _ = w.Write([]byte("unauthorized"))
+		dto.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 		h.logger.Error("unauthorized")
 		return
 	}
@@ -200,7 +200,7 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	if raw := r.URL.Query().Get("page"); raw != "" {
 		value, err := strconv.Atoi(raw)
 		if err != nil || value < 1 {
-			http.Error(w, "invalid page", http.StatusBadRequest)
+			dto.WriteError(w, http.StatusBadRequest, "invalid_page", "invalid page")
 			return
 		}
 		page = value
@@ -209,7 +209,7 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	if raw := r.URL.Query().Get("limit"); raw != "" {
 		value, err := strconv.Atoi(raw)
 		if err != nil || value < 1 || value > 100 {
-			http.Error(w, "invalid limit", http.StatusBadRequest)
+			dto.WriteError(w, http.StatusBadRequest, "invalid_limit", "invalid limit")
 			return
 		}
 		limit = value
@@ -225,21 +225,24 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		status := http.StatusInternalServerError
-		msg := "DB closed"
+		code := "internal_error"
+		msg := "internal error"
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
+			code = "deadline_exceeded"
 			msg = "deadline exceeded"
 		case errors.Is(err, product.ErrInvalidCred):
 			status = http.StatusBadRequest
+			code = "invalid_credential"
 			msg = "invalid credential"
 		case errors.Is(err, product.ErrNotFound):
 			status = http.StatusNotFound
-			msg = "Product not found"
+			code = "product_not_found"
+			msg = "product not found"
 		}
 
-		w.WriteHeader(status)
-		_, _ = w.Write([]byte(msg))
+		dto.WriteError(w, status, code, msg)
 		h.logger.Error("service unavailable", slog.Any("err", err))
 		return
 	}
@@ -247,8 +250,7 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	re, err := json.Marshal(res)
 
 	if err != nil {
-		w.WriteHeader(http.StatusServiceUnavailable)
-		_, _ = w.Write([]byte("service unavailable"))
+		dto.WriteError(w, http.StatusInternalServerError, "internal_error", "internal error")
 		h.logger.Error("service unavailable", slog.Any("err", err))
 		return
 	}
@@ -265,13 +267,13 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 // @Param id path string true "Product ID"
 // @Param request body dto.UpdateProductRequest true "Product update data"
 // @Success 200 {object} product.UpdateProductResponse
-// @Failure 400 {string} string "Invalid credential data"
-// @Failure 401 {string} string "Unauthorized"
-// @Failure 404 {string} string "Product not found"
-// @Failure 409 {string} string "Product already exists"
-// @Failure 422 {string} string "Invalid input"
-// @Failure 500 {string} string "Internal error"
-// @Failure 503 {string} string "Service unavailable"
+// @Failure 400 {object} dto.Error "Invalid credential data"
+// @Failure 401 {object} dto.Error "Unauthorized"
+// @Failure 404 {object} dto.Error "Product not found"
+// @Failure 409 {object} dto.Error "Product already exists"
+// @Failure 422 {object} dto.Error "Invalid input"
+// @Failure 500 {object} dto.Error "Internal error"
+// @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /product/{id} [put]
 func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
@@ -282,24 +284,21 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	var ProductId = chi.URLParam(r, "id")
 
 	if ProductId == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		_, _ = w.Write([]byte("Product id is required"))
+		dto.WriteError(w, http.StatusBadRequest, "product_id_required", "product id is required")
 		h.logger.Error("Product id is required")
 		return
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		_, _ = w.Write([]byte("invalid input"))
+		dto.WriteError(w, http.StatusUnprocessableEntity, "invalid_input", "invalid input")
 		return
 	}
 
 	u, ok := middleware.CurrentUser(ctx)
 
 	if !ok {
-		w.WriteHeader(http.StatusUnauthorized)
-		_, _ = w.Write([]byte("unauthorized"))
+		dto.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 		h.logger.Error("unauthorized")
 		return
 	}
@@ -315,27 +314,32 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	res, err := h.sm.productService.UpdateProduct(ctx, &rq)
 	if err != nil {
 		status := http.StatusInternalServerError
-		msg := "DB closed"
+		code := "internal_error"
+		msg := "internal error"
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
+			code = "deadline_exceeded"
 			msg = "deadline exceeded"
 		case errors.Is(err, product.ErrInvalidCred):
 			status = http.StatusBadRequest
+			code = "invalid_credential"
 			msg = "invalid credential"
 		case errors.Is(err, product.ErrNotFound):
 			status = http.StatusNotFound
-			msg = "Product not found"
+			code = "product_not_found"
+			msg = "product not found"
 		case errors.Is(err, product.ErrProductAlreadyExists):
 			status = http.StatusConflict
-			msg = "Product already exists"
+			code = "product_already_exists"
+			msg = "product already exists"
 		case errors.Is(err, product.ErrInvalidUnitType):
 			status = http.StatusBadRequest
+			code = "invalid_product_unit_type"
 			msg = "invalid product unit type"
 		}
 
-		w.WriteHeader(status)
-		_, _ = w.Write([]byte(msg))
+		dto.WriteError(w, status, code, msg)
 		h.logger.Error("service unavailable", slog.Any("err", err))
 		return
 	}
@@ -343,8 +347,7 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	re, err := json.Marshal(res)
 
 	if err != nil {
-		w.WriteHeader(http.StatusServiceUnavailable)
-		_, _ = w.Write([]byte("service unavailable"))
+		dto.WriteError(w, http.StatusInternalServerError, "internal_error", "internal error")
 		h.logger.Error("service unavailable", slog.Any("err", err))
 		return
 	}
@@ -363,11 +366,11 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param id path string true "Product ID"
 // @Success 204 {string} string "No Content"
-// @Failure 400 {string} string "Invalid credential data"
-// @Failure 401 {string} string "Unauthorized"
-// @Failure 404 {string} string "Product not found"
-// @Failure 500 {string} string "Internal error"
-// @Failure 503 {string} string "Service unavailable"
+// @Failure 400 {object} dto.Error "Invalid credential data"
+// @Failure 401 {object} dto.Error "Unauthorized"
+// @Failure 404 {object} dto.Error "Product not found"
+// @Failure 500 {object} dto.Error "Internal error"
+// @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /product/{id}/archive [patch]
 func (h *Handler) ArchiveProduct(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
@@ -376,8 +379,7 @@ func (h *Handler) ArchiveProduct(w http.ResponseWriter, r *http.Request) {
 	var ProductId = chi.URLParam(r, "id")
 
 	if ProductId == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		_, _ = w.Write([]byte("Product id is required"))
+		dto.WriteError(w, http.StatusBadRequest, "product_id_required", "product id is required")
 		h.logger.Error("Product id is required")
 		return
 	}
@@ -385,8 +387,7 @@ func (h *Handler) ArchiveProduct(w http.ResponseWriter, r *http.Request) {
 	u, ok := middleware.CurrentUser(ctx)
 
 	if !ok {
-		w.WriteHeader(http.StatusUnauthorized)
-		_, _ = w.Write([]byte("unauthorized"))
+		dto.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 		h.logger.Error("unauthorized")
 		return
 	}
@@ -394,21 +395,24 @@ func (h *Handler) ArchiveProduct(w http.ResponseWriter, r *http.Request) {
 	err := h.sm.productService.ArchiveProduct(ctx, ProductId, u.CompanyId)
 	if err != nil {
 		status := http.StatusInternalServerError
-		msg := "DB closed"
+		code := "internal_error"
+		msg := "internal error"
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
+			code = "deadline_exceeded"
 			msg = "deadline exceeded"
 		case errors.Is(err, product.ErrInvalidCred):
 			status = http.StatusBadRequest
+			code = "invalid_credential"
 			msg = "invalid credential"
 		case errors.Is(err, product.ErrNotFound):
 			status = http.StatusNotFound
-			msg = "Product not found"
+			code = "product_not_found"
+			msg = "product not found"
 		}
 
-		w.WriteHeader(status)
-		_, _ = w.Write([]byte(msg))
+		dto.WriteError(w, status, code, msg)
 		h.logger.Error("service unavailable", slog.Any("err", err))
 		return
 	}
