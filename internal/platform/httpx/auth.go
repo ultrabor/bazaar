@@ -22,7 +22,6 @@ import (
 // @Success 201 {object} auth.RegisterResponse
 // @Failure 400 {object} dto.Error "Invalid registration data"
 // @Failure 409 {object} dto.Error "Phone already registered"
-// @Failure 422 {object} dto.Error "Invalid input"
 // @Failure 500 {object} dto.Error "Internal error"
 // @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /auth/register-owner [post]
@@ -35,7 +34,7 @@ func (h *Handler) RegisterOwner(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&body)
 
 	if err != nil {
-		dto.WriteError(w, http.StatusUnprocessableEntity, "invalid_input", "invalid input")
+		dto.WriteError(w, http.StatusBadRequest, "invalid_json", "invalid JSON")
 		h.logger.Error("invalid input", slog.Any("err", err))
 		return
 	}
@@ -57,8 +56,8 @@ func (h *Handler) RegisterOwner(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
-			code = "deadline_exceeded"
-			msg = "deadline exceeded"
+			code = "service_unavailable"
+			msg = "service unavailable"
 		case errors.Is(err, auth.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
@@ -104,7 +103,6 @@ func (h *Handler) RegisterOwner(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} auth.LoginResponse
 // @Failure 400 {object} dto.Error "Invalid login data"
 // @Failure 401 {object} dto.Error "Unauthorized"
-// @Failure 422 {object} dto.Error "Invalid input"
 // @Failure 500 {object} dto.Error "Internal error"
 // @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /auth/login [post]
@@ -117,7 +115,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&body)
 
 	if err != nil {
-		dto.WriteError(w, http.StatusUnprocessableEntity, "invalid_input", "invalid input")
+		dto.WriteError(w, http.StatusBadRequest, "invalid_json", "invalid JSON")
 		h.logger.Error("invalid input", slog.Any("err", err))
 		return
 	}
@@ -136,8 +134,8 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
-			code = "deadline_exceeded"
-			msg = "deadline exceeded"
+			code = "service_unavailable"
+			msg = "service unavailable"
 		case errors.Is(err, auth.ErrInvalidCred):
 			status = http.StatusUnauthorized
 			code = "invalid_credential"
