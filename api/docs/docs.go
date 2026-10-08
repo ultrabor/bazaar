@@ -48,31 +48,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid login data",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "422": {
-                        "description": "Invalid input",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -102,19 +96,19 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -153,31 +147,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid registration data",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "409": {
                         "description": "Phone already registered",
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "422": {
-                        "description": "Invalid input",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -232,31 +220,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "404": {
                         "description": "Location not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -298,37 +286,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "409": {
                         "description": "Location already exists",
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "422": {
-                        "description": "Invalid input",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -370,31 +352,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "404": {
                         "description": "Location not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -443,43 +425,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "404": {
                         "description": "Location not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "409": {
                         "description": "Location already exists",
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "422": {
-                        "description": "Invalid input",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -521,31 +497,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "404": {
                         "description": "Location not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -595,33 +571,33 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid credential data",
+                        "description": "Invalid credential or pagination",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "404": {
                         "description": "Product not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -661,39 +637,33 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid credential data",
+                        "description": "Invalid JSON or product fields",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "409": {
-                        "description": "Product already exists",
+                        "description": "Duplicate SKU",
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "422": {
-                        "description": "Invalid input",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -733,33 +703,33 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid credential data",
+                        "description": "Invalid product ID or credential",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "404": {
                         "description": "Product not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -806,45 +776,39 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid credential data",
+                        "description": "Invalid JSON or product fields",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "404": {
                         "description": "Product not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "409": {
-                        "description": "Product already exists",
+                        "description": "Duplicate SKU",
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "422": {
-                        "description": "Invalid input",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -886,31 +850,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "404": {
                         "description": "Product not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -934,15 +898,15 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "DB closed",
+                        "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -986,31 +950,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "409": {
                         "description": "Phone already registered",
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "422": {
-                        "description": "Invalid input",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -1046,28 +1004,34 @@ const docTemplate = `{
                             "$ref": "#/definitions/bazaar_internal_modules_user.User"
                         }
                     },
+                    "400": {
+                        "description": "Invalid user ID",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     }
                 }
@@ -1279,6 +1243,25 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_role_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "bazaar_internal_platform_httpx_dto.Error": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.ErrorDetail"
+                }
+            }
+        },
+        "bazaar_internal_platform_httpx_dto.ErrorDetail": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
                     "type": "string"
                 }
             }

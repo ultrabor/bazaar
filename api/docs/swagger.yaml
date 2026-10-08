@@ -137,6 +137,18 @@ definitions:
       user_role_id:
         type: string
     type: object
+  bazaar_internal_platform_httpx_dto.Error:
+    properties:
+      error:
+        $ref: '#/definitions/bazaar_internal_platform_httpx_dto.ErrorDetail'
+    type: object
+  bazaar_internal_platform_httpx_dto.ErrorDetail:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+    type: object
   bazaar_internal_platform_httpx_dto.LoginRequest:
     properties:
       password:
@@ -202,23 +214,19 @@ paths:
         "400":
           description: Invalid login data
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
           schema:
-            type: string
-        "422":
-          description: Invalid input
-          schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       summary: Login a user
       tags:
       - Auth
@@ -234,15 +242,15 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       security:
       - BearerAuth: []
       summary: Get current user info
@@ -269,23 +277,19 @@ paths:
         "400":
           description: Invalid registration data
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "409":
           description: Phone already registered
           schema:
-            type: string
-        "422":
-          description: Invalid input
-          schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       summary: Register a company owner
       tags:
       - Auth
@@ -317,23 +321,23 @@ paths:
         "400":
           description: Invalid credential data
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "404":
           description: Location not found
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       security:
       - BearerAuth: []
       summary: Get all locations for the current user's company
@@ -359,27 +363,23 @@ paths:
         "400":
           description: Invalid credential data
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "409":
           description: Location already exists
           schema:
-            type: string
-        "422":
-          description: Invalid input
-          schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       security:
       - BearerAuth: []
       summary: Create a new location
@@ -405,23 +405,23 @@ paths:
         "400":
           description: Invalid credential data
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "404":
           description: Location not found
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       security:
       - BearerAuth: []
       summary: Get location by ID
@@ -452,31 +452,27 @@ paths:
         "400":
           description: Invalid credential data
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "404":
           description: Location not found
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "409":
           description: Location already exists
           schema:
-            type: string
-        "422":
-          description: Invalid input
-          schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       security:
       - BearerAuth: []
       summary: Update location by ID
@@ -502,23 +498,23 @@ paths:
         "400":
           description: Invalid credential data
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "404":
           description: Location not found
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       security:
       - BearerAuth: []
       summary: Archive location by ID
@@ -549,25 +545,25 @@ paths:
               $ref: '#/definitions/bazaar_internal_modules_product.Product'
             type: array
         "400":
-          description: Invalid credential data
+          description: Invalid credential or pagination
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "404":
           description: Product not found
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       security:
       - BearerAuth: []
       summary: Get all Products for the current user's company
@@ -591,29 +587,25 @@ paths:
           schema:
             $ref: '#/definitions/bazaar_internal_modules_product.CreateProductResponse'
         "400":
-          description: Invalid credential data
+          description: Invalid JSON or product fields
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "409":
-          description: Product already exists
+          description: Duplicate SKU
           schema:
-            type: string
-        "422":
-          description: Invalid input
-          schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       security:
       - BearerAuth: []
       summary: Create a new Product
@@ -637,25 +629,25 @@ paths:
           schema:
             $ref: '#/definitions/bazaar_internal_modules_product.Product'
         "400":
-          description: Invalid credential data
+          description: Invalid product ID or credential
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "404":
           description: Product not found
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       security:
       - BearerAuth: []
       summary: Get Product by ID
@@ -684,33 +676,29 @@ paths:
           schema:
             $ref: '#/definitions/bazaar_internal_modules_product.UpdateProductResponse'
         "400":
-          description: Invalid credential data
+          description: Invalid JSON or product fields
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "404":
           description: Product not found
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "409":
-          description: Product already exists
+          description: Duplicate SKU
           schema:
-            type: string
-        "422":
-          description: Invalid input
-          schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       security:
       - BearerAuth: []
       summary: Update Product by ID
@@ -736,23 +724,23 @@ paths:
         "400":
           description: Invalid credential data
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "404":
           description: Product not found
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       security:
       - BearerAuth: []
       summary: Archive Product by ID
@@ -769,13 +757,13 @@ paths:
           schema:
             type: string
         "500":
-          description: DB closed
+          description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       summary: Readiness probe
       tags:
       - Health
@@ -800,23 +788,19 @@ paths:
         "400":
           description: Invalid credential data
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "409":
           description: Phone already registered
           schema:
-            type: string
-        "422":
-          description: Invalid input
-          schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       security:
       - BearerAuth: []
       summary: Create a new user
@@ -837,22 +821,26 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/bazaar_internal_modules_user.User'
+        "400":
+          description: Invalid user ID
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "404":
           description: User not found
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
           description: Internal error
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "503":
           description: Service unavailable
           schema:
-            type: string
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
       security:
       - BearerAuth: []
       summary: Get user info

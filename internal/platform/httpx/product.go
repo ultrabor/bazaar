@@ -22,10 +22,9 @@ import (
 // @Security BearerAuth
 // @Param request body dto.CreateProductRequest true "Product creation data"
 // @Success 201 {object} product.CreateProductResponse
-// @Failure 400 {object} dto.Error "Invalid credential data"
+// @Failure 400 {object} dto.Error "Invalid JSON or product fields"
 // @Failure 401 {object} dto.Error "Unauthorized"
-// @Failure 409 {object} dto.Error "Product already exists"
-// @Failure 422 {object} dto.Error "Invalid input"
+// @Failure 409 {object} dto.Error "Duplicate SKU"
 // @Failure 500 {object} dto.Error "Internal error"
 // @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /product [post]
@@ -37,7 +36,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		dto.WriteError(w, http.StatusUnprocessableEntity, "invalid_input", "invalid input")
+		dto.WriteError(w, http.StatusBadRequest, "invalid_json", "invalid JSON")
 		return
 	}
 
@@ -63,19 +62,19 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
-			code = "deadline_exceeded"
-			msg = "deadline exceeded"
+			code = "service_unavailable"
+			msg = "service unavailable"
 		case errors.Is(err, product.ErrInvalidCred):
 			status = http.StatusBadRequest
-			code = "invalid_credential"
-			msg = "invalid credential"
+			code = "validation_error"
+			msg = "invalid product fields"
 		case errors.Is(err, product.ErrProductAlreadyExists):
 			status = http.StatusConflict
-			code = "product_already_exists"
-			msg = "product already exists"
+			code = "sku_conflict"
+			msg = "SKU already exists"
 		case errors.Is(err, product.ErrInvalidUnitType):
 			status = http.StatusBadRequest
-			code = "invalid_product_unit_type"
+			code = "validation_error"
 			msg = "invalid product unit type"
 		}
 
@@ -104,7 +103,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param id path string true "Product ID"
 // @Success 200 {object} product.Product
-// @Failure 400 {object} dto.Error "Invalid credential data"
+// @Failure 400 {object} dto.Error "Invalid product ID or credential"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 404 {object} dto.Error "Product not found"
 // @Failure 500 {object} dto.Error "Internal error"
@@ -138,8 +137,8 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
-			code = "deadline_exceeded"
-			msg = "deadline exceeded"
+			code = "service_unavailable"
+			msg = "service unavailable"
 		case errors.Is(err, product.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
@@ -177,7 +176,7 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 // @Param page query int false "Page number" default(1)
 // @Param limit query int false "Items per page" default(20)
 // @Success 200 {array} product.Product
-// @Failure 400 {object} dto.Error "Invalid credential data"
+// @Failure 400 {object} dto.Error "Invalid credential or pagination"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 404 {object} dto.Error "Product not found"
 // @Failure 500 {object} dto.Error "Internal error"
@@ -200,7 +199,7 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	if raw := r.URL.Query().Get("page"); raw != "" {
 		value, err := strconv.Atoi(raw)
 		if err != nil || value < 1 {
-			dto.WriteError(w, http.StatusBadRequest, "invalid_page", "invalid page")
+			dto.WriteError(w, http.StatusBadRequest, "invalid_pagination", "page must be greater than 0")
 			return
 		}
 		page = value
@@ -209,7 +208,7 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	if raw := r.URL.Query().Get("limit"); raw != "" {
 		value, err := strconv.Atoi(raw)
 		if err != nil || value < 1 || value > 100 {
-			dto.WriteError(w, http.StatusBadRequest, "invalid_limit", "invalid limit")
+			dto.WriteError(w, http.StatusBadRequest, "invalid_pagination", "limit must be between 1 and 100")
 			return
 		}
 		limit = value
@@ -230,8 +229,8 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
-			code = "deadline_exceeded"
-			msg = "deadline exceeded"
+			code = "service_unavailable"
+			msg = "service unavailable"
 		case errors.Is(err, product.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
@@ -267,11 +266,10 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 // @Param id path string true "Product ID"
 // @Param request body dto.UpdateProductRequest true "Product update data"
 // @Success 200 {object} product.UpdateProductResponse
-// @Failure 400 {object} dto.Error "Invalid credential data"
+// @Failure 400 {object} dto.Error "Invalid JSON or product fields"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 404 {object} dto.Error "Product not found"
-// @Failure 409 {object} dto.Error "Product already exists"
-// @Failure 422 {object} dto.Error "Invalid input"
+// @Failure 409 {object} dto.Error "Duplicate SKU"
 // @Failure 500 {object} dto.Error "Internal error"
 // @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /product/{id} [put]
@@ -291,7 +289,7 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		dto.WriteError(w, http.StatusUnprocessableEntity, "invalid_input", "invalid input")
+		dto.WriteError(w, http.StatusBadRequest, "invalid_json", "invalid JSON")
 		return
 	}
 
@@ -319,23 +317,23 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
-			code = "deadline_exceeded"
-			msg = "deadline exceeded"
+			code = "service_unavailable"
+			msg = "service unavailable"
 		case errors.Is(err, product.ErrInvalidCred):
 			status = http.StatusBadRequest
-			code = "invalid_credential"
-			msg = "invalid credential"
+			code = "validation_error"
+			msg = "invalid product fields"
 		case errors.Is(err, product.ErrNotFound):
 			status = http.StatusNotFound
 			code = "product_not_found"
 			msg = "product not found"
 		case errors.Is(err, product.ErrProductAlreadyExists):
 			status = http.StatusConflict
-			code = "product_already_exists"
-			msg = "product already exists"
+			code = "sku_conflict"
+			msg = "SKU already exists"
 		case errors.Is(err, product.ErrInvalidUnitType):
 			status = http.StatusBadRequest
-			code = "invalid_product_unit_type"
+			code = "validation_error"
 			msg = "invalid product unit type"
 		}
 
@@ -400,8 +398,8 @@ func (h *Handler) ArchiveProduct(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
-			code = "deadline_exceeded"
-			msg = "deadline exceeded"
+			code = "service_unavailable"
+			msg = "service unavailable"
 		case errors.Is(err, product.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"

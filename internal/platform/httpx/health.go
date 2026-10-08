@@ -30,8 +30,8 @@ func (h *Handler) Ready(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case errors.Is(err, context.DeadlineExceeded):
 			status = http.StatusServiceUnavailable
-			code = "deadline_exceeded"
-			msg = "deadline exceeded"
+			code = "service_unavailable"
+			msg = "service unavailable"
 		case errors.As(err, &depErr):
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
