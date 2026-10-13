@@ -525,7 +525,7 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Case-insensitive product name substring
+      - description: Case-insensitive literal product name substring
         in: query
         name: name
         type: string
