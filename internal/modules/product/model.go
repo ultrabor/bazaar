@@ -15,21 +15,23 @@ const (
 )
 
 type Product struct {
-	Id        string    `json:"id"`
-	Name      string    `json:"name"`
-	CompanyId string    `json:"company_id"`
-	SKU       string    `json:"sku"`
-	Unit      Unit      `json:"unit"`
-	Archived  bool      `json:"archived"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Id         string    `json:"id"`
+	Name       string    `json:"name"`
+	CompanyId  string    `json:"company_id"`
+	CategoryId *string   `json:"category_id"`
+	SKU        string    `json:"sku"`
+	Unit       Unit      `json:"unit"`
+	Archived   bool      `json:"archived"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type CreateProductRequest struct {
-	CompanyId string `json:"company_id"`
-	Name      string `json:"name"`
-	SKU       string `json:"sku"`
-	Unit      Unit   `json:"unit"`
+	CompanyId  string  `json:"company_id"`
+	CategoryId *string `json:"category_id"`
+	Name       string  `json:"name"`
+	SKU        string  `json:"sku"`
+	Unit       Unit    `json:"unit"`
 }
 
 type CreateProductResponse struct {
@@ -37,11 +39,12 @@ type CreateProductResponse struct {
 }
 
 type UpdateProductRequest struct {
-	ProductId string `json:"product_id"`
-	CompanyId string `json:"company_id"`
-	Name      string `json:"name"`
-	SKU       string `json:"sku"`
-	Unit      Unit   `json:"unit"`
+	ProductId  string  `json:"product_id"`
+	CompanyId  string  `json:"company_id"`
+	CategoryId *string `json:"category_id"`
+	Name       string  `json:"name"`
+	SKU        string  `json:"sku"`
+	Unit       Unit    `json:"unit"`
 }
 
 type UpdateProductResponse struct {
@@ -49,12 +52,13 @@ type UpdateProductResponse struct {
 }
 
 type GetCompanyProductsRequest struct {
-	CompanyId string `json:"company_id"`
-	Name      string `json:"name,omitempty"`
-	SKU       string `json:"sku,omitempty"`
-	Unit      Unit   `json:"unit,omitempty"`
-	Page      int    `json:"page,omitempty"`
-	Limit     int    `json:"limit,omitempty"`
+	CompanyId  string `json:"company_id"`
+	Name       string `json:"name,omitempty"`
+	SKU        string `json:"sku,omitempty"`
+	Unit       Unit   `json:"unit,omitempty"`
+	CategoryId string `json:"category_id,omitempty"`
+	Page       int    `json:"page,omitempty"`
+	Limit      int    `json:"limit,omitempty"`
 }
 
 var ErrInvalidCred = errors.New("invalid credentials")
@@ -62,3 +66,5 @@ var ErrNotFound = errors.New("no rows in result set")
 var ErrProductAlreadyExists = errors.New("product already exists")
 var ErrInvalidUnitType = errors.New("invalid product unit type")
 var ErrInvalidProductID = errors.New("invalid product id")
+var ErrInvalidCategoryID = errors.New("invalid category id")
+var ErrCategoryNotFound = errors.New("category not found")

@@ -171,6 +171,354 @@ const docTemplate = `{
                 }
             }
         },
+        "/category": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Get active categories for the current user's company",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Items per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Active categories; empty array when no categories match",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/bazaar_internal_modules_category.Category"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid pagination",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Create a category",
+                "parameters": [
+                    {
+                        "description": "Category data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.CreateCategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_modules_category.CreateCategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid JSON or empty name",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Active category name already exists",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/category/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Get a category by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_modules_category.Category"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid category UUID",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Rename a category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Category data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.UpdateCategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_modules_category.UpdateCategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid category UUID, JSON, or empty name",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Active category name already exists",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/category/{id}/archive": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Products keep their category_id and remain visible. Archived categories cannot be assigned to other products.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Archive a category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid category UUID",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/healthz": {
             "get": {
                 "produces": [
@@ -570,6 +918,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "Category UUID",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "default": 1,
                         "description": "Page number",
@@ -595,19 +949,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid unit or pagination parameters",
+                        "description": "Invalid unit, category UUID, or pagination parameters",
                         "schema": {
                             "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Product not found",
                         "schema": {
                             "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
@@ -632,6 +980,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "category_id is optional and must reference an active category owned by the current company.",
                 "consumes": [
                     "application/json"
                 ],
@@ -661,13 +1010,19 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid JSON or product fields",
+                        "description": "Invalid JSON, product fields, or category UUID",
                         "schema": {
                             "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found",
                         "schema": {
                             "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
@@ -764,6 +1119,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Missing or null category_id removes the category. Sending the existing category_id preserves an archived category assignment.",
                 "consumes": [
                     "application/json"
                 ],
@@ -800,7 +1156,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid JSON or product fields",
+                        "description": "Invalid JSON, product fields, product UUID, or category UUID",
                         "schema": {
                             "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
@@ -812,7 +1168,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Product not found",
+                        "description": "Product or category not found",
                         "schema": {
                             "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
@@ -1082,6 +1438,45 @@ const docTemplate = `{
                 }
             }
         },
+        "bazaar_internal_modules_category.Category": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "company_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "bazaar_internal_modules_category.CreateCategoryResponse": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "bazaar_internal_modules_category.UpdateCategoryResponse": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                }
+            }
+        },
         "bazaar_internal_modules_location.CreateLocationResponse": {
             "type": "object",
             "properties": {
@@ -1145,6 +1540,9 @@ const docTemplate = `{
             "properties": {
                 "archived": {
                     "type": "boolean"
+                },
+                "category_id": {
+                    "type": "string"
                 },
                 "company_id": {
                     "type": "string"
@@ -1223,6 +1621,14 @@ const docTemplate = `{
                 }
             }
         },
+        "bazaar_internal_platform_httpx_dto.CreateCategoryRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "bazaar_internal_platform_httpx_dto.CreateLocationRequest": {
             "type": "object",
             "properties": {
@@ -1240,6 +1646,9 @@ const docTemplate = `{
         "bazaar_internal_platform_httpx_dto.CreateProductRequest": {
             "type": "object",
             "properties": {
+                "category_id": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -1321,6 +1730,14 @@ const docTemplate = `{
                 }
             }
         },
+        "bazaar_internal_platform_httpx_dto.UpdateCategoryRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "bazaar_internal_platform_httpx_dto.UpdateLocationRequest": {
             "type": "object",
             "properties": {
@@ -1338,6 +1755,9 @@ const docTemplate = `{
         "bazaar_internal_platform_httpx_dto.UpdateProductRequest": {
             "type": "object",
             "properties": {
+                "category_id": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },

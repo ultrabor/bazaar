@@ -42,6 +42,12 @@ func (h *Handler) Routes(mw *middleware.Middleware) {
 		r.Get("/product/{id}", h.GetProductById)
 		r.Put("/product/{id}", h.UpdateProduct)
 		r.Patch("/product/{id}/archive", h.ArchiveProduct)
+
+		r.Post("/category", h.CreateCategory)
+		r.Get("/category", h.GetAllCategories)
+		r.Get("/category/{id}", h.GetCategoryById)
+		r.Put("/category/{id}", h.UpdateCategory)
+		r.Patch("/category/{id}/archive", h.ArchiveCategory)
 	})
 
 	h.router.Get("/healthz", h.Health)

@@ -12,6 +12,31 @@ definitions:
       user_id:
         type: string
     type: object
+  bazaar_internal_modules_category.Category:
+    properties:
+      archived:
+        type: boolean
+      company_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  bazaar_internal_modules_category.CreateCategoryResponse:
+    properties:
+      category_id:
+        type: string
+    type: object
+  bazaar_internal_modules_category.UpdateCategoryResponse:
+    properties:
+      category_id:
+        type: string
+    type: object
   bazaar_internal_modules_location.CreateLocationResponse:
     properties:
       location_id:
@@ -54,6 +79,8 @@ definitions:
     properties:
       archived:
         type: boolean
+      category_id:
+        type: string
       company_id:
         type: string
       created_at:
@@ -106,6 +133,11 @@ definitions:
       user_role_id:
         type: string
     type: object
+  bazaar_internal_platform_httpx_dto.CreateCategoryRequest:
+    properties:
+      name:
+        type: string
+    type: object
   bazaar_internal_platform_httpx_dto.CreateLocationRequest:
     properties:
       address:
@@ -117,6 +149,8 @@ definitions:
     type: object
   bazaar_internal_platform_httpx_dto.CreateProductRequest:
     properties:
+      category_id:
+        type: string
       name:
         type: string
       sku:
@@ -169,6 +203,11 @@ definitions:
       phone:
         type: string
     type: object
+  bazaar_internal_platform_httpx_dto.UpdateCategoryRequest:
+    properties:
+      name:
+        type: string
+    type: object
   bazaar_internal_platform_httpx_dto.UpdateLocationRequest:
     properties:
       address:
@@ -180,6 +219,8 @@ definitions:
     type: object
   bazaar_internal_platform_httpx_dto.UpdateProductRequest:
     properties:
+      category_id:
+        type: string
       name:
         type: string
       sku:
@@ -293,6 +334,230 @@ paths:
       summary: Register a company owner
       tags:
       - Auth
+  /category:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Active categories; empty array when no categories match
+          schema:
+            items:
+              $ref: '#/definitions/bazaar_internal_modules_category.Category'
+            type: array
+        "400":
+          description: Invalid pagination
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "503":
+          description: Service unavailable
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+      security:
+      - BearerAuth: []
+      summary: Get active categories for the current user's company
+      tags:
+      - Category
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.CreateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/bazaar_internal_modules_category.CreateCategoryResponse'
+        "400":
+          description: Invalid JSON or empty name
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "409":
+          description: Active category name already exists
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "503":
+          description: Service unavailable
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+      security:
+      - BearerAuth: []
+      summary: Create a category
+      tags:
+      - Category
+  /category/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/bazaar_internal_modules_category.Category'
+        "400":
+          description: Invalid category UUID
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "404":
+          description: Category not found
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "503":
+          description: Service unavailable
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+      security:
+      - BearerAuth: []
+      summary: Get a category by ID
+      tags:
+      - Category
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Category data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.UpdateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/bazaar_internal_modules_category.UpdateCategoryResponse'
+        "400":
+          description: Invalid category UUID, JSON, or empty name
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "404":
+          description: Category not found
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "409":
+          description: Active category name already exists
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "503":
+          description: Service unavailable
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+      security:
+      - BearerAuth: []
+      summary: Rename a category
+      tags:
+      - Category
+  /category/{id}/archive:
+    patch:
+      consumes:
+      - application/json
+      description: Products keep their category_id and remain visible. Archived categories
+        cannot be assigned to other products.
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Invalid category UUID
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "404":
+          description: Category not found
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "503":
+          description: Service unavailable
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+      security:
+      - BearerAuth: []
+      summary: Archive a category
+      tags:
+      - Category
   /healthz:
     get:
       produces:
@@ -542,6 +807,10 @@ paths:
         in: query
         name: unit
         type: string
+      - description: Category UUID
+        in: query
+        name: category_id
+        type: string
       - default: 1
         description: Page number
         in: query
@@ -562,15 +831,11 @@ paths:
               $ref: '#/definitions/bazaar_internal_modules_product.Product'
             type: array
         "400":
-          description: Invalid unit or pagination parameters
+          description: Invalid unit, category UUID, or pagination parameters
           schema:
             $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
-        "404":
-          description: Product not found
           schema:
             $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "500":
@@ -589,6 +854,8 @@ paths:
     post:
       consumes:
       - application/json
+      description: category_id is optional and must reference an active category owned
+        by the current company.
       parameters:
       - description: Product creation data
         in: body
@@ -604,11 +871,15 @@ paths:
           schema:
             $ref: '#/definitions/bazaar_internal_modules_product.CreateProductResponse'
         "400":
-          description: Invalid JSON or product fields
+          description: Invalid JSON, product fields, or category UUID
           schema:
             $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "404":
+          description: Category not found
           schema:
             $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "409":
@@ -673,6 +944,8 @@ paths:
     put:
       consumes:
       - application/json
+      description: Missing or null category_id removes the category. Sending the existing
+        category_id preserves an archived category assignment.
       parameters:
       - description: Product ID
         in: path
@@ -693,7 +966,7 @@ paths:
           schema:
             $ref: '#/definitions/bazaar_internal_modules_product.UpdateProductResponse'
         "400":
-          description: Invalid JSON or product fields
+          description: Invalid JSON, product fields, product UUID, or category UUID
           schema:
             $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":
@@ -701,7 +974,7 @@ paths:
           schema:
             $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "404":
-          description: Product not found
+          description: Product or category not found
           schema:
             $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "409":

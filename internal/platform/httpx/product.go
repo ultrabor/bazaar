@@ -16,14 +16,16 @@ import (
 )
 
 // @Summary Create a new Product
+// @Description category_id is optional and must reference an active category owned by the current company.
 // @Tags Product
 // @Accept json
 // @Produce json
 // @Security BearerAuth
 // @Param request body dto.CreateProductRequest true "Product creation data"
 // @Success 201 {object} product.CreateProductResponse
-// @Failure 400 {object} dto.Error "Invalid JSON or product fields"
+// @Failure 400 {object} dto.Error "Invalid JSON, product fields, or category UUID"
 // @Failure 401 {object} dto.Error "Unauthorized"
+// @Failure 404 {object} dto.Error "Category not found"
 // @Failure 409 {object} dto.Error "Duplicate SKU"
 // @Failure 500 {object} dto.Error "Internal error"
 // @Failure 503 {object} dto.Error "Service unavailable"
@@ -48,10 +50,11 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rq := product.CreateProductRequest{
-		CompanyId: u.CompanyId,
-		Name:      body.Name,
-		SKU:       body.SKU,
-		Unit:      body.Unit,
+		CompanyId:  u.CompanyId,
+		CategoryId: body.CategoryId,
+		Name:       body.Name,
+		SKU:        body.SKU,
+		Unit:       body.Unit,
 	}
 
 	res, err := h.sm.productService.CreateProduct(ctx, &rq)
@@ -76,6 +79,14 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusBadRequest
 			code = "validation_error"
 			msg = "invalid product unit type"
+		case errors.Is(err, product.ErrInvalidCategoryID):
+			status = http.StatusBadRequest
+			code = "invalid_category_id"
+			msg = "category id must be a valid UUID"
+		case errors.Is(err, product.ErrCategoryNotFound):
+			status = http.StatusNotFound
+			code = "category_not_found"
+			msg = "category not found"
 		}
 
 		dto.WriteError(w, status, code, msg)
@@ -180,12 +191,12 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 // @Param name query string false "Case-insensitive literal product name substring"
 // @Param sku query string false "Exact product SKU"
 // @Param unit query string false "Product unit" Enums(kg,meter,piece,liter)
+// @Param category_id query string false "Category UUID"
 // @Param page query int false "Page number" default(1)
 // @Param limit query int false "Items per page" default(20)
 // @Success 200 {array} product.Product "Matching active products; empty array when no products match"
-// @Failure 400 {object} dto.Error "Invalid unit or pagination parameters"
+// @Failure 400 {object} dto.Error "Invalid unit, category UUID, or pagination parameters"
 // @Failure 401 {object} dto.Error "Unauthorized"
-// @Failure 404 {object} dto.Error "Product not found"
 // @Failure 500 {object} dto.Error "Internal error"
 // @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /product [get]
@@ -222,12 +233,13 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rq := product.GetCompanyProductsRequest{
-		CompanyId: u.CompanyId,
-		Name:      r.URL.Query().Get("name"),
-		SKU:       r.URL.Query().Get("sku"),
-		Unit:      product.Unit(r.URL.Query().Get("unit")),
-		Page:      page,
-		Limit:     limit,
+		CompanyId:  u.CompanyId,
+		Name:       r.URL.Query().Get("name"),
+		SKU:        r.URL.Query().Get("sku"),
+		Unit:       product.Unit(r.URL.Query().Get("unit")),
+		CategoryId: r.URL.Query().Get("category_id"),
+		Page:       page,
+		Limit:      limit,
 	}
 
 	res, err := h.sm.productService.GetCompanyProducts(ctx, rq)
@@ -249,6 +261,10 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusBadRequest
 			code = "validation_error"
 			msg = "invalid product unit type"
+		case errors.Is(err, product.ErrInvalidCategoryID):
+			status = http.StatusBadRequest
+			code = "invalid_category_id"
+			msg = "category id must be a valid UUID"
 		case errors.Is(err, product.ErrNotFound):
 			status = http.StatusNotFound
 			code = "product_not_found"
@@ -273,6 +289,7 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary Update Product by ID
+// @Description Missing or null category_id removes the category. Sending the existing category_id preserves an archived category assignment.
 // @Tags Product
 // @Accept json
 // @Produce json
@@ -280,9 +297,9 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 // @Param id path string true "Product ID"
 // @Param request body dto.UpdateProductRequest true "Product update data"
 // @Success 200 {object} product.UpdateProductResponse
-// @Failure 400 {object} dto.Error "Invalid JSON or product fields"
+// @Failure 400 {object} dto.Error "Invalid JSON, product fields, product UUID, or category UUID"
 // @Failure 401 {object} dto.Error "Unauthorized"
-// @Failure 404 {object} dto.Error "Product not found"
+// @Failure 404 {object} dto.Error "Product or category not found"
 // @Failure 409 {object} dto.Error "Duplicate SKU"
 // @Failure 500 {object} dto.Error "Internal error"
 // @Failure 503 {object} dto.Error "Service unavailable"
@@ -316,11 +333,12 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rq := product.UpdateProductRequest{
-		ProductId: ProductId,
-		CompanyId: u.CompanyId,
-		Name:      body.Name,
-		SKU:       body.SKU,
-		Unit:      body.Unit,
+		ProductId:  ProductId,
+		CompanyId:  u.CompanyId,
+		CategoryId: body.CategoryId,
+		Name:       body.Name,
+		SKU:        body.SKU,
+		Unit:       body.Unit,
 	}
 
 	res, err := h.sm.productService.UpdateProduct(ctx, &rq)
@@ -353,6 +371,14 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusBadRequest
 			code = "validation_error"
 			msg = "invalid product unit type"
+		case errors.Is(err, product.ErrInvalidCategoryID):
+			status = http.StatusBadRequest
+			code = "invalid_category_id"
+			msg = "category id must be a valid UUID"
+		case errors.Is(err, product.ErrCategoryNotFound):
+			status = http.StatusNotFound
+			code = "category_not_found"
+			msg = "category not found"
 		}
 
 		dto.WriteError(w, status, code, msg)
