@@ -525,6 +525,23 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: Case-insensitive product name substring
+        in: query
+        name: name
+        type: string
+      - description: Exact product SKU
+        in: query
+        name: sku
+        type: string
+      - description: Product unit
+        enum:
+        - kg
+        - meter
+        - piece
+        - liter
+        in: query
+        name: unit
+        type: string
       - default: 1
         description: Page number
         in: query
@@ -539,13 +556,13 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Matching active products; empty array when no products match
           schema:
             items:
               $ref: '#/definitions/bazaar_internal_modules_product.Product'
             type: array
         "400":
-          description: Invalid credential or pagination
+          description: Invalid unit or pagination parameters
           schema:
             $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
         "401":

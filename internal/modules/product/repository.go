@@ -54,11 +54,23 @@ func (r *Repository) GetCompanyProducts(ctx context.Context, rq GetCompanyProduc
 	SELECT id, company_id, name, sku, unit, archived, created_at, updated_at
 		FROM products
 		where company_id = $1 and archived = false
+			and ($2 = '' or name ilike '%' || $2 || '%')
+			and ($3 = '' or sku = $3)
+			and ($4 = '' or unit = $4)
 		ORDER BY created_at desc, id desc
-		LIMIT $2 OFFSET $3
+		LIMIT $5 OFFSET $6
 		`
 
-	rows, err := r.db.GetDB().Query(ctx, query, rq.CompanyId, rq.Limit, (rq.Page-1)*rq.Limit)
+	rows, err := r.db.GetDB().Query(
+		ctx,
+		query,
+		rq.CompanyId,
+		rq.Name,
+		rq.SKU,
+		rq.Unit,
+		rq.Limit,
+		(rq.Page-1)*rq.Limit,
+	)
 
 	if err != nil {
 		return nil, err
