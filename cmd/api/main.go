@@ -3,6 +3,7 @@ package main
 import (
 	"bazaar/internal/app/health"
 	"bazaar/internal/modules/auth"
+	"bazaar/internal/modules/category"
 	"bazaar/internal/modules/location"
 	"bazaar/internal/modules/product"
 	"bazaar/internal/modules/user"
@@ -77,6 +78,7 @@ func main() {
 		user.NewService(user.NewRepository(db)),
 		location.NewService(location.NewRepository(db)),
 		product.NewService(product.NewRepository(db)),
+		category.NewService(category.NewRepository(db)),
 	))
 
 	authService := auth.New(db, []byte(cfg.JWTSecret))

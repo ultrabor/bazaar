@@ -36,6 +36,11 @@ func (s *Service) GetCompanyProducts(ctx context.Context, rq GetCompanyProductsR
 	if rq.Unit != "" && rq.Unit != UnitKg && rq.Unit != UnitLiter && rq.Unit != UnitMeter && rq.Unit != UnitPiece {
 		return nil, ErrInvalidUnitType
 	}
+	if rq.CategoryId != "" {
+		if _, err := uuid.Parse(rq.CategoryId); err != nil {
+			return nil, ErrInvalidCategoryID
+		}
+	}
 
 	products, err := s.repo.GetCompanyProducts(ctx, rq)
 	if err != nil {
@@ -66,6 +71,9 @@ func (s *Service) CreateProduct(ctx context.Context, r *CreateProductRequest) (*
 	if r.Name == "" || r.SKU == "" {
 		return nil, ErrInvalidCred
 	}
+	if err := validateCategoryId(r.CategoryId); err != nil {
+		return nil, err
+	}
 
 	res, err := s.repo.CreateProduct(ctx, r)
 	if err != nil {
@@ -93,6 +101,9 @@ func (s *Service) UpdateProduct(ctx context.Context, r *UpdateProductRequest) (*
 	if r.Name == "" || r.SKU == "" {
 		return nil, ErrInvalidCred
 	}
+	if err := validateCategoryId(r.CategoryId); err != nil {
+		return nil, err
+	}
 
 	res, err := s.repo.UpdateProduct(ctx, r)
 	if err != nil {
@@ -113,4 +124,14 @@ func (s *Service) ArchiveProduct(ctx context.Context, productId, companyId strin
 	err := s.repo.ArchiveProduct(ctx, productId, companyId)
 
 	return err
+}
+
+func validateCategoryId(categoryId *string) error {
+	if categoryId == nil {
+		return nil
+	}
+	if _, err := uuid.Parse(*categoryId); err != nil {
+		return ErrInvalidCategoryID
+	}
+	return nil
 }
