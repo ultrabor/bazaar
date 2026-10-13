@@ -177,7 +177,7 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param name query string false "Case-insensitive product name substring"
+// @Param name query string false "Case-insensitive literal product name substring"
 // @Param sku query string false "Exact product SKU"
 // @Param unit query string false "Product unit" Enums(kg,meter,piece,liter)
 // @Param page query int false "Page number" default(1)

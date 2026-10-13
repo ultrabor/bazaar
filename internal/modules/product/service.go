@@ -29,7 +29,7 @@ func (s *Service) GetProductById(ctx context.Context, productId, companyId strin
 }
 
 func (s *Service) GetCompanyProducts(ctx context.Context, rq GetCompanyProductsRequest) ([]Product, error) {
-	rq.Name = strings.TrimSpace(rq.Name)
+	rq.Name = escapeLikePattern(strings.TrimSpace(rq.Name))
 	rq.SKU = strings.TrimSpace(rq.SKU)
 	rq.Unit = Unit(strings.ToLower(strings.TrimSpace(string(rq.Unit))))
 
@@ -43,6 +43,12 @@ func (s *Service) GetCompanyProducts(ctx context.Context, rq GetCompanyProductsR
 	}
 
 	return products, nil
+}
+
+func escapeLikePattern(value string) string {
+	value = strings.ReplaceAll(value, `\`, `\\`)
+	value = strings.ReplaceAll(value, `%`, `\%`)
+	return strings.ReplaceAll(value, `_`, `\_`)
 }
 
 func (s *Service) CreateProduct(ctx context.Context, r *CreateProductRequest) (*CreateProductResponse, error) {

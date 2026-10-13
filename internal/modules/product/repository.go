@@ -54,7 +54,7 @@ func (r *Repository) GetCompanyProducts(ctx context.Context, rq GetCompanyProduc
 	SELECT id, company_id, name, sku, unit, archived, created_at, updated_at
 		FROM products
 		where company_id = $1 and archived = false
-			and ($2 = '' or name ilike '%' || $2 || '%')
+			and ($2 = '' or name ilike '%' || $2 || '%' escape E'\\')
 			and ($3 = '' or sku = $3)
 			and ($4 = '' or unit = $4)
 		ORDER BY created_at desc, id desc

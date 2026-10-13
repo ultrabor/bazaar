@@ -547,7 +547,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Case-insensitive product name substring",
+                        "description": "Case-insensitive literal product name substring",
                         "name": "name",
                         "in": "query"
                     },
