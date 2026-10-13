@@ -546,6 +546,30 @@ const docTemplate = `{
                 "summary": "Get all Products for the current user's company",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Case-insensitive product name substring",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Exact product SKU",
+                        "name": "sku",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "kg",
+                            "meter",
+                            "piece",
+                            "liter"
+                        ],
+                        "type": "string",
+                        "description": "Product unit",
+                        "name": "unit",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "default": 1,
                         "description": "Page number",
@@ -562,7 +586,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Matching active products; empty array when no products match",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -571,7 +595,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid credential or pagination",
+                        "description": "Invalid unit or pagination parameters",
                         "schema": {
                             "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }

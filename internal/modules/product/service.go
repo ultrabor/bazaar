@@ -3,6 +3,8 @@ package product
 import (
 	"context"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 type Service struct {
@@ -14,6 +16,10 @@ func NewService(repo *Repository) *Service {
 }
 
 func (s *Service) GetProductById(ctx context.Context, productId, companyId string) (*Product, error) {
+	if _, err := uuid.Parse(productId); err != nil {
+		return nil, ErrInvalidProductID
+	}
+
 	product, err := s.repo.GetProductById(ctx, productId, companyId)
 	if err != nil {
 		return nil, err
@@ -23,6 +29,14 @@ func (s *Service) GetProductById(ctx context.Context, productId, companyId strin
 }
 
 func (s *Service) GetCompanyProducts(ctx context.Context, rq GetCompanyProductsRequest) ([]Product, error) {
+	rq.Name = strings.TrimSpace(rq.Name)
+	rq.SKU = strings.TrimSpace(rq.SKU)
+	rq.Unit = Unit(strings.ToLower(strings.TrimSpace(string(rq.Unit))))
+
+	if rq.Unit != "" && rq.Unit != UnitKg && rq.Unit != UnitLiter && rq.Unit != UnitMeter && rq.Unit != UnitPiece {
+		return nil, ErrInvalidUnitType
+	}
+
 	products, err := s.repo.GetCompanyProducts(ctx, rq)
 	if err != nil {
 		return nil, err
@@ -59,6 +73,9 @@ func (s *Service) UpdateProduct(ctx context.Context, r *UpdateProductRequest) (*
 	if r == nil || r.CompanyId == "" || r.ProductId == "" {
 		return nil, ErrInvalidCred
 	}
+	if _, err := uuid.Parse(r.ProductId); err != nil {
+		return nil, ErrInvalidProductID
+	}
 
 	if r.Unit != UnitKg && r.Unit != UnitLiter && r.Unit != UnitMeter && r.Unit != UnitPiece {
 		return nil, ErrInvalidUnitType
@@ -82,6 +99,9 @@ func (s *Service) UpdateProduct(ctx context.Context, r *UpdateProductRequest) (*
 func (s *Service) ArchiveProduct(ctx context.Context, productId, companyId string) error {
 	if productId == "" || companyId == "" {
 		return ErrInvalidCred
+	}
+	if _, err := uuid.Parse(productId); err != nil {
+		return ErrInvalidProductID
 	}
 
 	err := s.repo.ArchiveProduct(ctx, productId, companyId)

@@ -50,6 +50,9 @@ type UpdateProductResponse struct {
 
 type GetCompanyProductsRequest struct {
 	CompanyId string `json:"company_id"`
+	Name      string `json:"name,omitempty"`
+	SKU       string `json:"sku,omitempty"`
+	Unit      Unit   `json:"unit,omitempty"`
 	Page      int    `json:"page,omitempty"`
 	Limit     int    `json:"limit,omitempty"`
 }
@@ -58,3 +61,4 @@ var ErrInvalidCred = errors.New("invalid credentials")
 var ErrNotFound = errors.New("no rows in result set")
 var ErrProductAlreadyExists = errors.New("product already exists")
 var ErrInvalidUnitType = errors.New("invalid product unit type")
+var ErrInvalidProductID = errors.New("invalid product id")

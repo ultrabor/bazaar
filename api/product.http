@@ -1,0 +1,50 @@
+@baseUrl = http://localhost:8080
+@token = replace-with-bearer-token
+@productId = replace-with-product-uuid
+
+### Products: paginated active list
+GET {{baseUrl}}/product?page=1&limit=20
+Authorization: Bearer {{token}}
+
+### Products: case-insensitive name substring and unit intersection
+GET {{baseUrl}}/product?name=%D0%BC%D0%BE%D0%BB%D0%BE%D0%BA%D0%BE&unit=liter&page=1&limit=20
+Authorization: Bearer {{token}}
+
+### Products: exact SKU
+GET {{baseUrl}}/product?sku=MILK-001&page=1&limit=20
+Authorization: Bearer {{token}}
+
+### Products: no matches returns 200 and []
+GET {{baseUrl}}/product?sku=SKU-THAT-DOES-NOT-EXIST
+Authorization: Bearer {{token}}
+
+### Products: unknown unit returns 400 JSON error
+GET {{baseUrl}}/product?unit=unknown
+Authorization: Bearer {{token}}
+
+### Products: invalid pagination returns 400 JSON error
+GET {{baseUrl}}/product?page=0&limit=101
+Authorization: Bearer {{token}}
+
+### Product: invalid UUID returns 400 JSON error
+GET {{baseUrl}}/product/not-a-uuid
+Authorization: Bearer {{token}}
+
+### Product update: invalid UUID returns 400 JSON error
+PUT {{baseUrl}}/product/not-a-uuid
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Milk",
+  "sku": "MILK-001",
+  "unit": "liter"
+}
+
+### Product archive: invalid UUID returns 400 JSON error
+PATCH {{baseUrl}}/product/not-a-uuid/archive
+Authorization: Bearer {{token}}
+
+### Product: valid UUID owned by another company returns 404
+GET {{baseUrl}}/product/{{productId}}
+Authorization: Bearer {{token}}

@@ -143,6 +143,10 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
+		case errors.Is(err, product.ErrInvalidProductID):
+			status = http.StatusBadRequest
+			code = "invalid_product_id"
+			msg = "product id must be a valid UUID"
 		case errors.Is(err, product.ErrNotFound):
 			status = http.StatusNotFound
 			code = "product_not_found"
@@ -173,10 +177,13 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
+// @Param name query string false "Case-insensitive product name substring"
+// @Param sku query string false "Exact product SKU"
+// @Param unit query string false "Product unit" Enums(kg,meter,piece,liter)
 // @Param page query int false "Page number" default(1)
 // @Param limit query int false "Items per page" default(20)
-// @Success 200 {array} product.Product
-// @Failure 400 {object} dto.Error "Invalid credential or pagination"
+// @Success 200 {array} product.Product "Matching active products; empty array when no products match"
+// @Failure 400 {object} dto.Error "Invalid unit or pagination parameters"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 404 {object} dto.Error "Product not found"
 // @Failure 500 {object} dto.Error "Internal error"
@@ -216,6 +223,9 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 
 	rq := product.GetCompanyProductsRequest{
 		CompanyId: u.CompanyId,
+		Name:      r.URL.Query().Get("name"),
+		SKU:       r.URL.Query().Get("sku"),
+		Unit:      product.Unit(r.URL.Query().Get("unit")),
 		Page:      page,
 		Limit:     limit,
 	}
@@ -235,6 +245,10 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
+		case errors.Is(err, product.ErrInvalidUnitType):
+			status = http.StatusBadRequest
+			code = "validation_error"
+			msg = "invalid product unit type"
 		case errors.Is(err, product.ErrNotFound):
 			status = http.StatusNotFound
 			code = "product_not_found"
@@ -323,6 +337,10 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusBadRequest
 			code = "validation_error"
 			msg = "invalid product fields"
+		case errors.Is(err, product.ErrInvalidProductID):
+			status = http.StatusBadRequest
+			code = "invalid_product_id"
+			msg = "product id must be a valid UUID"
 		case errors.Is(err, product.ErrNotFound):
 			status = http.StatusNotFound
 			code = "product_not_found"
@@ -404,6 +422,10 @@ func (h *Handler) ArchiveProduct(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
+		case errors.Is(err, product.ErrInvalidProductID):
+			status = http.StatusBadRequest
+			code = "invalid_product_id"
+			msg = "product id must be a valid UUID"
 		case errors.Is(err, product.ErrNotFound):
 			status = http.StatusNotFound
 			code = "product_not_found"
