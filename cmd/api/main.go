@@ -5,6 +5,7 @@ import (
 	"bazaar/internal/modules/auth"
 	"bazaar/internal/modules/category"
 	"bazaar/internal/modules/location"
+	"bazaar/internal/modules/permission"
 	"bazaar/internal/modules/product"
 	"bazaar/internal/modules/user"
 	"bazaar/internal/platform/config"
@@ -79,11 +80,13 @@ func main() {
 		location.NewService(location.NewRepository(db)),
 		product.NewService(product.NewRepository(db)),
 		category.NewService(category.NewRepository(db)),
+		permission.NewService(permission.NewRepository(db)),
 	))
 
 	authService := auth.New(db, []byte(cfg.JWTSecret))
+	permissionService := permission.NewService(permission.NewRepository(db))
 
-	handler.Routes(middleware.New(log, cfg.JWTSecret, authService.GetUserById))
+	handler.Routes(middleware.New(log, cfg.JWTSecret, authService.GetUserById, permissionService.GetPermissionByCode))
 
 	server := http.Server{
 		Addr:              cfg.HttpHost + ":" + cfg.HttpPort,
