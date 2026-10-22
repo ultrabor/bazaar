@@ -48,6 +48,10 @@ func (h *Handler) Routes(mw *middleware.Middleware) {
 		r.Get("/category/{id}", h.GetCategoryById)
 		r.Put("/category/{id}", h.UpdateCategory)
 		r.Patch("/category/{id}/archive", h.ArchiveCategory)
+
+		r.Get("/permissions", h.GetListPermissions)
+		r.Post("/permission/set", h.SetPermission)
+		r.Post("/permission/remove", h.RemovePermission)
 	})
 
 	h.router.Get("/healthz", h.Health)

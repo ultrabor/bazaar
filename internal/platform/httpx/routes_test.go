@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"bazaar/internal/platform/httpx/middleware"
+
 	"github.com/go-chi/chi/v5"
 )
 
@@ -15,7 +16,7 @@ func TestRoutesRedirectTrailingSlash(t *testing.T) {
 	router := chi.NewRouter()
 	log := slog.New(slog.NewTextHandler(io.Discard, nil))
 	handler := New(log, router, &ServiceManager{})
-	handler.Routes(middleware.New(log, "secret", nil))
+	handler.Routes(middleware.New(log, "secret", nil, nil))
 
 	for _, path := range []string{"/user/", "/location/"} {
 		t.Run(path, func(t *testing.T) {

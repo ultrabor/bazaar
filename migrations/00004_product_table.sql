@@ -1,4 +1,4 @@
--- migrations/00003_product_table.sql
+-- migrations/00004_product_table.sql
 
 -- +goose Up
 
