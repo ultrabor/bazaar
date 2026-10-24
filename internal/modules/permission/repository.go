@@ -101,7 +101,7 @@ func (repo *Repository) RemovePermission(ctx context.Context, userId, permission
 
 	query := `
 		DELETE FROM user_permissions 
-		where user_id = $1 and permissionId = $2
+		where user_id = $1 and permission_id = $2
 	`
 
 	cmdTag, err := repo.db.GetDB().Exec(ctx, query, userId, permissionId)
