@@ -10,6 +10,7 @@ func (m *Middleware) Permission(next http.HandlerFunc, code string) http.Handler
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		if ctx == nil {
+			dto.WriteError(w, http.StatusBadRequest, "forbidden", "bad request")
 			return
 		}
 
@@ -21,6 +22,7 @@ func (m *Middleware) Permission(next http.HandlerFunc, code string) http.Handler
 
 		_, err := m.loadPermision(ctx, user.Id, code)
 		if err != nil {
+			dto.WriteError(w, http.StatusMethodNotAllowed, "not_enough_permession", "not enough permession")
 			return
 		}
 
