@@ -138,7 +138,7 @@ func (h *Handler) RemovePermission(w http.ResponseWriter, r *http.Request) {
 		PermissionId:    body.PermissionId,
 	}
 
-	err = h.sm.permissionService.SetPermission(ctx, rq)
+	err = h.sm.permissionService.RemovePermission(ctx, rq)
 
 	if err != nil {
 		status := http.StatusInternalServerError
