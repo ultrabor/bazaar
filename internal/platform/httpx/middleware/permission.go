@@ -5,6 +5,7 @@ import (
 	"bazaar/internal/modules/user"
 	"bazaar/internal/platform/httpx/dto"
 	"errors"
+	"log/slog"
 	"net/http"
 )
 
@@ -32,7 +33,7 @@ func (m *Middleware) Permission(next http.HandlerFunc, code string) http.Handler
 				code = "do_not_have_enough_permission"
 				msg = "dont have enough permission"
 			}
-
+			m.logger.Error("service unavailable", slog.Any("err", err))
 			dto.WriteError(w, status, code, msg)
 			return
 		}
