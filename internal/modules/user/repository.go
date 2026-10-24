@@ -65,9 +65,9 @@ func (r *Repository) GetCompanyRoles(ctx context.Context, companyId string) ([]U
 	return roles, nil
 }
 
-func (r *Repository) CreateUser(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, error) {
+func (r *Repository) CreateUser(ctx context.Context, tx pgx.Tx, req *CreateUserRequest) (*CreateUserResponse, error) {
 	var userId string
-	err := r.db.GetDB().QueryRow(ctx, `
+	err := tx.QueryRow(ctx, `
 		INSERT INTO users (id, company_id, user_role_id, first_name, last_name, phone, password_hash)
 		VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6)
 		RETURNING id
@@ -78,4 +78,27 @@ func (r *Repository) CreateUser(ctx context.Context, req *CreateUserRequest) (*C
 	}
 
 	return &CreateUserResponse{userId}, nil
+}
+
+func (r *Repository) GiveRolePermissions(ctx context.Context, tx pgx.Tx, userId, userRoleId string) error {
+	query := `
+		INSERT INTO user_permissions(user_id, permission_id)
+		SELECT $1, rp.permission_id
+		FROM role_permissions rp
+		JOIN permissions p ON p.id = rp.permission_id AND p.deleted_at = 0
+		WHERE rp.user_role_id = $2
+		ON CONFLICT DO NOTHING;
+	`
+
+	cmdTag, err := tx.Exec(ctx, query, userId, userRoleId)
+
+	if err != nil {
+		return err
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return ErrNotFound
+	}
+
+	return nil
 }

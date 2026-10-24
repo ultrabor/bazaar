@@ -54,7 +54,12 @@ func (s *Service) CreateUser(ctx context.Context, r *CreateUserRequest) (*Create
 
 	r.PasswordHash = hash
 
-	res, err := s.repo.CreateUser(ctx, r)
+	tx, err := s.repo.db.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := s.repo.CreateUser(ctx, tx, r)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) &&
@@ -62,6 +67,11 @@ func (s *Service) CreateUser(ctx context.Context, r *CreateUserRequest) (*Create
 			pgErr.ConstraintName == "users_active_phone_unique" {
 			return nil, ErrPhoneTaken
 		}
+		return nil, err
+	}
+
+	err = s.repo.GiveRolePermissions(ctx, tx, res.UserID, r.UserRoleId)
+	if err != nil {
 		return nil, err
 	}
 
