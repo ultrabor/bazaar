@@ -1,15 +1,15 @@
 package httpx
 
 import (
-	"bazaar/internal/platform/httpx/middleware"
 	"net/http"
+
+	"bazaar/internal/platform/httpx/middleware"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
 func (h *Handler) Routes(mw *middleware.Middleware) {
-
 	h.router.Use(chimiddleware.RedirectSlashes)
 	h.router.Use(mw.Logger)
 	h.router.Use(mw.Recover)
@@ -28,26 +28,26 @@ func (h *Handler) Routes(mw *middleware.Middleware) {
 	h.router.Group(func(r chi.Router) {
 		r.Use(mw.Auth)
 
-		r.Post("/user", h.CreateUser)
-		r.Get("/user/{id}", h.GetUserById)
+		r.Post("/user", mw.Permission(h.CreateUser, "user.create"))
+		r.Get("/user/{id}", mw.Permission(h.GetUserById, "user.view"))
 
-		r.Post("/location", h.CreateLocation)
-		r.Get("/location", h.GetAllLocations)
-		r.Get("/location/{id}", h.GetLocationById)
-		r.Put("/location/{id}", h.UpdateLocation)
-		r.Patch("/location/{id}/archive", h.ArchiveLocation)
+		r.Post("/location", mw.Permission(h.CreateLocation, "location.create"))
+		r.Get("/location", mw.Permission(h.GetAllLocations, "location.view"))
+		r.Get("/location/{id}", mw.Permission(h.GetLocationById, "location.view"))
+		r.Put("/location/{id}", mw.Permission(h.UpdateLocation, "location.edit"))
+		r.Patch("/location/{id}/archive", mw.Permission(h.ArchiveLocation, "location.archive"))
 
-		r.Post("/product", h.CreateProduct)
-		r.Get("/product", h.GetAllProducts)
-		r.Get("/product/{id}", h.GetProductById)
-		r.Put("/product/{id}", h.UpdateProduct)
-		r.Patch("/product/{id}/archive", h.ArchiveProduct)
+		r.Post("/product", mw.Permission(h.CreateProduct, "product.create"))
+		r.Get("/product", mw.Permission(h.GetAllProducts, "product.view"))
+		r.Get("/product/{id}", mw.Permission(h.GetProductById, "product.view"))
+		r.Put("/product/{id}", mw.Permission(h.UpdateProduct, "product.edit"))
+		r.Patch("/product/{id}/archive", mw.Permission(h.ArchiveProduct, "product.archive"))
 
-		r.Post("/category", h.CreateCategory)
-		r.Get("/category", h.GetAllCategories)
-		r.Get("/category/{id}", h.GetCategoryById)
-		r.Put("/category/{id}", h.UpdateCategory)
-		r.Patch("/category/{id}/archive", h.ArchiveCategory)
+		r.Post("/category", mw.Permission(h.CreateCategory, "category.create"))
+		r.Get("/category", mw.Permission(h.GetAllCategories, "category.view"))
+		r.Get("/category/{id}", mw.Permission(h.GetCategoryById, "category.view"))
+		r.Put("/category/{id}", mw.Permission(h.UpdateCategory, "category.edit"))
+		r.Patch("/category/{id}/archive", mw.Permission(h.ArchiveCategory, "category.archive"))
 
 		r.Get("/permissions", h.GetListPermissions)
 		r.Post("/permission/set", h.SetPermission)
