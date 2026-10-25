@@ -1,7 +1,7 @@
 package httpx
 
 import (
-	"bazaar/internal/modules/product"
+	"bazaar/internal/domain"
 	"bazaar/internal/platform/httpx/dto"
 	"bazaar/internal/platform/httpx/middleware"
 	"context"
@@ -22,7 +22,7 @@ import (
 // @Produce json
 // @Security BearerAuth
 // @Param request body dto.CreateProductRequest true "Product creation data"
-// @Success 201 {object} product.CreateProductResponse
+// @Success 201 {object} domain.CreateProductResponse
 // @Failure 400 {object} dto.Error "Invalid JSON, product fields, or category UUID"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 404 {object} dto.Error "Category not found"
@@ -49,7 +49,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rq := product.CreateProductRequest{
+	rq := domain.CreateProductRequest{
 		CompanyId:  u.CompanyId,
 		CategoryId: body.CategoryId,
 		Name:       body.Name,
@@ -67,23 +67,23 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, product.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "validation_error"
 			msg = "invalid product fields"
-		case errors.Is(err, product.ErrProductAlreadyExists):
+		case errors.Is(err, domain.ErrProductAlreadyExists):
 			status = http.StatusConflict
 			code = "sku_conflict"
 			msg = "SKU already exists"
-		case errors.Is(err, product.ErrInvalidUnitType):
+		case errors.Is(err, domain.ErrInvalidUnitType):
 			status = http.StatusBadRequest
 			code = "validation_error"
 			msg = "invalid product unit type"
-		case errors.Is(err, product.ErrInvalidCategoryID):
+		case errors.Is(err, domain.ErrInvalidCategoryID):
 			status = http.StatusBadRequest
 			code = "invalid_category_id"
 			msg = "category id must be a valid UUID"
-		case errors.Is(err, product.ErrCategoryNotFound):
+		case errors.Is(err, domain.ErrCategoryNotFound):
 			status = http.StatusNotFound
 			code = "category_not_found"
 			msg = "category not found"
@@ -113,7 +113,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Security BearerAuth
 // @Param id path string true "Product ID"
-// @Success 200 {object} product.Product
+// @Success 200 {object} domain.Product
 // @Failure 400 {object} dto.Error "Invalid product ID or credential"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 404 {object} dto.Error "Product not found"
@@ -150,15 +150,15 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, product.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
-		case errors.Is(err, product.ErrInvalidProductID):
+		case errors.Is(err, domain.ErrInvalidProductID):
 			status = http.StatusBadRequest
 			code = "invalid_product_id"
 			msg = "product id must be a valid UUID"
-		case errors.Is(err, product.ErrNotFound):
+		case errors.Is(err, domain.ErrProductNotFound):
 			status = http.StatusNotFound
 			code = "product_not_found"
 			msg = "product not found"
@@ -194,7 +194,7 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 // @Param category_id query string false "Category UUID"
 // @Param page query int false "Page number" default(1)
 // @Param limit query int false "Items per page" default(20)
-// @Success 200 {array} product.Product "Matching active products; empty array when no products match"
+// @Success 200 {array} domain.Product "Matching active products; empty array when no products match"
 // @Failure 400 {object} dto.Error "Invalid unit, category UUID, or pagination parameters"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 500 {object} dto.Error "Internal error"
@@ -232,11 +232,11 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 		limit = value
 	}
 
-	rq := product.GetCompanyProductsRequest{
+	rq := domain.GetCompanyProductsRequest{
 		CompanyId:  u.CompanyId,
 		Name:       r.URL.Query().Get("name"),
 		SKU:        r.URL.Query().Get("sku"),
-		Unit:       product.Unit(r.URL.Query().Get("unit")),
+		Unit:       domain.ProductUnit(r.URL.Query().Get("unit")),
 		CategoryId: r.URL.Query().Get("category_id"),
 		Page:       page,
 		Limit:      limit,
@@ -253,19 +253,19 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, product.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
-		case errors.Is(err, product.ErrInvalidUnitType):
+		case errors.Is(err, domain.ErrInvalidUnitType):
 			status = http.StatusBadRequest
 			code = "validation_error"
 			msg = "invalid product unit type"
-		case errors.Is(err, product.ErrInvalidCategoryID):
+		case errors.Is(err, domain.ErrInvalidCategoryID):
 			status = http.StatusBadRequest
 			code = "invalid_category_id"
 			msg = "category id must be a valid UUID"
-		case errors.Is(err, product.ErrNotFound):
+		case errors.Is(err, domain.ErrProductNotFound):
 			status = http.StatusNotFound
 			code = "product_not_found"
 			msg = "product not found"
@@ -296,7 +296,7 @@ func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param id path string true "Product ID"
 // @Param request body dto.UpdateProductRequest true "Product update data"
-// @Success 200 {object} product.UpdateProductResponse
+// @Success 200 {object} domain.UpdateProductResponse
 // @Failure 400 {object} dto.Error "Invalid JSON, product fields, product UUID, or category UUID"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 404 {object} dto.Error "Product or category not found"
@@ -332,7 +332,7 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rq := product.UpdateProductRequest{
+	rq := domain.UpdateProductRequest{
 		ProductId:  ProductId,
 		CompanyId:  u.CompanyId,
 		CategoryId: body.CategoryId,
@@ -351,31 +351,31 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, product.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "validation_error"
 			msg = "invalid product fields"
-		case errors.Is(err, product.ErrInvalidProductID):
+		case errors.Is(err, domain.ErrInvalidProductID):
 			status = http.StatusBadRequest
 			code = "invalid_product_id"
 			msg = "product id must be a valid UUID"
-		case errors.Is(err, product.ErrNotFound):
+		case errors.Is(err, domain.ErrProductNotFound):
 			status = http.StatusNotFound
 			code = "product_not_found"
 			msg = "product not found"
-		case errors.Is(err, product.ErrProductAlreadyExists):
+		case errors.Is(err, domain.ErrProductAlreadyExists):
 			status = http.StatusConflict
 			code = "sku_conflict"
 			msg = "SKU already exists"
-		case errors.Is(err, product.ErrInvalidUnitType):
+		case errors.Is(err, domain.ErrInvalidUnitType):
 			status = http.StatusBadRequest
 			code = "validation_error"
 			msg = "invalid product unit type"
-		case errors.Is(err, product.ErrInvalidCategoryID):
+		case errors.Is(err, domain.ErrInvalidCategoryID):
 			status = http.StatusBadRequest
 			code = "invalid_category_id"
 			msg = "category id must be a valid UUID"
-		case errors.Is(err, product.ErrCategoryNotFound):
+		case errors.Is(err, domain.ErrCategoryNotFound):
 			status = http.StatusNotFound
 			code = "category_not_found"
 			msg = "category not found"
@@ -444,15 +444,15 @@ func (h *Handler) ArchiveProduct(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, product.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
-		case errors.Is(err, product.ErrInvalidProductID):
+		case errors.Is(err, domain.ErrInvalidProductID):
 			status = http.StatusBadRequest
 			code = "invalid_product_id"
 			msg = "product id must be a valid UUID"
-		case errors.Is(err, product.ErrNotFound):
+		case errors.Is(err, domain.ErrProductNotFound):
 			status = http.StatusNotFound
 			code = "product_not_found"
 			msg = "product not found"

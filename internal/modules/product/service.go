@@ -1,23 +1,26 @@
 package product
 
 import (
+	"bazaar/internal/domain"
 	"context"
 	"strings"
 
 	"github.com/google/uuid"
 )
 
-type Service struct {
-	repo *Repository
+type service struct {
+	repo domain.ProductRepository
 }
 
-func NewService(repo *Repository) *Service {
-	return &Service{repo: repo}
+var _ domain.ProductService = (*service)(nil)
+
+func NewService(repo domain.ProductRepository) domain.ProductService {
+	return &service{repo: repo}
 }
 
-func (s *Service) GetProductById(ctx context.Context, productId, companyId string) (*Product, error) {
+func (s *service) GetProductById(ctx context.Context, productId, companyId string) (*domain.Product, error) {
 	if _, err := uuid.Parse(productId); err != nil {
-		return nil, ErrInvalidProductID
+		return nil, domain.ErrInvalidProductID
 	}
 
 	product, err := s.repo.GetProductById(ctx, productId, companyId)
@@ -28,17 +31,17 @@ func (s *Service) GetProductById(ctx context.Context, productId, companyId strin
 	return product, nil
 }
 
-func (s *Service) GetCompanyProducts(ctx context.Context, rq GetCompanyProductsRequest) ([]Product, error) {
+func (s *service) GetCompanyProducts(ctx context.Context, rq domain.GetCompanyProductsRequest) ([]domain.Product, error) {
 	rq.Name = escapeLikePattern(strings.TrimSpace(rq.Name))
 	rq.SKU = strings.TrimSpace(rq.SKU)
-	rq.Unit = Unit(strings.ToLower(strings.TrimSpace(string(rq.Unit))))
+	rq.Unit = domain.ProductUnit(strings.ToLower(strings.TrimSpace(string(rq.Unit))))
 
-	if rq.Unit != "" && rq.Unit != UnitKg && rq.Unit != UnitLiter && rq.Unit != UnitMeter && rq.Unit != UnitPiece {
-		return nil, ErrInvalidUnitType
+	if rq.Unit != "" && rq.Unit != domain.ProductUnitKg && rq.Unit != domain.ProductUnitLiter && rq.Unit != domain.ProductUnitMeter && rq.Unit != domain.ProductUnitPiece {
+		return nil, domain.ErrInvalidUnitType
 	}
 	if rq.CategoryId != "" {
 		if _, err := uuid.Parse(rq.CategoryId); err != nil {
-			return nil, ErrInvalidCategoryID
+			return nil, domain.ErrInvalidCategoryID
 		}
 	}
 
@@ -56,20 +59,20 @@ func escapeLikePattern(value string) string {
 	return strings.ReplaceAll(value, `_`, `\_`)
 }
 
-func (s *Service) CreateProduct(ctx context.Context, r *CreateProductRequest) (*CreateProductResponse, error) {
+func (s *service) CreateProduct(ctx context.Context, r *domain.CreateProductRequest) (*domain.CreateProductResponse, error) {
 	if r == nil || r.CompanyId == "" {
-		return nil, ErrInvalidCred
+		return nil, domain.ErrInvalidCred
 	}
 
-	if r.Unit != UnitKg && r.Unit != UnitLiter && r.Unit != UnitMeter && r.Unit != UnitPiece {
-		return nil, ErrInvalidUnitType
+	if r.Unit != domain.ProductUnitKg && r.Unit != domain.ProductUnitLiter && r.Unit != domain.ProductUnitMeter && r.Unit != domain.ProductUnitPiece {
+		return nil, domain.ErrInvalidUnitType
 	}
 
 	r.Name = strings.TrimSpace(r.Name)
 	r.SKU = strings.TrimSpace(r.SKU)
 
 	if r.Name == "" || r.SKU == "" {
-		return nil, ErrInvalidCred
+		return nil, domain.ErrInvalidCred
 	}
 	if err := validateCategoryId(r.CategoryId); err != nil {
 		return nil, err
@@ -83,23 +86,23 @@ func (s *Service) CreateProduct(ctx context.Context, r *CreateProductRequest) (*
 	return res, nil
 }
 
-func (s *Service) UpdateProduct(ctx context.Context, r *UpdateProductRequest) (*UpdateProductResponse, error) {
+func (s *service) UpdateProduct(ctx context.Context, r *domain.UpdateProductRequest) (*domain.UpdateProductResponse, error) {
 	if r == nil || r.CompanyId == "" || r.ProductId == "" {
-		return nil, ErrInvalidCred
+		return nil, domain.ErrInvalidCred
 	}
 	if _, err := uuid.Parse(r.ProductId); err != nil {
-		return nil, ErrInvalidProductID
+		return nil, domain.ErrInvalidProductID
 	}
 
-	if r.Unit != UnitKg && r.Unit != UnitLiter && r.Unit != UnitMeter && r.Unit != UnitPiece {
-		return nil, ErrInvalidUnitType
+	if r.Unit != domain.ProductUnitKg && r.Unit != domain.ProductUnitLiter && r.Unit != domain.ProductUnitMeter && r.Unit != domain.ProductUnitPiece {
+		return nil, domain.ErrInvalidUnitType
 	}
 
 	r.Name = strings.TrimSpace(r.Name)
 	r.SKU = strings.TrimSpace(r.SKU)
 
 	if r.Name == "" || r.SKU == "" {
-		return nil, ErrInvalidCred
+		return nil, domain.ErrInvalidCred
 	}
 	if err := validateCategoryId(r.CategoryId); err != nil {
 		return nil, err
@@ -113,12 +116,12 @@ func (s *Service) UpdateProduct(ctx context.Context, r *UpdateProductRequest) (*
 	return res, nil
 }
 
-func (s *Service) ArchiveProduct(ctx context.Context, productId, companyId string) error {
+func (s *service) ArchiveProduct(ctx context.Context, productId, companyId string) error {
 	if productId == "" || companyId == "" {
-		return ErrInvalidCred
+		return domain.ErrInvalidCred
 	}
 	if _, err := uuid.Parse(productId); err != nil {
-		return ErrInvalidProductID
+		return domain.ErrInvalidProductID
 	}
 
 	err := s.repo.ArchiveProduct(ctx, productId, companyId)
@@ -131,7 +134,7 @@ func validateCategoryId(categoryId *string) error {
 		return nil
 	}
 	if _, err := uuid.Parse(*categoryId); err != nil {
-		return ErrInvalidCategoryID
+		return domain.ErrInvalidCategoryID
 	}
 	return nil
 }

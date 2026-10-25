@@ -5,7 +5,6 @@ import (
 	"bazaar/internal/domain"
 	"bazaar/internal/modules/auth"
 	"bazaar/internal/modules/permission"
-	"bazaar/internal/modules/product"
 	"log/slog"
 
 	"github.com/go-chi/chi/v5"
@@ -22,7 +21,7 @@ type ServiceManager struct {
 	authService       *auth.Service
 	userService       domain.UserService
 	locationService   domain.LocationService
-	productService    *product.Service
+	productService    domain.ProductService
 	categoryService   domain.CategoryService
 	permissionService *permission.Service
 }
@@ -32,7 +31,7 @@ func NewServiceManager(
 	authService *auth.Service,
 	userService domain.UserService,
 	locationService domain.LocationService,
-	productService *product.Service,
+	productService domain.ProductService,
 	categoryService domain.CategoryService,
 	permissionService *permission.Service,
 ) *ServiceManager {

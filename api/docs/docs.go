@@ -944,7 +944,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/bazaar_internal_modules_product.Product"
+                                "$ref": "#/definitions/bazaar_internal_domain.Product"
                             }
                         }
                     },
@@ -1006,7 +1006,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_product.CreateProductResponse"
+                            "$ref": "#/definitions/bazaar_internal_domain.CreateProductResponse"
                         }
                     },
                     "400": {
@@ -1078,7 +1078,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_product.Product"
+                            "$ref": "#/definitions/bazaar_internal_domain.Product"
                         }
                     },
                     "400": {
@@ -1152,7 +1152,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_product.UpdateProductResponse"
+                            "$ref": "#/definitions/bazaar_internal_domain.UpdateProductResponse"
                         }
                     },
                     "400": {
@@ -1458,6 +1458,14 @@ const docTemplate = `{
                 }
             }
         },
+        "bazaar_internal_domain.CreateProductResponse": {
+            "type": "object",
+            "properties": {
+                "product_id": {
+                    "type": "string"
+                }
+            }
+        },
         "bazaar_internal_domain.CreateUserResponse": {
             "type": "object",
             "properties": {
@@ -1500,6 +1508,53 @@ const docTemplate = `{
                 "LocationTypeWarehouse"
             ]
         },
+        "bazaar_internal_domain.Product": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "category_id": {
+                    "type": "string"
+                },
+                "company_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sku": {
+                    "type": "string"
+                },
+                "unit": {
+                    "$ref": "#/definitions/bazaar_internal_domain.ProductUnit"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "bazaar_internal_domain.ProductUnit": {
+            "type": "string",
+            "enum": [
+                "kg",
+                "meter",
+                "piece",
+                "liter"
+            ],
+            "x-enum-varnames": [
+                "ProductUnitKg",
+                "ProductUnitMeter",
+                "ProductUnitPiece",
+                "ProductUnitLiter"
+            ]
+        },
         "bazaar_internal_domain.UpdateCategoryResponse": {
             "type": "object",
             "properties": {
@@ -1512,6 +1567,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "location_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "bazaar_internal_domain.UpdateProductResponse": {
+            "type": "object",
+            "properties": {
+                "product_id": {
                     "type": "string"
                 }
             }
@@ -1558,69 +1621,6 @@ const docTemplate = `{
                 }
             }
         },
-        "bazaar_internal_modules_product.CreateProductResponse": {
-            "type": "object",
-            "properties": {
-                "product_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_modules_product.Product": {
-            "type": "object",
-            "properties": {
-                "archived": {
-                    "type": "boolean"
-                },
-                "category_id": {
-                    "type": "string"
-                },
-                "company_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "sku": {
-                    "type": "string"
-                },
-                "unit": {
-                    "$ref": "#/definitions/bazaar_internal_modules_product.Unit"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_modules_product.Unit": {
-            "type": "string",
-            "enum": [
-                "kg",
-                "meter",
-                "piece",
-                "liter"
-            ],
-            "x-enum-varnames": [
-                "UnitKg",
-                "UnitMeter",
-                "UnitPiece",
-                "UnitLiter"
-            ]
-        },
-        "bazaar_internal_modules_product.UpdateProductResponse": {
-            "type": "object",
-            "properties": {
-                "product_id": {
-                    "type": "string"
-                }
-            }
-        },
         "bazaar_internal_platform_httpx_dto.CreateCategoryRequest": {
             "type": "object",
             "properties": {
@@ -1656,7 +1656,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "unit": {
-                    "$ref": "#/definitions/bazaar_internal_modules_product.Unit"
+                    "$ref": "#/definitions/bazaar_internal_domain.ProductUnit"
                 }
             }
         },
@@ -1765,7 +1765,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "unit": {
-                    "$ref": "#/definitions/bazaar_internal_modules_product.Unit"
+                    "$ref": "#/definitions/bazaar_internal_domain.ProductUnit"
                 }
             }
         }
