@@ -1,6 +1,7 @@
 package product
 
 import (
+	"bazaar/internal/domain"
 	"bazaar/internal/platform/database"
 	"context"
 	"errors"
@@ -9,18 +10,20 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-type Repository struct {
+type repository struct {
 	db *database.Database
 }
 
-func NewRepository(db *database.Database) *Repository {
-	return &Repository{db: db}
+var _ domain.ProductRepository = (*repository)(nil)
+
+func NewRepository(db *database.Database) domain.ProductRepository {
+	return &repository{db: db}
 }
 
-func (r *Repository) GetProductById(ctx context.Context, productId, companyId string) (*Product, error) {
-	var product Product
+func (r *repository) GetProductById(ctx context.Context, productId, companyId string) (*domain.Product, error) {
+	var product domain.Product
 
-	err := r.db.GetDB().QueryRow(ctx, `
+	err := r.db.Conn(ctx).QueryRow(ctx, `
 		SELECT id, company_id, category_id, name, sku, unit, archived, created_at, updated_at
 		FROM products
 		where id = $1 and company_id = $2 and archived = false
@@ -38,8 +41,8 @@ func (r *Repository) GetProductById(ctx context.Context, productId, companyId st
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, ErrNotFound
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, domain.ErrProductNotFound
 		}
 		return nil, err
 	}
@@ -49,7 +52,7 @@ func (r *Repository) GetProductById(ctx context.Context, productId, companyId st
 
 //GetCompanyProducts, CreateProduct, UpdateProduct
 
-func (r *Repository) GetCompanyProducts(ctx context.Context, rq GetCompanyProductsRequest) ([]Product, error) {
+func (r *repository) GetCompanyProducts(ctx context.Context, rq domain.GetCompanyProductsRequest) ([]domain.Product, error) {
 
 	query := `
 	SELECT id, company_id, category_id, name, sku, unit, archived, created_at, updated_at
@@ -63,7 +66,7 @@ func (r *Repository) GetCompanyProducts(ctx context.Context, rq GetCompanyProduc
 		LIMIT $6 OFFSET $7
 		`
 
-	rows, err := r.db.GetDB().Query(
+	rows, err := r.db.Conn(ctx).Query(
 		ctx,
 		query,
 		rq.CompanyId,
@@ -80,10 +83,10 @@ func (r *Repository) GetCompanyProducts(ctx context.Context, rq GetCompanyProduc
 	}
 	defer rows.Close()
 
-	products := make([]Product, 0)
+	products := make([]domain.Product, 0)
 
 	for rows.Next() {
-		var product Product
+		var product domain.Product
 
 		if err := rows.Scan(
 			&product.Id,
@@ -102,8 +105,8 @@ func (r *Repository) GetCompanyProducts(ctx context.Context, rq GetCompanyProduc
 	}
 
 	if err := rows.Err(); err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, ErrNotFound
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, domain.ErrProductNotFound
 		}
 		return nil, err
 	}
@@ -111,104 +114,98 @@ func (r *Repository) GetCompanyProducts(ctx context.Context, rq GetCompanyProduc
 	return products, nil
 }
 
-func (r *Repository) CreateProduct(ctx context.Context, rq *CreateProductRequest) (*CreateProductResponse, error) {
-	tx, err := r.db.Begin(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback(ctx)
-
-	if rq.CategoryId != nil {
-		if err := lockActiveCategory(ctx, tx, *rq.CategoryId, rq.CompanyId); err != nil {
-			return nil, err
-		}
-	}
-
+// CreateProduct and UpdateProduct lock the category row, so the category
+// cannot be archived between the check and the write.
+func (r *repository) CreateProduct(ctx context.Context, rq *domain.CreateProductRequest) (*domain.CreateProductResponse, error) {
 	var productId string
-	err = tx.QueryRow(ctx, `
+
+	err := r.db.WithinTx(ctx, func(ctx context.Context) error {
+		if rq.CategoryId != nil {
+			if err := r.lockActiveCategory(ctx, *rq.CategoryId, rq.CompanyId); err != nil {
+				return err
+			}
+		}
+
+		err := r.db.Conn(ctx).QueryRow(ctx, `
 	INSERT INTO products (company_id, name, sku, unit, category_id)
 	VALUES ($1, $2, $3, $4, $5::uuid)
 	RETURNING id
 	`, rq.CompanyId, rq.Name, rq.SKU, rq.Unit, rq.CategoryId,
-	).Scan(&productId)
+		).Scan(&productId)
 
+		if err != nil {
+			if isDuplicateSKU(err) {
+				return domain.ErrProductAlreadyExists
+			}
+			if errors.Is(err, pgx.ErrNoRows) {
+				return domain.ErrCategoryNotFound
+			}
+			return err
+		}
+		return nil
+	})
 	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) &&
-			pgErr.Code == "23505" &&
-			pgErr.ConstraintName == "products_company_sku_active_unique" {
-			return nil, ErrProductAlreadyExists
-		}
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, ErrCategoryNotFound
-		}
-		return nil, err
-	}
-	if err := tx.Commit(ctx); err != nil {
 		return nil, err
 	}
 
-	return &CreateProductResponse{ProductId: productId}, nil
+	return &domain.CreateProductResponse{ProductId: productId}, nil
 }
 
-func (r *Repository) UpdateProduct(ctx context.Context, rq *UpdateProductRequest) (*UpdateProductResponse, error) {
-	tx, err := r.db.Begin(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback(ctx)
+func (r *repository) UpdateProduct(ctx context.Context, rq *domain.UpdateProductRequest) (*domain.UpdateProductResponse, error) {
+	var productId string
 
-	var currentCategoryId *string
-	err = tx.QueryRow(ctx, `
+	err := r.db.WithinTx(ctx, func(ctx context.Context) error {
+		var currentCategoryId *string
+		err := r.db.Conn(ctx).QueryRow(ctx, `
 		SELECT category_id
 		FROM products
 		WHERE id = $1 AND company_id = $2 AND archived = false
 		FOR UPDATE
 	`, rq.ProductId, rq.CompanyId).Scan(&currentCategoryId)
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, ErrNotFound
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return domain.ErrProductNotFound
+			}
+			return err
 		}
-		return nil, err
-	}
 
-	keepsCurrentCategory := rq.CategoryId != nil &&
-		currentCategoryId != nil &&
-		*rq.CategoryId == *currentCategoryId
-	if rq.CategoryId != nil && !keepsCurrentCategory {
-		if err := lockActiveCategory(ctx, tx, *rq.CategoryId, rq.CompanyId); err != nil {
-			return nil, err
+		keepsCurrentCategory := rq.CategoryId != nil &&
+			currentCategoryId != nil &&
+			*rq.CategoryId == *currentCategoryId
+		if rq.CategoryId != nil && !keepsCurrentCategory {
+			if err := r.lockActiveCategory(ctx, *rq.CategoryId, rq.CompanyId); err != nil {
+				return err
+			}
 		}
-	}
 
-	var productId string
-	err = tx.QueryRow(ctx, `
+		err = r.db.Conn(ctx).QueryRow(ctx, `
 	UPDATE products
 	SET name = $1, sku = $2, unit = $3, category_id = $4::uuid, updated_at = now()
 	where id = $5 and company_id = $6 and archived = false
 	RETURNING id
 	`, rq.Name, rq.SKU, rq.Unit, rq.CategoryId, rq.ProductId, rq.CompanyId,
-	).Scan(&productId)
+		).Scan(&productId)
 
-	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) &&
-			pgErr.Code == "23505" &&
-			pgErr.ConstraintName == "products_company_sku_active_unique" {
-			return nil, ErrProductAlreadyExists
+		if err != nil {
+			if isDuplicateSKU(err) {
+				return domain.ErrProductAlreadyExists
+			}
+			return err
 		}
-		return nil, err
-	}
-	if err := tx.Commit(ctx); err != nil {
+		return nil
+	})
+	if err != nil {
 		return nil, err
 	}
 
-	return &UpdateProductResponse{ProductId: productId}, nil
+	return &domain.UpdateProductResponse{ProductId: productId}, nil
 }
 
-func lockActiveCategory(ctx context.Context, tx pgx.Tx, categoryId, companyId string) error {
+// lockActiveCategory must run inside WithinTx: FOR SHARE holds the lock
+// only until the transaction ends.
+func (r *repository) lockActiveCategory(ctx context.Context, categoryId, companyId string) error {
 	var archived bool
-	err := tx.QueryRow(ctx, `
+	err := r.db.Conn(ctx).QueryRow(ctx, `
 		SELECT archived
 		FROM categories
 		WHERE id = $1 AND company_id = $2
@@ -216,20 +213,20 @@ func lockActiveCategory(ctx context.Context, tx pgx.Tx, categoryId, companyId st
 	`, categoryId, companyId).Scan(&archived)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return ErrCategoryNotFound
+			return domain.ErrCategoryNotFound
 		}
 		return err
 	}
 	if archived {
-		return ErrCategoryNotFound
+		return domain.ErrCategoryNotFound
 	}
 	return nil
 }
 
-func (r *Repository) ArchiveProduct(ctx context.Context, productId, companyId string) error {
-	res, err := r.db.GetDB().Exec(ctx, `
-	UPDATE products 
-	SET archived = true, updated_at = now()	
+func (r *repository) ArchiveProduct(ctx context.Context, productId, companyId string) error {
+	res, err := r.db.Conn(ctx).Exec(ctx, `
+	UPDATE products
+	SET archived = true, updated_at = now()
 	where id = $1 and company_id = $2 and archived = false
 	`, productId, companyId,
 	)
@@ -239,8 +236,15 @@ func (r *Repository) ArchiveProduct(ctx context.Context, productId, companyId st
 	}
 
 	if res.RowsAffected() == 0 {
-		return ErrNotFound
+		return domain.ErrProductNotFound
 	}
 
 	return nil
+}
+
+func isDuplicateSKU(err error) bool {
+	var pgErr *pgconn.PgError
+	return errors.As(err, &pgErr) &&
+		pgErr.Code == "23505" &&
+		pgErr.ConstraintName == "products_company_sku_active_unique"
 }

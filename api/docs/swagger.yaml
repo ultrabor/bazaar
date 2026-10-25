@@ -25,6 +25,11 @@ definitions:
       location_id:
         type: string
     type: object
+  bazaar_internal_domain.CreateProductResponse:
+    properties:
+      product_id:
+        type: string
+    type: object
   bazaar_internal_domain.CreateUserResponse:
     properties:
       user_id:
@@ -53,6 +58,39 @@ definitions:
     x-enum-varnames:
     - LocationTypeStore
     - LocationTypeWarehouse
+  bazaar_internal_domain.Product:
+    properties:
+      archived:
+        type: boolean
+      category_id:
+        type: string
+      company_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      sku:
+        type: string
+      unit:
+        $ref: '#/definitions/bazaar_internal_domain.ProductUnit'
+      updated_at:
+        type: string
+    type: object
+  bazaar_internal_domain.ProductUnit:
+    enum:
+    - kg
+    - meter
+    - piece
+    - liter
+    type: string
+    x-enum-varnames:
+    - ProductUnitKg
+    - ProductUnitMeter
+    - ProductUnitPiece
+    - ProductUnitLiter
   bazaar_internal_domain.UpdateCategoryResponse:
     properties:
       category_id:
@@ -61,6 +99,11 @@ definitions:
   bazaar_internal_domain.UpdateLocationResponse:
     properties:
       location_id:
+        type: string
+    type: object
+  bazaar_internal_domain.UpdateProductResponse:
+    properties:
+      product_id:
         type: string
     type: object
   bazaar_internal_domain.User:
@@ -90,49 +133,6 @@ definitions:
       user_id:
         type: string
     type: object
-  bazaar_internal_modules_product.CreateProductResponse:
-    properties:
-      product_id:
-        type: string
-    type: object
-  bazaar_internal_modules_product.Product:
-    properties:
-      archived:
-        type: boolean
-      category_id:
-        type: string
-      company_id:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      sku:
-        type: string
-      unit:
-        $ref: '#/definitions/bazaar_internal_modules_product.Unit'
-      updated_at:
-        type: string
-    type: object
-  bazaar_internal_modules_product.Unit:
-    enum:
-    - kg
-    - meter
-    - piece
-    - liter
-    type: string
-    x-enum-varnames:
-    - UnitKg
-    - UnitMeter
-    - UnitPiece
-    - UnitLiter
-  bazaar_internal_modules_product.UpdateProductResponse:
-    properties:
-      product_id:
-        type: string
-    type: object
   bazaar_internal_platform_httpx_dto.CreateCategoryRequest:
     properties:
       name:
@@ -156,7 +156,7 @@ definitions:
       sku:
         type: string
       unit:
-        $ref: '#/definitions/bazaar_internal_modules_product.Unit'
+        $ref: '#/definitions/bazaar_internal_domain.ProductUnit'
     type: object
   bazaar_internal_platform_httpx_dto.CreateUserRequest:
     properties:
@@ -226,7 +226,7 @@ definitions:
       sku:
         type: string
       unit:
-        $ref: '#/definitions/bazaar_internal_modules_product.Unit'
+        $ref: '#/definitions/bazaar_internal_domain.ProductUnit'
     type: object
 info:
   contact: {}
@@ -828,7 +828,7 @@ paths:
           description: Matching active products; empty array when no products match
           schema:
             items:
-              $ref: '#/definitions/bazaar_internal_modules_product.Product'
+              $ref: '#/definitions/bazaar_internal_domain.Product'
             type: array
         "400":
           description: Invalid unit, category UUID, or pagination parameters
@@ -869,7 +869,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/bazaar_internal_modules_product.CreateProductResponse'
+            $ref: '#/definitions/bazaar_internal_domain.CreateProductResponse'
         "400":
           description: Invalid JSON, product fields, or category UUID
           schema:
@@ -915,7 +915,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_modules_product.Product'
+            $ref: '#/definitions/bazaar_internal_domain.Product'
         "400":
           description: Invalid product ID or credential
           schema:
@@ -964,7 +964,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_modules_product.UpdateProductResponse'
+            $ref: '#/definitions/bazaar_internal_domain.UpdateProductResponse'
         "400":
           description: Invalid JSON, product fields, product UUID, or category UUID
           schema:
