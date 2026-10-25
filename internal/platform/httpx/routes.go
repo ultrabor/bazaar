@@ -43,11 +43,11 @@ func (h *Handler) Routes(mw *middleware.Middleware) {
 		r.Put("/product/{id}", mw.Permission(h.UpdateProduct, "products.edit"))
 		r.Patch("/product/{id}/archive", mw.Permission(h.ArchiveProduct, "products.archive"))
 
-		r.Post("/category", mw.Permission(h.CreateCategory, "categorys.create"))
-		r.Get("/category", mw.Permission(h.GetAllCategories, "categorys.view"))
-		r.Get("/category/{id}", mw.Permission(h.GetCategoryById, "categorys.view"))
-		r.Put("/category/{id}", mw.Permission(h.UpdateCategory, "categorys.edit"))
-		r.Patch("/category/{id}/archive", mw.Permission(h.ArchiveCategory, "categorys.archive"))
+		r.Post("/category", mw.Permission(h.CreateCategory, "categories.create"))
+		r.Get("/category", mw.Permission(h.GetAllCategories, "categories.view"))
+		r.Get("/category/{id}", mw.Permission(h.GetCategoryById, "categories.view"))
+		r.Put("/category/{id}", mw.Permission(h.UpdateCategory, "categories.edit"))
+		r.Patch("/category/{id}/archive", mw.Permission(h.ArchiveCategory, "categories.archive"))
 
 		r.Get("/permissions", mw.Permission(h.GetListPermissions, "permissions.view"))
 		r.Post("/permission/set", mw.Permission(h.SetPermission, "permissions.grant"))
