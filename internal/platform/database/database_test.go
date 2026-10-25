@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"errors"
+	"runtime"
 	"testing"
 
 	"github.com/jackc/pgx/v5"
@@ -64,6 +65,26 @@ func TestWithinTxCommitsWhenFnSucceeds(t *testing.T) {
 	}
 	if !b.tx.committed || b.tx.rolledBack {
 		t.Fatalf("committed = %v, rolledBack = %v, want true, false", b.tx.committed, b.tx.rolledBack)
+	}
+}
+
+// t.Fatal inside fn calls runtime.Goexit: fn never returns and recover sees
+// nothing, yet the transaction must still be rolled back.
+func TestWithinTxRollsBackOnGoexit(t *testing.T) {
+	b := &fakeBeginner{tx: &fakeTx{}}
+	finished := make(chan struct{})
+
+	go func() {
+		defer close(finished)
+		_ = withinTx(context.Background(), b, func(ctx context.Context) error {
+			runtime.Goexit()
+			return nil
+		})
+	}()
+	<-finished
+
+	if !b.tx.rolledBack || b.tx.committed {
+		t.Fatalf("rolledBack = %v, committed = %v, want true, false", b.tx.rolledBack, b.tx.committed)
 	}
 }
 
