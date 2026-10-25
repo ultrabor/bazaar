@@ -30,6 +30,11 @@ definitions:
       product_id:
         type: string
     type: object
+  bazaar_internal_domain.CreateRoleResponse:
+    properties:
+      role_id:
+        type: string
+    type: object
   bazaar_internal_domain.CreateUserResponse:
     properties:
       user_id:
@@ -61,6 +66,15 @@ definitions:
   bazaar_internal_domain.LoginResponse:
     properties:
       token:
+        type: string
+    type: object
+  bazaar_internal_domain.Permission:
+    properties:
+      code:
+        type: string
+      id:
+        type: string
+      label:
         type: string
     type: object
   bazaar_internal_domain.Product:
@@ -103,6 +117,34 @@ definitions:
       user_id:
         type: string
     type: object
+  bazaar_internal_domain.RoleDetails:
+    properties:
+      company_id:
+        type: string
+      id:
+        type: string
+      is_system:
+        type: boolean
+      name:
+        type: string
+      permissions:
+        items:
+          $ref: '#/definitions/bazaar_internal_domain.Permission'
+        type: array
+    type: object
+  bazaar_internal_domain.RoleSummary:
+    properties:
+      id:
+        type: string
+      is_system:
+        type: boolean
+      name:
+        type: string
+      permissions_count:
+        type: integer
+      user_count:
+        type: integer
+    type: object
   bazaar_internal_domain.UpdateCategoryResponse:
     properties:
       category_id:
@@ -133,6 +175,16 @@ definitions:
       user_role_id:
         type: string
     type: object
+  bazaar_internal_platform_httpx_dto.AddRolePermissionRequest:
+    properties:
+      permission_id:
+        type: string
+    type: object
+  bazaar_internal_platform_httpx_dto.AssignRoleRequest:
+    properties:
+      role_id:
+        type: string
+    type: object
   bazaar_internal_platform_httpx_dto.CreateCategoryRequest:
     properties:
       name:
@@ -157,6 +209,11 @@ definitions:
         type: string
       unit:
         $ref: '#/definitions/bazaar_internal_domain.ProductUnit'
+    type: object
+  bazaar_internal_platform_httpx_dto.CreateRoleRequest:
+    properties:
+      name:
+        type: string
     type: object
   bazaar_internal_platform_httpx_dto.CreateUserRequest:
     properties:
@@ -227,6 +284,11 @@ definitions:
         type: string
       unit:
         $ref: '#/definitions/bazaar_internal_domain.ProductUnit'
+    type: object
+  bazaar_internal_platform_httpx_dto.UpdateRoleRequest:
+    properties:
+      name:
+        type: string
     type: object
 info:
   contact: {}
@@ -1057,6 +1119,294 @@ paths:
       summary: Readiness probe
       tags:
       - Health
+  /role:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/bazaar_internal_domain.RoleSummary'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "503":
+          description: Service unavailable
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+      security:
+      - BearerAuth: []
+      summary: List roles of the current user's company
+      tags:
+      - Role
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Role data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.CreateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/bazaar_internal_domain.CreateRoleResponse'
+        "400":
+          description: Invalid JSON or role name
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "409":
+          description: Active role name already exists
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "503":
+          description: Service unavailable
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+      security:
+      - BearerAuth: []
+      summary: Create a role without permissions
+      tags:
+      - Role
+  /role/{id}:
+    get:
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/bazaar_internal_domain.RoleDetails'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "404":
+          description: Role not found
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "503":
+          description: Service unavailable
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+      security:
+      - BearerAuth: []
+      summary: Get a role with its permissions
+      tags:
+      - Role
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Role data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.UpdateRoleRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Invalid JSON or role name
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "403":
+          description: System role
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "404":
+          description: Role not found
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "409":
+          description: Active role name already exists
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "503":
+          description: Service unavailable
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+      security:
+      - BearerAuth: []
+      summary: Rename a role
+      tags:
+      - Role
+  /role/{id}/archive:
+    patch:
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "403":
+          description: System role
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "404":
+          description: Role not found
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "409":
+          description: Role is assigned to active users
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "503":
+          description: Service unavailable
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+      security:
+      - BearerAuth: []
+      summary: Archive a role
+      tags:
+      - Role
+  /role/{id}/permission:
+    post:
+      consumes:
+      - application/json
+      description: Users who already hold the role keep their permissions.
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Permission
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.AddRolePermissionRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Invalid JSON
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "403":
+          description: System role or permission not held
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "404":
+          description: Role not found
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "503":
+          description: Service unavailable
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+      security:
+      - BearerAuth: []
+      summary: Add a permission to a role package
+      tags:
+      - Role
+  /role/{id}/permission/{permissionId}:
+    delete:
+      description: Users who already hold the role keep their permissions.
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Permission ID
+        in: path
+        name: permissionId
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "403":
+          description: System role or permission not held
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "404":
+          description: Role or permission not found
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "503":
+          description: Service unavailable
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+      security:
+      - BearerAuth: []
+      summary: Remove a permission from a role package
+      tags:
+      - Role
   /user:
     post:
       consumes:
@@ -1140,6 +1490,55 @@ paths:
       summary: Get user info
       tags:
       - User
+  /user/{id}/role:
+    put:
+      consumes:
+      - application/json
+      description: Replaces the user's permissions with the role package.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Role
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.AssignRoleRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Invalid JSON, user id or role
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "403":
+          description: Owner or role wider than the assigner
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+        "503":
+          description: Service unavailable
+          schema:
+            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+      security:
+      - BearerAuth: []
+      summary: Assign a role to a user
+      tags:
+      - Role
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.

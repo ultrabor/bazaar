@@ -22,6 +22,7 @@ type ServiceManager struct {
 	productService    domain.ProductService
 	categoryService   domain.CategoryService
 	permissionService domain.PermissionService
+	roleService       domain.RoleService
 }
 
 func NewServiceManager(
@@ -32,6 +33,7 @@ func NewServiceManager(
 	productService domain.ProductService,
 	categoryService domain.CategoryService,
 	permissionService domain.PermissionService,
+	roleService domain.RoleService,
 ) *ServiceManager {
 	return &ServiceManager{
 		healthService:     healthService,
@@ -41,6 +43,7 @@ func NewServiceManager(
 		productService:    productService,
 		categoryService:   categoryService,
 		permissionService: permissionService,
+		roleService:       roleService,
 	}
 }
 
