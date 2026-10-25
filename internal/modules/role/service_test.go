@@ -26,6 +26,9 @@ func (f *fakeTx) WithinTx(ctx context.Context, fn func(ctx context.Context) erro
 }
 
 type fakeRepo struct {
+	// Embedded so the fake only implements the methods the test uses.
+	domain.RoleRepository
+
 	role      *domain.Role
 	getErr    error
 	giveAllEr error

@@ -46,6 +46,9 @@ func (f *fakeRepo) CreateUser(ctx context.Context, req *domain.CreateUserRequest
 }
 
 type fakeRoles struct {
+	// Embedded so the fake only implements the methods the test uses.
+	domain.RoleService
+
 	checkErr error
 	grantErr error
 	giveErr  error
