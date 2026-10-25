@@ -1,6 +1,7 @@
 package category
 
 import (
+	"bazaar/internal/domain"
 	"bazaar/internal/platform/database"
 	"context"
 	"errors"
@@ -9,33 +10,35 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-type Repository struct {
+type repository struct {
 	db *database.Database
 }
 
-func NewRepository(db *database.Database) *Repository {
-	return &Repository{db: db}
+var _ domain.CategoryRepository = (*repository)(nil)
+
+func NewRepository(db *database.Database) domain.CategoryRepository {
+	return &repository{db: db}
 }
 
-func (r *Repository) CreateCategory(ctx context.Context, rq *CreateCategoryRequest) (*CreateCategoryResponse, error) {
+func (r *repository) CreateCategory(ctx context.Context, rq *domain.CreateCategoryRequest) (*domain.CreateCategoryResponse, error) {
 	var categoryId string
-	err := r.db.GetDB().QueryRow(ctx, `
+	err := r.db.Conn(ctx).QueryRow(ctx, `
 		INSERT INTO categories (company_id, name)
 		VALUES ($1, $2)
 		RETURNING id
 	`, rq.CompanyId, rq.Name).Scan(&categoryId)
 	if err != nil {
 		if isDuplicateName(err) {
-			return nil, ErrAlreadyExists
+			return nil, domain.ErrCategoryAlreadyExists
 		}
 		return nil, err
 	}
 
-	return &CreateCategoryResponse{CategoryId: categoryId}, nil
+	return &domain.CreateCategoryResponse{CategoryId: categoryId}, nil
 }
 
-func (r *Repository) GetCompanyCategories(ctx context.Context, rq GetCompanyCategoriesRequest) ([]Category, error) {
-	rows, err := r.db.GetDB().Query(ctx, `
+func (r *repository) GetCompanyCategories(ctx context.Context, rq domain.GetCompanyCategoriesRequest) ([]domain.Category, error) {
+	rows, err := r.db.Conn(ctx).Query(ctx, `
 		SELECT id, company_id, name, archived, created_at, updated_at
 		FROM categories
 		WHERE company_id = $1 AND archived = false
@@ -47,9 +50,9 @@ func (r *Repository) GetCompanyCategories(ctx context.Context, rq GetCompanyCate
 	}
 	defer rows.Close()
 
-	categories := make([]Category, 0)
+	categories := make([]domain.Category, 0)
 	for rows.Next() {
-		var item Category
+		var item domain.Category
 		if err := rows.Scan(
 			&item.Id,
 			&item.CompanyId,
@@ -69,9 +72,9 @@ func (r *Repository) GetCompanyCategories(ctx context.Context, rq GetCompanyCate
 	return categories, nil
 }
 
-func (r *Repository) GetCategoryById(ctx context.Context, categoryId, companyId string) (*Category, error) {
-	var item Category
-	err := r.db.GetDB().QueryRow(ctx, `
+func (r *repository) GetCategoryById(ctx context.Context, categoryId, companyId string) (*domain.Category, error) {
+	var item domain.Category
+	err := r.db.Conn(ctx).QueryRow(ctx, `
 		SELECT id, company_id, name, archived, created_at, updated_at
 		FROM categories
 		WHERE id = $1 AND company_id = $2 AND archived = false
@@ -85,7 +88,7 @@ func (r *Repository) GetCategoryById(ctx context.Context, categoryId, companyId 
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, ErrNotFound
+			return nil, domain.ErrCategoryNotFound
 		}
 		return nil, err
 	}
@@ -93,9 +96,9 @@ func (r *Repository) GetCategoryById(ctx context.Context, categoryId, companyId 
 	return &item, nil
 }
 
-func (r *Repository) UpdateCategory(ctx context.Context, rq *UpdateCategoryRequest) (*UpdateCategoryResponse, error) {
+func (r *repository) UpdateCategory(ctx context.Context, rq *domain.UpdateCategoryRequest) (*domain.UpdateCategoryResponse, error) {
 	var categoryId string
-	err := r.db.GetDB().QueryRow(ctx, `
+	err := r.db.Conn(ctx).QueryRow(ctx, `
 		UPDATE categories
 		SET name = $1, updated_at = now()
 		WHERE id = $2 AND company_id = $3 AND archived = false
@@ -103,19 +106,19 @@ func (r *Repository) UpdateCategory(ctx context.Context, rq *UpdateCategoryReque
 	`, rq.Name, rq.CategoryId, rq.CompanyId).Scan(&categoryId)
 	if err != nil {
 		if isDuplicateName(err) {
-			return nil, ErrAlreadyExists
+			return nil, domain.ErrCategoryAlreadyExists
 		}
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, ErrNotFound
+			return nil, domain.ErrCategoryNotFound
 		}
 		return nil, err
 	}
 
-	return &UpdateCategoryResponse{CategoryId: categoryId}, nil
+	return &domain.UpdateCategoryResponse{CategoryId: categoryId}, nil
 }
 
-func (r *Repository) ArchiveCategory(ctx context.Context, categoryId, companyId string) error {
-	result, err := r.db.GetDB().Exec(ctx, `
+func (r *repository) ArchiveCategory(ctx context.Context, categoryId, companyId string) error {
+	result, err := r.db.Conn(ctx).Exec(ctx, `
 		UPDATE categories
 		SET archived = true, updated_at = now()
 		WHERE id = $1 AND company_id = $2 AND archived = false
@@ -124,7 +127,7 @@ func (r *Repository) ArchiveCategory(ctx context.Context, categoryId, companyId 
 		return err
 	}
 	if result.RowsAffected() == 0 {
-		return ErrNotFound
+		return domain.ErrCategoryNotFound
 	}
 
 	return nil

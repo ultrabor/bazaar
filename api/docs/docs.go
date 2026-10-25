@@ -210,7 +210,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/bazaar_internal_modules_category.Category"
+                                "$ref": "#/definitions/bazaar_internal_domain.Category"
                             }
                         }
                     },
@@ -271,7 +271,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_category.CreateCategoryResponse"
+                            "$ref": "#/definitions/bazaar_internal_domain.CreateCategoryResponse"
                         }
                     },
                     "400": {
@@ -337,7 +337,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_category.Category"
+                            "$ref": "#/definitions/bazaar_internal_domain.Category"
                         }
                     },
                     "400": {
@@ -410,7 +410,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_category.UpdateCategoryResponse"
+                            "$ref": "#/definitions/bazaar_internal_domain.UpdateCategoryResponse"
                         }
                     },
                     "400": {
@@ -1419,6 +1419,37 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "bazaar_internal_domain.Category": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "company_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "bazaar_internal_domain.CreateCategoryResponse": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                }
+            }
+        },
         "bazaar_internal_domain.CreateLocationResponse": {
             "type": "object",
             "properties": {
@@ -1469,6 +1500,14 @@ const docTemplate = `{
                 "LocationTypeWarehouse"
             ]
         },
+        "bazaar_internal_domain.UpdateCategoryResponse": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                }
+            }
+        },
         "bazaar_internal_domain.UpdateLocationResponse": {
             "type": "object",
             "properties": {
@@ -1515,45 +1554,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_modules_category.Category": {
-            "type": "object",
-            "properties": {
-                "archived": {
-                    "type": "boolean"
-                },
-                "company_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_modules_category.CreateCategoryResponse": {
-            "type": "object",
-            "properties": {
-                "category_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_modules_category.UpdateCategoryResponse": {
-            "type": "object",
-            "properties": {
-                "category_id": {
                     "type": "string"
                 }
             }

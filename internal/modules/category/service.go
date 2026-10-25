@@ -1,68 +1,71 @@
 package category
 
 import (
+	"bazaar/internal/domain"
 	"context"
 	"strings"
 
 	"github.com/google/uuid"
 )
 
-type Service struct {
-	repo *Repository
+type service struct {
+	repo domain.CategoryRepository
 }
 
-func NewService(repo *Repository) *Service {
-	return &Service{repo: repo}
+var _ domain.CategoryService = (*service)(nil)
+
+func NewService(repo domain.CategoryRepository) domain.CategoryService {
+	return &service{repo: repo}
 }
 
-func (s *Service) CreateCategory(ctx context.Context, rq *CreateCategoryRequest) (*CreateCategoryResponse, error) {
+func (s *service) CreateCategory(ctx context.Context, rq *domain.CreateCategoryRequest) (*domain.CreateCategoryResponse, error) {
 	if rq == nil || rq.CompanyId == "" {
-		return nil, ErrInvalidCredentials
+		return nil, domain.ErrInvalidCred
 	}
 	rq.Name = strings.TrimSpace(rq.Name)
 	if rq.Name == "" {
-		return nil, ErrInvalidName
+		return nil, domain.ErrInvalidCategoryName
 	}
 	return s.repo.CreateCategory(ctx, rq)
 }
 
-func (s *Service) GetCompanyCategories(ctx context.Context, rq GetCompanyCategoriesRequest) ([]Category, error) {
+func (s *service) GetCompanyCategories(ctx context.Context, rq domain.GetCompanyCategoriesRequest) ([]domain.Category, error) {
 	if rq.CompanyId == "" {
-		return nil, ErrInvalidCredentials
+		return nil, domain.ErrInvalidCred
 	}
 	return s.repo.GetCompanyCategories(ctx, rq)
 }
 
-func (s *Service) GetCategoryById(ctx context.Context, categoryId, companyId string) (*Category, error) {
+func (s *service) GetCategoryById(ctx context.Context, categoryId, companyId string) (*domain.Category, error) {
 	if _, err := uuid.Parse(categoryId); err != nil {
-		return nil, ErrInvalidCategoryID
+		return nil, domain.ErrInvalidCategoryID
 	}
 	if companyId == "" {
-		return nil, ErrInvalidCredentials
+		return nil, domain.ErrInvalidCred
 	}
 	return s.repo.GetCategoryById(ctx, categoryId, companyId)
 }
 
-func (s *Service) UpdateCategory(ctx context.Context, rq *UpdateCategoryRequest) (*UpdateCategoryResponse, error) {
+func (s *service) UpdateCategory(ctx context.Context, rq *domain.UpdateCategoryRequest) (*domain.UpdateCategoryResponse, error) {
 	if rq == nil || rq.CompanyId == "" {
-		return nil, ErrInvalidCredentials
+		return nil, domain.ErrInvalidCred
 	}
 	if _, err := uuid.Parse(rq.CategoryId); err != nil {
-		return nil, ErrInvalidCategoryID
+		return nil, domain.ErrInvalidCategoryID
 	}
 	rq.Name = strings.TrimSpace(rq.Name)
 	if rq.Name == "" {
-		return nil, ErrInvalidName
+		return nil, domain.ErrInvalidCategoryName
 	}
 	return s.repo.UpdateCategory(ctx, rq)
 }
 
-func (s *Service) ArchiveCategory(ctx context.Context, categoryId, companyId string) error {
+func (s *service) ArchiveCategory(ctx context.Context, categoryId, companyId string) error {
 	if _, err := uuid.Parse(categoryId); err != nil {
-		return ErrInvalidCategoryID
+		return domain.ErrInvalidCategoryID
 	}
 	if companyId == "" {
-		return ErrInvalidCredentials
+		return domain.ErrInvalidCred
 	}
 	return s.repo.ArchiveCategory(ctx, categoryId, companyId)
 }

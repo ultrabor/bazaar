@@ -1,7 +1,7 @@
 package httpx
 
 import (
-	"bazaar/internal/modules/category"
+	"bazaar/internal/domain"
 	"bazaar/internal/platform/httpx/dto"
 	"bazaar/internal/platform/httpx/middleware"
 	"context"
@@ -21,7 +21,7 @@ import (
 // @Produce json
 // @Security BearerAuth
 // @Param request body dto.CreateCategoryRequest true "Category data"
-// @Success 201 {object} category.CreateCategoryResponse
+// @Success 201 {object} domain.CreateCategoryResponse
 // @Failure 400 {object} dto.Error "Invalid JSON or empty name"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 409 {object} dto.Error "Active category name already exists"
@@ -43,7 +43,7 @@ func (h *Handler) CreateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := h.sm.categoryService.CreateCategory(ctx, &category.CreateCategoryRequest{
+	response, err := h.sm.categoryService.CreateCategory(ctx, &domain.CreateCategoryRequest{
 		CompanyId: u.CompanyId,
 		Name:      body.Name,
 	})
@@ -62,7 +62,7 @@ func (h *Handler) CreateCategory(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param page query int false "Page number" default(1)
 // @Param limit query int false "Items per page" default(20)
-// @Success 200 {array} category.Category "Active categories; empty array when no categories match"
+// @Success 200 {array} domain.Category "Active categories; empty array when no categories match"
 // @Failure 400 {object} dto.Error "Invalid pagination"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 500 {object} dto.Error "Internal error"
@@ -96,7 +96,7 @@ func (h *Handler) GetAllCategories(w http.ResponseWriter, r *http.Request) {
 		limit = value
 	}
 
-	response, err := h.sm.categoryService.GetCompanyCategories(ctx, category.GetCompanyCategoriesRequest{
+	response, err := h.sm.categoryService.GetCompanyCategories(ctx, domain.GetCompanyCategoriesRequest{
 		CompanyId: u.CompanyId,
 		Page:      page,
 		Limit:     limit,
@@ -115,7 +115,7 @@ func (h *Handler) GetAllCategories(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Security BearerAuth
 // @Param id path string true "Category ID"
-// @Success 200 {object} category.Category
+// @Success 200 {object} domain.Category
 // @Failure 400 {object} dto.Error "Invalid category UUID"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 404 {object} dto.Error "Category not found"
@@ -148,7 +148,7 @@ func (h *Handler) GetCategoryById(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param id path string true "Category ID"
 // @Param request body dto.UpdateCategoryRequest true "Category data"
-// @Success 200 {object} category.UpdateCategoryResponse
+// @Success 200 {object} domain.UpdateCategoryResponse
 // @Failure 400 {object} dto.Error "Invalid category UUID, JSON, or empty name"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 404 {object} dto.Error "Category not found"
@@ -171,7 +171,7 @@ func (h *Handler) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := h.sm.categoryService.UpdateCategory(ctx, &category.UpdateCategoryRequest{
+	response, err := h.sm.categoryService.UpdateCategory(ctx, &domain.UpdateCategoryRequest{
 		CategoryId: chi.URLParam(r, "id"),
 		CompanyId:  u.CompanyId,
 		Name:       body.Name,
@@ -226,23 +226,23 @@ func (h *Handler) writeCategoryError(w http.ResponseWriter, err error) {
 		status = http.StatusServiceUnavailable
 		code = "service_unavailable"
 		message = "service unavailable"
-	case errors.Is(err, category.ErrInvalidCredentials):
+	case errors.Is(err, domain.ErrInvalidCred):
 		status = http.StatusBadRequest
 		code = "invalid_credential"
 		message = "invalid credential"
-	case errors.Is(err, category.ErrInvalidCategoryID):
+	case errors.Is(err, domain.ErrInvalidCategoryID):
 		status = http.StatusBadRequest
 		code = "invalid_category_id"
 		message = "category id must be a valid UUID"
-	case errors.Is(err, category.ErrInvalidName):
+	case errors.Is(err, domain.ErrInvalidCategoryName):
 		status = http.StatusBadRequest
 		code = "validation_error"
 		message = "category name must not be empty"
-	case errors.Is(err, category.ErrNotFound):
+	case errors.Is(err, domain.ErrCategoryNotFound):
 		status = http.StatusNotFound
 		code = "category_not_found"
 		message = "category not found"
-	case errors.Is(err, category.ErrAlreadyExists):
+	case errors.Is(err, domain.ErrCategoryAlreadyExists):
 		status = http.StatusConflict
 		code = "category_name_conflict"
 		message = "active category name already exists"
