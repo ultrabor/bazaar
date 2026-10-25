@@ -54,6 +54,15 @@ func (h *Handler) Routes(mw *middleware.Middleware) {
 		r.Get("/permissions", h.GetListPermissions)
 		r.Post("/permission/set", mw.Permission(h.SetPermission, "permissions.grant"))
 		r.Post("/permission/remove", mw.Permission(h.RemovePermission, "permissions.revoke"))
+
+		r.Get("/role", mw.Permission(h.GetRoles, "roles.view"))
+		r.Get("/role/{id}", mw.Permission(h.GetRoleById, "roles.view"))
+		r.Post("/role", mw.Permission(h.CreateRole, "roles.create"))
+		r.Put("/role/{id}", mw.Permission(h.UpdateRole, "roles.edit"))
+		r.Patch("/role/{id}/archive", mw.Permission(h.ArchiveRole, "roles.archive"))
+		r.Post("/role/{id}/permission", mw.Permission(h.AddRolePermission, "roles.edit"))
+		r.Delete("/role/{id}/permission/{permissionId}", mw.Permission(h.RemoveRolePermission, "roles.edit"))
+		r.Put("/user/{id}/role", mw.Permission(h.AssignRole, "roles.assign"))
 	})
 
 	h.router.Get("/healthz", h.Health)

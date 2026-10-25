@@ -1285,6 +1285,457 @@
                 }
             }
         },
+        "/role": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "List roles of the current user's company",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/bazaar_internal_domain.RoleSummary"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Create a role without permissions",
+                "parameters": [
+                    {
+                        "description": "Role data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.CreateRoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_domain.CreateRoleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid JSON or role name",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Active role name already exists",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Get a role with its permissions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_domain.RoleDetails"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Role not found",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Rename a role",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Role data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.UpdateRoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Invalid JSON or role name",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "System role",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Role not found",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Active role name already exists",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/{id}/archive": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Archive a role",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "System role",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Role not found",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Role is assigned to active users",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/{id}/permission": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Users who already hold the role keep their permissions.",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Add a permission to a role package",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Permission",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.AddRolePermissionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Invalid JSON",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "System role or permission not held",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Role not found",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/{id}/permission/{permissionId}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Users who already hold the role keep their permissions.",
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Remove a permission from a role package",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Role ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Permission ID",
+                        "name": "permissionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "System role or permission not held",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Role or permission not found",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/user": {
             "post": {
                 "security": [
@@ -1415,6 +1866,82 @@
                     }
                 }
             }
+        },
+        "/user/{id}/role": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Replaces the user's permissions with the role package.",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Assign a role to a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Role",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.AssignRoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Invalid JSON, user id or role",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Owner or role wider than the assigner",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1465,6 +1992,14 @@
                 }
             }
         },
+        "bazaar_internal_domain.CreateRoleResponse": {
+            "type": "object",
+            "properties": {
+                "role_id": {
+                    "type": "string"
+                }
+            }
+        },
         "bazaar_internal_domain.CreateUserResponse": {
             "type": "object",
             "properties": {
@@ -1511,6 +2046,20 @@
             "type": "object",
             "properties": {
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "bazaar_internal_domain.Permission": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "label": {
                     "type": "string"
                 }
             }
@@ -1573,6 +2122,49 @@
                 }
             }
         },
+        "bazaar_internal_domain.RoleDetails": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_system": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bazaar_internal_domain.Permission"
+                    }
+                }
+            }
+        },
+        "bazaar_internal_domain.RoleSummary": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "is_system": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "permissions_count": {
+                    "type": "integer"
+                },
+                "user_count": {
+                    "type": "integer"
+                }
+            }
+        },
         "bazaar_internal_domain.UpdateCategoryResponse": {
             "type": "object",
             "properties": {
@@ -1620,6 +2212,22 @@
                 }
             }
         },
+        "bazaar_internal_platform_httpx_dto.AddRolePermissionRequest": {
+            "type": "object",
+            "properties": {
+                "permission_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "bazaar_internal_platform_httpx_dto.AssignRoleRequest": {
+            "type": "object",
+            "properties": {
+                "role_id": {
+                    "type": "string"
+                }
+            }
+        },
         "bazaar_internal_platform_httpx_dto.CreateCategoryRequest": {
             "type": "object",
             "properties": {
@@ -1656,6 +2264,14 @@
                 },
                 "unit": {
                     "$ref": "#/definitions/bazaar_internal_domain.ProductUnit"
+                }
+            }
+        },
+        "bazaar_internal_platform_httpx_dto.CreateRoleRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -1765,6 +2381,14 @@
                 },
                 "unit": {
                     "$ref": "#/definitions/bazaar_internal_domain.ProductUnit"
+                }
+            }
+        },
+        "bazaar_internal_platform_httpx_dto.UpdateRoleRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
                 }
             }
         }

@@ -87,6 +87,7 @@ func main() {
 		product.NewService(product.NewRepository(db)),
 		category.NewService(category.NewRepository(db)),
 		permissionService,
+		roleService,
 	))
 
 	handler.Routes(middleware.New(log, cfg.JWTSecret, authService.GetUserById, permissionService.GetPermissionByCode))
