@@ -58,6 +58,11 @@ definitions:
     x-enum-varnames:
     - LocationTypeStore
     - LocationTypeWarehouse
+  bazaar_internal_domain.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
   bazaar_internal_domain.Product:
     properties:
       archived:
@@ -91,6 +96,13 @@ definitions:
     - ProductUnitMeter
     - ProductUnitPiece
     - ProductUnitLiter
+  bazaar_internal_domain.RegisterResponse:
+    properties:
+      company_id:
+        type: string
+      user_id:
+        type: string
+    type: object
   bazaar_internal_domain.UpdateCategoryResponse:
     properties:
       category_id:
@@ -119,18 +131,6 @@ definitions:
       phone:
         type: string
       user_role_id:
-        type: string
-    type: object
-  bazaar_internal_modules_auth.LoginResponse:
-    properties:
-      token:
-        type: string
-    type: object
-  bazaar_internal_modules_auth.RegisterResponse:
-    properties:
-      company_id:
-        type: string
-      user_id:
         type: string
     type: object
   bazaar_internal_platform_httpx_dto.CreateCategoryRequest:
@@ -251,7 +251,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_modules_auth.LoginResponse'
+            $ref: '#/definitions/bazaar_internal_domain.LoginResponse'
         "400":
           description: Invalid login data
           schema:
@@ -314,7 +314,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/bazaar_internal_modules_auth.RegisterResponse'
+            $ref: '#/definitions/bazaar_internal_domain.RegisterResponse'
         "400":
           description: Invalid registration data
           schema:

@@ -42,7 +42,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_auth.LoginResponse"
+                            "$ref": "#/definitions/bazaar_internal_domain.LoginResponse"
                         }
                     },
                     "400": {
@@ -141,7 +141,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_auth.RegisterResponse"
+                            "$ref": "#/definitions/bazaar_internal_domain.RegisterResponse"
                         }
                     },
                     "400": {
@@ -1508,6 +1508,14 @@ const docTemplate = `{
                 "LocationTypeWarehouse"
             ]
         },
+        "bazaar_internal_domain.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "bazaar_internal_domain.Product": {
             "type": "object",
             "properties": {
@@ -1555,6 +1563,17 @@ const docTemplate = `{
                 "ProductUnitLiter"
             ]
         },
+        "bazaar_internal_domain.RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "bazaar_internal_domain.UpdateCategoryResponse": {
             "type": "object",
             "properties": {
@@ -1598,25 +1617,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_role_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_modules_auth.LoginResponse": {
-            "type": "object",
-            "properties": {
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_modules_auth.RegisterResponse": {
-            "type": "object",
-            "properties": {
-                "company_id": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }

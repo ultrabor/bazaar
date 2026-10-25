@@ -2,7 +2,6 @@ package httpx
 
 import (
 	"bazaar/internal/domain"
-	"bazaar/internal/modules/auth"
 	"bazaar/internal/platform/httpx/dto"
 	"bazaar/internal/platform/httpx/middleware"
 	"bazaar/internal/platform/support/validator"
@@ -19,7 +18,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param request body dto.RegisterOwnerRequest true "Registration data"
-// @Success 201 {object} auth.RegisterResponse
+// @Success 201 {object} domain.RegisterResponse
 // @Failure 400 {object} dto.Error "Invalid registration data"
 // @Failure 409 {object} dto.Error "Phone already registered"
 // @Failure 500 {object} dto.Error "Internal error"
@@ -39,7 +38,7 @@ func (h *Handler) RegisterOwner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rq := auth.RegisterRequest{
+	rq := domain.RegisterRequest{
 		FirstName:   body.FirstName,
 		LastName:    body.LastName,
 		CompanyName: body.CompanyName,
@@ -58,15 +57,15 @@ func (h *Handler) RegisterOwner(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, auth.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
-		case errors.Is(err, auth.ErrInvalidPhone):
+		case errors.Is(err, domain.ErrInvalidPhone):
 			status = http.StatusBadRequest
 			code = "invalid_phone"
 			msg = "not valid phone number"
-		case errors.Is(err, auth.ErrPhoneTaken):
+		case errors.Is(err, domain.ErrPhoneTaken):
 			status = http.StatusConflict
 			code = "phone_taken"
 			msg = "phone is taken"
@@ -100,7 +99,7 @@ func (h *Handler) RegisterOwner(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param request body dto.LoginRequest true "Login data"
-// @Success 200 {object} auth.LoginResponse
+// @Success 200 {object} domain.LoginResponse
 // @Failure 400 {object} dto.Error "Invalid login data"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 500 {object} dto.Error "Internal error"
@@ -120,7 +119,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rq := auth.LoginRequest{
+	rq := domain.LoginRequest{
 		Phone:    body.Phone,
 		Password: body.Password,
 	}
@@ -136,15 +135,15 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, auth.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusUnauthorized
 			code = "invalid_credential"
 			msg = "invalid credential"
-		case errors.Is(err, auth.ErrInvalidPhone):
+		case errors.Is(err, domain.ErrInvalidPhone):
 			status = http.StatusBadRequest
 			code = "invalid_phone"
 			msg = "not valid phone number"
-		case errors.Is(err, auth.ErrUnauthorized):
+		case errors.Is(err, domain.ErrUnauthorized):
 			status = http.StatusUnauthorized
 			code = "unauthorized"
 			msg = "unauthorized"

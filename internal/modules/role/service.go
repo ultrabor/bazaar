@@ -19,12 +19,31 @@ PUT /user/{id}/role	roles.assign
 
 type service struct {
 	repo domain.RoleRepository
+	tx   domain.TxManager
 }
 
 var _ domain.RoleService = (*service)(nil)
 
-func NewService(repo domain.RoleRepository) domain.RoleService {
-	return &service{repo: repo}
+func NewService(repo domain.RoleRepository, tx domain.TxManager) domain.RoleService {
+	return &service{repo: repo, tx: tx}
+}
+
+func (s *service) CreateOwnerRole(ctx context.Context, companyId string) (string, error) {
+	var roleId string
+	err := s.tx.WithinTx(ctx, func(ctx context.Context) error {
+		var err error
+		roleId, err = s.repo.CreateSystemRole(ctx, companyId)
+		if err != nil {
+			return err
+		}
+
+		return s.repo.GiveAllPermissions(ctx, roleId)
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return roleId, nil
 }
 
 func (s *service) GetCompanyRoles(ctx context.Context, companyId string) ([]domain.Role, error) {

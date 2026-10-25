@@ -58,6 +58,10 @@ func (f *fakeRoles) GetCompanyRoles(ctx context.Context, companyId string) ([]do
 	return nil, nil
 }
 
+func (f *fakeRoles) CreateOwnerRole(ctx context.Context, companyId string) (string, error) {
+	return "", nil
+}
+
 func (f *fakeRoles) CheckAssignable(ctx context.Context, roleId, companyId string) error {
 	return f.checkErr
 }
