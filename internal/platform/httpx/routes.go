@@ -49,7 +49,9 @@ func (h *Handler) Routes(mw *middleware.Middleware) {
 		r.Put("/category/{id}", mw.Permission(h.UpdateCategory, "categories.edit"))
 		r.Patch("/category/{id}/archive", mw.Permission(h.ArchiveCategory, "categories.archive"))
 
-		r.Get("/permissions", mw.Permission(h.GetListPermissions, "permissions.view"))
+		// Own permissions are always visible; the service checks
+		// permissions.view when ?user_id points to another user.
+		r.Get("/permissions", h.GetListPermissions)
 		r.Post("/permission/set", mw.Permission(h.SetPermission, "permissions.grant"))
 		r.Post("/permission/remove", mw.Permission(h.RemovePermission, "permissions.revoke"))
 	})

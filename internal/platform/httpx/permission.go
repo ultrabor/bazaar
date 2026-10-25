@@ -23,7 +23,7 @@ func (h *Handler) GetListPermissions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.sm.permissionService.GetListByUserId(ctx, jwt.Id)
+	res, err := h.sm.permissionService.GetUserPermissions(ctx, jwt.Id, jwt.CompanyId, r.URL.Query().Get("user_id"))
 
 	if err != nil {
 		status := http.StatusInternalServerError
@@ -34,10 +34,18 @@ func (h *Handler) GetListPermissions(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, domain.ErrPermissionNotFound):
+		case errors.Is(err, domain.ErrInvalidUserID):
+			status = http.StatusBadRequest
+			code = "invalid_user_id"
+			msg = "user id must be a valid UUID"
+		case errors.Is(err, domain.ErrForbidden):
+			status = http.StatusForbidden
+			code = "do_not_have_enough_permission"
+			msg = "dont have enough permission"
+		case errors.Is(err, domain.ErrUserNotFound):
 			status = http.StatusNotFound
-			code = "permission_not_found"
-			msg = "permission_not_found"
+			code = "user_not_found"
+			msg = "user not found"
 		}
 
 		dto.WriteError(w, status, code, msg)
