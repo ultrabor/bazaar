@@ -1,8 +1,8 @@
 package httpx
 
 import (
+	"bazaar/internal/domain"
 	"bazaar/internal/modules/auth"
-	"bazaar/internal/modules/user"
 	"bazaar/internal/platform/httpx/dto"
 	"bazaar/internal/platform/httpx/middleware"
 	"bazaar/internal/platform/support/validator"
@@ -177,13 +177,13 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 // @Tags Auth
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} user.User
+// @Success 200 {object} domain.User
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 500 {object} dto.Error "Internal error"
 // @Failure 503 {object} dto.Error "Service unavailable"
 // @Router /auth/me [get]
 func (h *Handler) Me(w http.ResponseWriter, r *http.Request) {
-	var u *user.User
+	var u *domain.User
 	u, ok := middleware.CurrentUser(r.Context())
 	if !ok {
 		dto.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")

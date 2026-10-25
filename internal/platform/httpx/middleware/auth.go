@@ -4,7 +4,6 @@ import (
 	"bazaar/internal/modules/auth"
 	"bazaar/internal/platform/httpx/dto"
 	"bazaar/internal/platform/support/validator"
-	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -40,8 +39,6 @@ func (m *Middleware) Auth(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), currentUserKey, u)
-
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, r.WithContext(WithCurrentUser(r.Context(), u)))
 	})
 }

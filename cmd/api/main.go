@@ -7,6 +7,7 @@ import (
 	"bazaar/internal/modules/location"
 	"bazaar/internal/modules/permission"
 	"bazaar/internal/modules/product"
+	"bazaar/internal/modules/role"
 	"bazaar/internal/modules/user"
 	"bazaar/internal/platform/config"
 	"bazaar/internal/platform/database"
@@ -73,18 +74,20 @@ func main() {
 
 	router := chi.NewRouter()
 
+	authService := auth.New(db, []byte(cfg.JWTSecret))
+	permissionService := permission.NewService(permission.NewRepository(db))
+	roleService := role.NewService(role.NewRepository(db))
+	userService := user.NewService(user.NewRepository(db), db, roleService)
+
 	handler := httpx.New(log, router, httpx.NewServiceManager(
 		health.New(db),
-		auth.New(db, []byte(cfg.JWTSecret)),
-		user.NewService(user.NewRepository(db)),
+		authService,
+		userService,
 		location.NewService(location.NewRepository(db)),
 		product.NewService(product.NewRepository(db)),
 		category.NewService(category.NewRepository(db)),
-		permission.NewService(permission.NewRepository(db)),
+		permissionService,
 	))
-
-	authService := auth.New(db, []byte(cfg.JWTSecret))
-	permissionService := permission.NewService(permission.NewRepository(db))
 
 	handler.Routes(middleware.New(log, cfg.JWTSecret, authService.GetUserById, permissionService.GetPermissionByCode))
 

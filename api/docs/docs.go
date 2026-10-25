@@ -90,7 +90,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_user.User"
+                            "$ref": "#/definitions/bazaar_internal_domain.User"
                         }
                     },
                     "401": {
@@ -1324,7 +1324,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_user.CreateUserResponse"
+                            "$ref": "#/definitions/bazaar_internal_domain.CreateUserResponse"
                         }
                     },
                     "400": {
@@ -1381,7 +1381,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_user.User"
+                            "$ref": "#/definitions/bazaar_internal_domain.User"
                         }
                     },
                     "400": {
@@ -1419,6 +1419,37 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "bazaar_internal_domain.CreateUserResponse": {
+            "type": "object",
+            "properties": {
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "bazaar_internal_domain.User": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "user_role_id": {
+                    "type": "string"
+                }
+            }
+        },
         "bazaar_internal_modules_auth.LoginResponse": {
             "type": "object",
             "properties": {
@@ -1586,37 +1617,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "product_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_modules_user.CreateUserResponse": {
-            "type": "object",
-            "properties": {
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_modules_user.User": {
-            "type": "object",
-            "properties": {
-                "company_id": {
-                    "type": "string"
-                },
-                "first_name": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "last_name": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "user_role_id": {
                     "type": "string"
                 }
             }

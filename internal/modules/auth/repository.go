@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"bazaar/internal/modules/user"
+	"bazaar/internal/domain"
 	"bazaar/internal/platform/support/apperror"
 	"context"
 
@@ -60,8 +60,8 @@ func (r *Repository) CreateUser(
 	return id, nil
 }
 
-func (r *Repository) GetUserByPhone(ctx context.Context, db *pgxpool.Pool, phone string) (*user.User, error) {
-	var u user.User
+func (r *Repository) GetUserByPhone(ctx context.Context, db *pgxpool.Pool, phone string) (*domain.User, error) {
+	var u domain.User
 
 	err := db.QueryRow(ctx, "SELECT id, company_id, user_role_id, first_name, last_name, phone, password_hash FROM users WHERE phone = $1 and deleted_at = 0", phone).Scan(&u.Id, &u.CompanyId, &u.UserRoleId, &u.FirstName, &u.LastName, &u.Phone, &u.PasswordHash)
 
@@ -75,8 +75,8 @@ func (r *Repository) GetUserByPhone(ctx context.Context, db *pgxpool.Pool, phone
 	return &u, nil
 }
 
-func (r *Repository) GetUserById(ctx context.Context, db *pgxpool.Pool, userId string) (*user.User, error) {
-	var u user.User
+func (r *Repository) GetUserById(ctx context.Context, db *pgxpool.Pool, userId string) (*domain.User, error) {
+	var u domain.User
 
 	err := db.QueryRow(ctx, "SELECT id, company_id, user_role_id, first_name, last_name, phone FROM users WHERE id = $1 and deleted_at = 0", userId).Scan(&u.Id, &u.CompanyId, &u.UserRoleId, &u.FirstName, &u.LastName, &u.Phone)
 

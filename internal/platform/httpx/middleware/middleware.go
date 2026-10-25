@@ -1,13 +1,13 @@
 package middleware
 
 import (
+	"bazaar/internal/domain"
 	"bazaar/internal/modules/permission"
-	"bazaar/internal/modules/user"
 	"context"
 	"log/slog"
 )
 
-type UserLoader func(context.Context, string) (*user.User, error)
+type UserLoader func(context.Context, string) (*domain.User, error)
 type PermissionLoader func(context.Context, string, string) (*permission.Permission, error)
 
 type Middleware struct {

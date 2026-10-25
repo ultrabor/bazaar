@@ -1,5 +1,25 @@
 basePath: /
 definitions:
+  bazaar_internal_domain.CreateUserResponse:
+    properties:
+      user_id:
+        type: string
+    type: object
+  bazaar_internal_domain.User:
+    properties:
+      company_id:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+      user_role_id:
+        type: string
+    type: object
   bazaar_internal_modules_auth.LoginResponse:
     properties:
       token:
@@ -111,26 +131,6 @@ definitions:
   bazaar_internal_modules_product.UpdateProductResponse:
     properties:
       product_id:
-        type: string
-    type: object
-  bazaar_internal_modules_user.CreateUserResponse:
-    properties:
-      user_id:
-        type: string
-    type: object
-  bazaar_internal_modules_user.User:
-    properties:
-      company_id:
-        type: string
-      first_name:
-        type: string
-      id:
-        type: string
-      last_name:
-        type: string
-      phone:
-        type: string
-      user_role_id:
         type: string
     type: object
   bazaar_internal_platform_httpx_dto.CreateCategoryRequest:
@@ -279,7 +279,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_modules_user.User'
+            $ref: '#/definitions/bazaar_internal_domain.User'
         "401":
           description: Unauthorized
           schema:
@@ -1074,7 +1074,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/bazaar_internal_modules_user.CreateUserResponse'
+            $ref: '#/definitions/bazaar_internal_domain.CreateUserResponse'
         "400":
           description: Invalid credential data
           schema:
@@ -1110,7 +1110,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_modules_user.User'
+            $ref: '#/definitions/bazaar_internal_domain.User'
         "400":
           description: Invalid user ID
           schema:
