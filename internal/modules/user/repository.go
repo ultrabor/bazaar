@@ -38,7 +38,7 @@ func (r *Repository) GetCompanyRoles(ctx context.Context, companyId string) ([]U
 	rows, err := r.db.GetDB().Query(ctx, `
 		SELECT id, company_id, name
 		FROM user_roles
-		WHERE company_id = $1 and deleted_at = 0
+		WHERE company_id = $1 and deleted_at = 0 and is_system = false
 	`, companyId)
 
 	if err != nil {
@@ -90,14 +90,10 @@ func (r *Repository) GiveRolePermissions(ctx context.Context, tx pgx.Tx, userId,
 		ON CONFLICT DO NOTHING;
 	`
 
-	cmdTag, err := tx.Exec(ctx, query, userId, userRoleId)
+	_, err := tx.Exec(ctx, query, userId, userRoleId)
 
 	if err != nil {
 		return err
-	}
-
-	if cmdTag.RowsAffected() == 0 {
-		return ErrNotFound
 	}
 
 	return nil

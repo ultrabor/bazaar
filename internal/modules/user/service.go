@@ -59,6 +59,8 @@ func (s *Service) CreateUser(ctx context.Context, r *CreateUserRequest) (*Create
 		return nil, err
 	}
 
+	defer tx.Rollback(ctx)
+
 	res, err := s.repo.CreateUser(ctx, tx, r)
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -71,6 +73,12 @@ func (s *Service) CreateUser(ctx context.Context, r *CreateUserRequest) (*Create
 	}
 
 	err = s.repo.GiveRolePermissions(ctx, tx, res.UserID, r.UserRoleId)
+	if err != nil {
+		return nil, err
+	}
+
+	err = tx.Commit(ctx)
+
 	if err != nil {
 		return nil, err
 	}
