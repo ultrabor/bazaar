@@ -561,7 +561,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/bazaar_internal_modules_location.Location"
+                                "$ref": "#/definitions/bazaar_internal_domain.Location"
                             }
                         }
                     },
@@ -628,7 +628,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_location.CreateLocationResponse"
+                            "$ref": "#/definitions/bazaar_internal_domain.CreateLocationResponse"
                         }
                     },
                     "400": {
@@ -694,7 +694,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_location.Location"
+                            "$ref": "#/definitions/bazaar_internal_domain.Location"
                         }
                     },
                     "400": {
@@ -767,7 +767,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_modules_location.UpdateLocationResponse"
+                            "$ref": "#/definitions/bazaar_internal_domain.UpdateLocationResponse"
                         }
                     },
                     "400": {
@@ -1419,10 +1419,60 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "bazaar_internal_domain.CreateLocationResponse": {
+            "type": "object",
+            "properties": {
+                "location_id": {
+                    "type": "string"
+                }
+            }
+        },
         "bazaar_internal_domain.CreateUserResponse": {
             "type": "object",
             "properties": {
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "bazaar_internal_domain.Location": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "archived": {
+                    "type": "boolean"
+                },
+                "company_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/bazaar_internal_domain.LocationType"
+                }
+            }
+        },
+        "bazaar_internal_domain.LocationType": {
+            "type": "string",
+            "enum": [
+                "store",
+                "warehouse"
+            ],
+            "x-enum-varnames": [
+                "LocationTypeStore",
+                "LocationTypeWarehouse"
+            ]
+        },
+        "bazaar_internal_domain.UpdateLocationResponse": {
+            "type": "object",
+            "properties": {
+                "location_id": {
                     "type": "string"
                 }
             }
@@ -1508,56 +1558,6 @@ const docTemplate = `{
                 }
             }
         },
-        "bazaar_internal_modules_location.CreateLocationResponse": {
-            "type": "object",
-            "properties": {
-                "location_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_modules_location.Location": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "archived": {
-                    "type": "boolean"
-                },
-                "company_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/bazaar_internal_modules_location.Type"
-                }
-            }
-        },
-        "bazaar_internal_modules_location.Type": {
-            "type": "string",
-            "enum": [
-                "store",
-                "warehouse"
-            ],
-            "x-enum-varnames": [
-                "TypeStore",
-                "TypeWarehouse"
-            ]
-        },
-        "bazaar_internal_modules_location.UpdateLocationResponse": {
-            "type": "object",
-            "properties": {
-                "location_id": {
-                    "type": "string"
-                }
-            }
-        },
         "bazaar_internal_modules_product.CreateProductResponse": {
             "type": "object",
             "properties": {
@@ -1639,7 +1639,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/bazaar_internal_modules_location.Type"
+                    "$ref": "#/definitions/bazaar_internal_domain.LocationType"
                 }
             }
         },
@@ -1748,7 +1748,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/bazaar_internal_modules_location.Type"
+                    "$ref": "#/definitions/bazaar_internal_domain.LocationType"
                 }
             }
         },

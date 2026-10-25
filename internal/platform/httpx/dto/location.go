@@ -1,15 +1,15 @@
 package dto
 
-import "bazaar/internal/modules/location"
+import "bazaar/internal/domain"
 
 type CreateLocationRequest struct {
-	Name    string        `json:"name"`
-	Address string        `json:"address"`
-	Type    location.Type `json:"type"`
+	Name    string              `json:"name"`
+	Address string              `json:"address"`
+	Type    domain.LocationType `json:"type"`
 }
 
 type UpdateLocationRequest struct {
-	Name    string        `json:"name"`
-	Address string        `json:"address"`
-	Type    location.Type `json:"type"`
+	Name    string              `json:"name"`
+	Address string              `json:"address"`
+	Type    domain.LocationType `json:"type"`
 }

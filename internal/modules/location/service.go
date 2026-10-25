@@ -1,18 +1,21 @@
 package location
 
 import (
+	"bazaar/internal/domain"
 	"context"
 )
 
-type Service struct {
-	repo *Repository
+type service struct {
+	repo domain.LocationRepository
 }
 
-func NewService(repo *Repository) *Service {
-	return &Service{repo: repo}
+var _ domain.LocationService = (*service)(nil)
+
+func NewService(repo domain.LocationRepository) domain.LocationService {
+	return &service{repo: repo}
 }
 
-func (s *Service) GetCompanyLocations(ctx context.Context, companyId string) ([]Location, error) {
+func (s *service) GetCompanyLocations(ctx context.Context, companyId string) ([]domain.Location, error) {
 	locations, err := s.repo.GetCompanyLocations(ctx, companyId)
 	if err != nil {
 		return nil, err
@@ -21,17 +24,17 @@ func (s *Service) GetCompanyLocations(ctx context.Context, companyId string) ([]
 	return locations, nil
 }
 
-func (s *Service) GetLocationById(ctx context.Context, locationId, companyId string) (*Location, error) {
+func (s *service) GetLocationById(ctx context.Context, locationId, companyId string) (*domain.Location, error) {
 	return s.repo.GetLocationById(ctx, locationId, companyId)
 }
 
-func (s *Service) CreateLocation(ctx context.Context, r *CreateLocationRequest) (*CreateLocationResponse, error) {
+func (s *service) CreateLocation(ctx context.Context, r *domain.CreateLocationRequest) (*domain.CreateLocationResponse, error) {
 
 	if r == nil || r.CompanyId == "" || r.Name == "" || r.Address == "" {
-		return nil, ErrInvalidCred
+		return nil, domain.ErrInvalidCred
 	}
-	if r.Type != TypeStore && r.Type != TypeWarehouse {
-		return nil, ErrInvalidType
+	if !validType(r.Type) {
+		return nil, domain.ErrInvalidLocationType
 	}
 
 	res, err := s.repo.CreateLocation(ctx, r)
@@ -42,13 +45,13 @@ func (s *Service) CreateLocation(ctx context.Context, r *CreateLocationRequest) 
 	return res, nil
 }
 
-func (s *Service) UpdateLocation(ctx context.Context, r *UpdateLocationRequest) (*UpdateLocationResponse, error) {
+func (s *service) UpdateLocation(ctx context.Context, r *domain.UpdateLocationRequest) (*domain.UpdateLocationResponse, error) {
 
 	if r == nil || r.CompanyId == "" || r.LocationId == "" || r.Name == "" || r.Address == "" {
-		return nil, ErrInvalidCred
+		return nil, domain.ErrInvalidCred
 	}
-	if r.Type != TypeStore && r.Type != TypeWarehouse {
-		return nil, ErrInvalidType
+	if !validType(r.Type) {
+		return nil, domain.ErrInvalidLocationType
 	}
 
 	res, err := s.repo.UpdateLocation(ctx, r)
@@ -59,9 +62,9 @@ func (s *Service) UpdateLocation(ctx context.Context, r *UpdateLocationRequest) 
 	return res, nil
 }
 
-func (s *Service) ArchiveLocation(ctx context.Context, locationId, companyId string) error {
+func (s *service) ArchiveLocation(ctx context.Context, locationId, companyId string) error {
 	if locationId == "" || companyId == "" {
-		return ErrInvalidCred
+		return domain.ErrInvalidCred
 	}
 
 	err := s.repo.ArchiveLocation(ctx, locationId, companyId)
@@ -70,4 +73,8 @@ func (s *Service) ArchiveLocation(ctx context.Context, locationId, companyId str
 	}
 
 	return nil
+}
+
+func validType(t domain.LocationType) bool {
+	return t == domain.LocationTypeStore || t == domain.LocationTypeWarehouse
 }

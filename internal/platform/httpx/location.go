@@ -1,7 +1,7 @@
 package httpx
 
 import (
-	"bazaar/internal/modules/location"
+	"bazaar/internal/domain"
 	"bazaar/internal/platform/httpx/dto"
 	"bazaar/internal/platform/httpx/middleware"
 	"context"
@@ -20,7 +20,7 @@ import (
 // @Produce json
 // @Security BearerAuth
 // @Param request body dto.CreateLocationRequest true "Location creation data"
-// @Success 201 {object} location.CreateLocationResponse
+// @Success 201 {object} domain.CreateLocationResponse
 // @Failure 400 {object} dto.Error "Invalid credential data"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 409 {object} dto.Error "Location already exists"
@@ -46,7 +46,7 @@ func (h *Handler) CreateLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rq := location.CreateLocationRequest{
+	rq := domain.CreateLocationRequest{
 		CompanyId: u.CompanyId,
 		Name:      body.Name,
 		Address:   body.Address,
@@ -63,15 +63,15 @@ func (h *Handler) CreateLocation(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, location.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
-		case errors.Is(err, location.ErrLocationAlreadyExists):
+		case errors.Is(err, domain.ErrLocationAlreadyExists):
 			status = http.StatusConflict
 			code = "location_already_exists"
 			msg = "location already exists"
-		case errors.Is(err, location.ErrInvalidType):
+		case errors.Is(err, domain.ErrInvalidLocationType):
 			status = http.StatusBadRequest
 			code = "invalid_location_type"
 			msg = "invalid location type"
@@ -101,7 +101,7 @@ func (h *Handler) CreateLocation(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Security BearerAuth
 // @Param id path string true "Location ID"
-// @Success 200 {object} location.Location
+// @Success 200 {object} domain.Location
 // @Failure 400 {object} dto.Error "Invalid credential data"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 404 {object} dto.Error "Location not found"
@@ -138,11 +138,11 @@ func (h *Handler) GetLocationById(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, location.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
-		case errors.Is(err, location.ErrNotFound):
+		case errors.Is(err, domain.ErrLocationNotFound):
 			status = http.StatusNotFound
 			code = "location_not_found"
 			msg = "location not found"
@@ -172,7 +172,7 @@ func (h *Handler) GetLocationById(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {array} location.Location
+// @Success 200 {array} domain.Location
 // @Failure 400 {object} dto.Error "Invalid credential data"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 404 {object} dto.Error "Location not found"
@@ -202,11 +202,11 @@ func (h *Handler) GetAllLocations(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, location.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
-		case errors.Is(err, location.ErrNotFound):
+		case errors.Is(err, domain.ErrLocationNotFound):
 			status = http.StatusNotFound
 			code = "location_not_found"
 			msg = "location not found"
@@ -236,7 +236,7 @@ func (h *Handler) GetAllLocations(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param id path string true "Location ID"
 // @Param request body dto.UpdateLocationRequest true "Location update data"
-// @Success 200 {object} location.UpdateLocationResponse
+// @Success 200 {object} domain.UpdateLocationResponse
 // @Failure 400 {object} dto.Error "Invalid credential data"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 404 {object} dto.Error "Location not found"
@@ -272,7 +272,7 @@ func (h *Handler) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rq := location.UpdateLocationRequest{
+	rq := domain.UpdateLocationRequest{
 		LocationId: locationId,
 		CompanyId:  u.CompanyId,
 		Name:       body.Name,
@@ -290,19 +290,19 @@ func (h *Handler) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, location.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
-		case errors.Is(err, location.ErrNotFound):
+		case errors.Is(err, domain.ErrLocationNotFound):
 			status = http.StatusNotFound
 			code = "location_not_found"
 			msg = "location not found"
-		case errors.Is(err, location.ErrLocationAlreadyExists):
+		case errors.Is(err, domain.ErrLocationAlreadyExists):
 			status = http.StatusConflict
 			code = "location_already_exists"
 			msg = "location already exists"
-		case errors.Is(err, location.ErrInvalidType):
+		case errors.Is(err, domain.ErrInvalidLocationType):
 			status = http.StatusBadRequest
 			code = "invalid_location_type"
 			msg = "invalid location type"
@@ -371,11 +371,11 @@ func (h *Handler) ArchiveLocation(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, location.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
-		case errors.Is(err, location.ErrNotFound):
+		case errors.Is(err, domain.ErrLocationNotFound):
 			status = http.StatusNotFound
 			code = "location_not_found"
 			msg = "location not found"
