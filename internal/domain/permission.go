@@ -12,9 +12,10 @@ type Permission struct {
 }
 
 // ChangePermissionRequest grants or revokes a permission. The guarantor must
-// hold the permission to pass it to or take it from the apply user.
+// hold the permission, and the apply user must belong to CompanyId.
 type ChangePermissionRequest struct {
 	GuarantorUserId string `json:"guarantor_user_id"`
+	CompanyId       string `json:"company_id"`
 	ApplyUserId     string `json:"apply_user_id"`
 	PermissionId    string `json:"permission_id"`
 }

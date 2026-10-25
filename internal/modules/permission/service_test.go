@@ -108,3 +108,55 @@ func TestGetUserPermissions(t *testing.T) {
 		})
 	}
 }
+
+func TestChangePermissionChecksTargetCompany(t *testing.T) {
+	tests := []struct {
+		name    string
+		otherIn string
+		applyTo string
+		permId  string
+		wantErr error
+	}{
+		{name: "same company, owned", otherIn: companyId, applyTo: otherId, permId: salesPerm.Id},
+		{name: "another company", otherIn: "company-2", applyTo: otherId, permId: salesPerm.Id, wantErr: domain.ErrUserNotFound},
+		{name: "not a uuid", otherIn: companyId, applyTo: "abc", permId: salesPerm.Id, wantErr: domain.ErrInvalidUserID},
+		{name: "permission not owned", otherIn: companyId, applyTo: otherId, permId: "p-other", wantErr: domain.ErrPermissionNotOwned},
+	}
+
+	ops := map[string]func(s domain.PermissionService, rq domain.ChangePermissionRequest) error{
+		"set": func(s domain.PermissionService, rq domain.ChangePermissionRequest) error {
+			return s.SetPermission(context.Background(), rq)
+		},
+		"remove": func(s domain.PermissionService, rq domain.ChangePermissionRequest) error {
+			return s.RemovePermission(context.Background(), rq)
+		},
+	}
+
+	for opName, op := range ops {
+		for _, tt := range tests {
+			t.Run(opName+"/"+tt.name, func(t *testing.T) {
+				repo := &fakeRepo{perms: map[string][]domain.Permission{viewerId: {salesPerm}}}
+				users := &fakeUsers{company: map[string]string{otherId: tt.otherIn}}
+				rq := domain.ChangePermissionRequest{
+					GuarantorUserId: viewerId,
+					CompanyId:       companyId,
+					ApplyUserId:     tt.applyTo,
+					PermissionId:    tt.permId,
+				}
+
+				err := op(NewService(repo, users), rq)
+
+				if !errors.Is(err, tt.wantErr) {
+					t.Fatalf("error = %v, want %v", err, tt.wantErr)
+				}
+				changed := len(repo.set) + len(repo.removed)
+				if tt.wantErr != nil && changed != 0 {
+					t.Fatalf("permissions changed after error: set=%v removed=%v", repo.set, repo.removed)
+				}
+				if tt.wantErr == nil && changed != 1 {
+					t.Fatalf("changes = %d, want 1", changed)
+				}
+			})
+		}
+	}
+}
