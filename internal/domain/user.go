@@ -33,7 +33,6 @@ var (
 	ErrUserNotFound = errors.New("user not found")
 	ErrPhoneTaken   = errors.New("phone already registered")
 	ErrInvalidPhone = errors.New("invalid phone")
-	ErrInvalidCred  = errors.New("invalid credentials")
 	ErrInvalidRole  = errors.New("invalid role for company")
 )
 
