@@ -27,7 +27,7 @@ func (r *Repository) CreateCompany(ctx context.Context, tx pgx.Tx, name string) 
 func (r *Repository) CreateOwnerRole(ctx context.Context, tx pgx.Tx, companyId string) (string, error) {
 	var id string
 
-	err := tx.QueryRow(ctx, "INSERT INTO user_roles(id, company_id, name) VALUES(gen_random_uuid(), $1, 'owner') RETURNING id",
+	err := tx.QueryRow(ctx, "INSERT INTO user_roles(id, company_id, name, is_system) VALUES(gen_random_uuid(), $1, 'owner', true) RETURNING id",
 		companyId).Scan(&id)
 
 	if err != nil {
