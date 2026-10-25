@@ -1,5 +1,25 @@
 basePath: /
 definitions:
+  bazaar_internal_domain.Category:
+    properties:
+      archived:
+        type: boolean
+      company_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  bazaar_internal_domain.CreateCategoryResponse:
+    properties:
+      category_id:
+        type: string
+    type: object
   bazaar_internal_domain.CreateLocationResponse:
     properties:
       location_id:
@@ -33,6 +53,11 @@ definitions:
     x-enum-varnames:
     - LocationTypeStore
     - LocationTypeWarehouse
+  bazaar_internal_domain.UpdateCategoryResponse:
+    properties:
+      category_id:
+        type: string
+    type: object
   bazaar_internal_domain.UpdateLocationResponse:
     properties:
       location_id:
@@ -63,31 +88,6 @@ definitions:
       company_id:
         type: string
       user_id:
-        type: string
-    type: object
-  bazaar_internal_modules_category.Category:
-    properties:
-      archived:
-        type: boolean
-      company_id:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  bazaar_internal_modules_category.CreateCategoryResponse:
-    properties:
-      category_id:
-        type: string
-    type: object
-  bazaar_internal_modules_category.UpdateCategoryResponse:
-    properties:
-      category_id:
         type: string
     type: object
   bazaar_internal_modules_product.CreateProductResponse:
@@ -356,7 +356,7 @@ paths:
           description: Active categories; empty array when no categories match
           schema:
             items:
-              $ref: '#/definitions/bazaar_internal_modules_category.Category'
+              $ref: '#/definitions/bazaar_internal_domain.Category'
             type: array
         "400":
           description: Invalid pagination
@@ -395,7 +395,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/bazaar_internal_modules_category.CreateCategoryResponse'
+            $ref: '#/definitions/bazaar_internal_domain.CreateCategoryResponse'
         "400":
           description: Invalid JSON or empty name
           schema:
@@ -437,7 +437,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_modules_category.Category'
+            $ref: '#/definitions/bazaar_internal_domain.Category'
         "400":
           description: Invalid category UUID
           schema:
@@ -484,7 +484,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_modules_category.UpdateCategoryResponse'
+            $ref: '#/definitions/bazaar_internal_domain.UpdateCategoryResponse'
         "400":
           description: Invalid category UUID, JSON, or empty name
           schema:
