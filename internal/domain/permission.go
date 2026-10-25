@@ -36,7 +36,11 @@ type PermissionRepository interface {
 }
 
 type PermissionService interface {
-	GetListByUserId(ctx context.Context, userId string) ([]Permission, error)
+	// GetUserPermissions returns the viewer's own permissions when userId is
+	// empty or the viewer's id. For another user the viewer needs
+	// permissions.view (else ErrForbidden) and the user must belong to
+	// companyId (else ErrUserNotFound).
+	GetUserPermissions(ctx context.Context, viewerId, companyId, userId string) ([]Permission, error)
 	GetPermissionByCode(ctx context.Context, userId, code string) (*Permission, error)
 	// SetPermission and RemovePermission return ErrPermissionNotOwned when
 	// the guarantor does not hold the permission.

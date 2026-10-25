@@ -76,8 +76,8 @@ func main() {
 
 	roleService := role.NewService(role.NewRepository(db), db)
 	authService := auth.NewService(auth.NewRepository(db), db, roleService, []byte(cfg.JWTSecret))
-	permissionService := permission.NewService(permission.NewRepository(db))
 	userService := user.NewService(user.NewRepository(db), db, roleService)
+	permissionService := permission.NewService(permission.NewRepository(db), userService)
 
 	handler := httpx.New(log, router, httpx.NewServiceManager(
 		health.New(db),

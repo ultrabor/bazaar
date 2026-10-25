@@ -30,7 +30,8 @@ type CreateUserResponse struct {
 }
 
 var (
-	ErrUserNotFound = errors.New("user not found")
+	ErrUserNotFound  = errors.New("user not found")
+	ErrInvalidUserID = errors.New("invalid user id")
 	ErrPhoneTaken   = errors.New("phone already registered")
 	ErrInvalidPhone = errors.New("invalid phone")
 	ErrInvalidRole  = errors.New("invalid role for company")
