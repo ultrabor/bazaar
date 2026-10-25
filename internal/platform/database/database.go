@@ -107,20 +107,25 @@ func withinTx(ctx context.Context, b beginner, fn func(ctx context.Context) erro
 		return err
 	}
 
+	// fn may never return: on a panic or runtime.Goexit (t.Fatal in tests)
+	// only deferred calls run, so the rollback lives in a defer. Without
+	// it the connection stays busy in an open transaction and Close hangs.
+	done := false
 	defer func() {
-		if p := recover(); p != nil {
+		if !done {
 			_ = tx.Rollback(ctx)
-			panic(p)
 		}
 	}()
 
 	if err := fn(context.WithValue(ctx, txKey{}, tx)); err != nil {
+		done = true
 		if rbErr := tx.Rollback(ctx); rbErr != nil {
 			return errors.Join(err, rbErr)
 		}
 		return err
 	}
 
+	done = true
 	return tx.Commit(ctx)
 }
 
