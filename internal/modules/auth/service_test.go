@@ -57,6 +57,9 @@ func (f *fakeRepo) GetUserById(ctx context.Context, userId string) (*domain.User
 }
 
 type fakeRoles struct {
+	// Embedded so the fake only implements the methods the test uses.
+	domain.RoleService
+
 	giveErr error
 
 	ownerCompanyId string
