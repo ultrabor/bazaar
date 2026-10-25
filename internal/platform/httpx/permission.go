@@ -87,6 +87,7 @@ func (h *Handler) SetPermission(w http.ResponseWriter, r *http.Request) {
 
 	rq := domain.ChangePermissionRequest{
 		GuarantorUserId: jwt.Id,
+		CompanyId:       jwt.CompanyId,
 		ApplyUserId:     body.UserId,
 		PermissionId:    body.PermissionId,
 	}
@@ -110,6 +111,14 @@ func (h *Handler) SetPermission(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusNotFound
 			code = "invalid_cred"
 			msg = "invalid credential"
+		case errors.Is(err, domain.ErrInvalidUserID):
+			status = http.StatusBadRequest
+			code = "invalid_user_id"
+			msg = "user id must be a valid UUID"
+		case errors.Is(err, domain.ErrUserNotFound):
+			status = http.StatusNotFound
+			code = "user_not_found"
+			msg = "user not found"
 		}
 
 		dto.WriteError(w, status, code, msg)
@@ -142,6 +151,7 @@ func (h *Handler) RemovePermission(w http.ResponseWriter, r *http.Request) {
 
 	rq := domain.ChangePermissionRequest{
 		GuarantorUserId: jwt.Id,
+		CompanyId:       jwt.CompanyId,
 		ApplyUserId:     body.UserId,
 		PermissionId:    body.PermissionId,
 	}
@@ -165,6 +175,14 @@ func (h *Handler) RemovePermission(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusNotFound
 			code = "invalid_cred"
 			msg = "invalid credential"
+		case errors.Is(err, domain.ErrInvalidUserID):
+			status = http.StatusBadRequest
+			code = "invalid_user_id"
+			msg = "user id must be a valid UUID"
+		case errors.Is(err, domain.ErrUserNotFound):
+			status = http.StatusNotFound
+			code = "user_not_found"
+			msg = "user not found"
 		}
 
 		dto.WriteError(w, status, code, msg)

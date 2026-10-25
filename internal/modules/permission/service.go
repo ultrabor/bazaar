@@ -59,6 +59,9 @@ func (s *service) GetPermissionByCode(ctx context.Context, userId, code string) 
 }
 
 func (s *service) SetPermission(ctx context.Context, rq domain.ChangePermissionRequest) error {
+	if err := s.checkTarget(ctx, rq); err != nil {
+		return err
+	}
 
 	res, err := s.repo.GetListByUserId(ctx, rq.GuarantorUserId)
 
@@ -82,6 +85,9 @@ func (s *service) SetPermission(ctx context.Context, rq domain.ChangePermissionR
 }
 
 func (s *service) RemovePermission(ctx context.Context, rq domain.ChangePermissionRequest) error {
+	if err := s.checkTarget(ctx, rq); err != nil {
+		return err
+	}
 
 	res, err := s.repo.GetListByUserId(ctx, rq.GuarantorUserId)
 
@@ -102,4 +108,15 @@ func (s *service) RemovePermission(ctx context.Context, rq domain.ChangePermissi
 	}
 
 	return s.repo.RemovePermission(ctx, rq.ApplyUserId, rq.PermissionId)
+}
+
+// checkTarget makes sure the apply user is a valid id of the guarantor's
+// company, so permissions cannot be changed across companies.
+func (s *service) checkTarget(ctx context.Context, rq domain.ChangePermissionRequest) error {
+	if _, err := uuid.Parse(rq.ApplyUserId); err != nil {
+		return domain.ErrInvalidUserID
+	}
+
+	_, err := s.users.GetUserById(ctx, rq.ApplyUserId, rq.CompanyId)
+	return err
 }
