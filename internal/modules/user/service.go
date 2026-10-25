@@ -40,6 +40,10 @@ func (s *service) CreateUser(ctx context.Context, r *domain.CreateUserRequest) (
 		return nil, err
 	}
 
+	if err := s.roles.CheckGrantable(ctx, r.UserRoleId, r.CreatorId); err != nil {
+		return nil, err
+	}
+
 	hash, err := validator.HashPassword(r.Password)
 	if err != nil {
 		return nil, err

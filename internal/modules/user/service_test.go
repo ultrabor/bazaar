@@ -47,7 +47,10 @@ func (f *fakeRepo) CreateUser(ctx context.Context, req *domain.CreateUserRequest
 
 type fakeRoles struct {
 	checkErr error
+	grantErr error
 	giveErr  error
+
+	grantor string
 
 	gaveUserId string
 	gaveRoleId string
@@ -66,6 +69,11 @@ func (f *fakeRoles) CheckAssignable(ctx context.Context, roleId, companyId strin
 	return f.checkErr
 }
 
+func (f *fakeRoles) CheckGrantable(ctx context.Context, roleId, grantorId string) error {
+	f.grantor = grantorId
+	return f.grantErr
+}
+
 func (f *fakeRoles) GivePermissions(ctx context.Context, userId, roleId string) error {
 	f.gaveUserId = userId
 	f.gaveRoleId = roleId
@@ -80,6 +88,24 @@ func validRequest() *domain.CreateUserRequest {
 		Password:   "Secret#123",
 		CompanyId:  "company-1",
 		UserRoleId: "role-1",
+		CreatorId:  "admin-1",
+	}
+}
+
+func TestCreateUserRejectsRoleWiderThanCreator(t *testing.T) {
+	repo, tx := &fakeRepo{}, &fakeTx{}
+	roles := &fakeRoles{grantErr: domain.ErrRoleExceedsPermissions}
+
+	_, err := NewService(repo, tx, roles).CreateUser(context.Background(), validRequest())
+
+	if !errors.Is(err, domain.ErrRoleExceedsPermissions) {
+		t.Fatalf("CreateUser error = %v, want %v", err, domain.ErrRoleExceedsPermissions)
+	}
+	if roles.grantor != "admin-1" {
+		t.Fatalf("CheckGrantable grantor = %q, want admin-1", roles.grantor)
+	}
+	if tx.calls != 0 || repo.created != nil {
+		t.Fatalf("WithinTx calls = %d, created = %v; want no insert", tx.calls, repo.created)
 	}
 }
 

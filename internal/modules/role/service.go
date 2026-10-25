@@ -66,6 +66,17 @@ func (s *service) CheckAssignable(ctx context.Context, roleId, companyId string)
 	return nil
 }
 
+func (s *service) CheckGrantable(ctx context.Context, roleId, grantorId string) error {
+	ok, err := s.repo.IsSubsetOfUser(ctx, roleId, grantorId)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return domain.ErrRoleExceedsPermissions
+	}
+	return nil
+}
+
 func (s *service) GivePermissions(ctx context.Context, userId, roleId string) error {
 	return s.repo.GivePermissions(ctx, userId, roleId)
 }

@@ -115,3 +115,22 @@ func (r *repository) GiveAllPermissions(ctx context.Context, roleId string) erro
 
 	return err
 }
+
+func (r *repository) IsSubsetOfUser(ctx context.Context, roleId, userId string) (bool, error) {
+	var ok bool
+
+	err := r.db.Conn(ctx).QueryRow(ctx, `
+		SELECT NOT EXISTS (
+			SELECT 1
+			FROM role_permissions rp
+			JOIN permissions p ON p.id = rp.permission_id AND p.deleted_at = 0
+			WHERE rp.user_role_id = $1
+			  AND NOT EXISTS (
+				SELECT 1 FROM user_permissions up
+				WHERE up.user_id = $2 AND up.permission_id = rp.permission_id
+			  )
+		)
+	`, roleId, userId).Scan(&ok)
+
+	return ok, err
+}

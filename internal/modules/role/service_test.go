@@ -29,6 +29,8 @@ type fakeRepo struct {
 	role      *domain.Role
 	getErr    error
 	giveAllEr error
+	subset    bool
+	subsetErr error
 
 	createdTx   int
 	giveAllTx   int
@@ -50,6 +52,10 @@ func (f *fakeRepo) GivePermissions(ctx context.Context, userId, roleId string) e
 func (f *fakeRepo) CreateSystemRole(ctx context.Context, companyId string) (string, error) {
 	f.createdTx = txCall(ctx)
 	return "role-owner", nil
+}
+
+func (f *fakeRepo) IsSubsetOfUser(ctx context.Context, roleId, userId string) (bool, error) {
+	return f.subset, f.subsetErr
 }
 
 func (f *fakeRepo) GiveAllPermissions(ctx context.Context, roleId string) error {
@@ -104,6 +110,28 @@ func TestCheckAssignable(t *testing.T) {
 			err := NewService(tt.repo, &fakeTx{}).CheckAssignable(context.Background(), "r", "company-1")
 			if !errors.Is(err, tt.want) {
 				t.Fatalf("CheckAssignable error = %v, want %v", err, tt.want)
+			}
+		})
+	}
+}
+
+func TestCheckGrantable(t *testing.T) {
+	dbErr := errors.New("db down")
+	tests := []struct {
+		name string
+		repo *fakeRepo
+		want error
+	}{
+		{name: "subset", repo: &fakeRepo{subset: true}, want: nil},
+		{name: "role has more", repo: &fakeRepo{subset: false}, want: domain.ErrRoleExceedsPermissions},
+		{name: "database error", repo: &fakeRepo{subsetErr: dbErr}, want: dbErr},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := NewService(tt.repo, &fakeTx{}).CheckGrantable(context.Background(), "role-1", "admin-1")
+			if !errors.Is(err, tt.want) {
+				t.Fatalf("CheckGrantable error = %v, want %v", err, tt.want)
 			}
 		})
 	}

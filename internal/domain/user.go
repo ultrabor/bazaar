@@ -23,6 +23,9 @@ type CreateUserRequest struct {
 	PasswordHash string `json:"-"`
 	CompanyId    string `json:"company_id"`
 	UserRoleId   string `json:"user_role_id"`
+	// CreatorId is the user from the token; the new user's role may not
+	// hold permissions the creator lacks.
+	CreatorId string `json:"-"`
 }
 
 type CreateUserResponse struct {
@@ -32,9 +35,9 @@ type CreateUserResponse struct {
 var (
 	ErrUserNotFound  = errors.New("user not found")
 	ErrInvalidUserID = errors.New("invalid user id")
-	ErrPhoneTaken   = errors.New("phone already registered")
-	ErrInvalidPhone = errors.New("invalid phone")
-	ErrInvalidRole  = errors.New("invalid role for company")
+	ErrPhoneTaken    = errors.New("phone already registered")
+	ErrInvalidPhone  = errors.New("invalid phone")
+	ErrInvalidRole   = errors.New("invalid role for company")
 )
 
 type UserRepository interface {
