@@ -74,9 +74,9 @@ func main() {
 
 	router := chi.NewRouter()
 
-	authService := auth.New(db, []byte(cfg.JWTSecret))
+	roleService := role.NewService(role.NewRepository(db), db)
+	authService := auth.NewService(auth.NewRepository(db), db, roleService, []byte(cfg.JWTSecret))
 	permissionService := permission.NewService(permission.NewRepository(db))
-	roleService := role.NewService(role.NewRepository(db))
 	userService := user.NewService(user.NewRepository(db), db, roleService)
 
 	handler := httpx.New(log, router, httpx.NewServiceManager(

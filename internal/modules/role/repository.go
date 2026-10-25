@@ -3,6 +3,7 @@ package role
 import (
 	"bazaar/internal/domain"
 	"bazaar/internal/platform/database"
+	"bazaar/internal/platform/support/apperror"
 	"context"
 	"errors"
 
@@ -84,6 +85,33 @@ func (r *repository) GivePermissions(ctx context.Context, userId, roleId string)
 	`
 
 	_, err := r.db.Conn(ctx).Exec(ctx, query, userId, roleId)
+
+	return err
+}
+
+func (r *repository) CreateSystemRole(ctx context.Context, companyId string) (string, error) {
+	var id string
+
+	err := r.db.Conn(ctx).QueryRow(ctx, "INSERT INTO user_roles(id, company_id, name, is_system) VALUES(gen_random_uuid(), $1, 'owner', true) RETURNING id",
+		companyId).Scan(&id)
+
+	if err != nil {
+		return "", apperror.New("failed to create owner role", err)
+	}
+
+	return id, nil
+}
+
+func (r *repository) GiveAllPermissions(ctx context.Context, roleId string) error {
+	query := `
+		INSERT INTO role_permissions(user_role_id, permission_id)
+		SELECT $1, p.id
+		FROM permissions p
+		WHERE p.deleted_at = 0
+		ON CONFLICT DO NOTHING;
+	`
+
+	_, err := r.db.Conn(ctx).Exec(ctx, query, roleId)
 
 	return err
 }

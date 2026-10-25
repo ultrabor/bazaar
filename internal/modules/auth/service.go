@@ -2,32 +2,32 @@ package auth
 
 import (
 	"bazaar/internal/domain"
-	"bazaar/internal/platform/database"
 	"bazaar/internal/platform/support/validator"
 	"context"
-	"errors"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
-type Service struct {
-	db        *database.Database
+type service struct {
+	repo      domain.AuthRepository
+	tx        domain.TxManager
+	roles     domain.RoleService
 	jwtSecret []byte
 }
 
-func New(db *database.Database, jwtSecret []byte) *Service {
-	return &Service{db: db, jwtSecret: jwtSecret}
+var _ domain.AuthService = (*service)(nil)
+
+func NewService(repo domain.AuthRepository, tx domain.TxManager, roles domain.RoleService, jwtSecret []byte) domain.AuthService {
+	return &service{repo: repo, tx: tx, roles: roles, jwtSecret: jwtSecret}
 }
 
-func (s *Service) RegisterOwner(ctx context.Context, rq RegisterRequest) (*RegisterResponse, error) {
+func (s *service) RegisterOwner(ctx context.Context, rq domain.RegisterRequest) (*domain.RegisterResponse, error) {
 
 	if rq.CompanyName == "" || rq.FirstName == "" || rq.Password == "" {
-		return nil, ErrInvalidCred
+		return nil, domain.ErrInvalidCred
 	}
 
 	if !validator.PhoneValid(rq.Phone) {
-		return nil, ErrInvalidPhone
+		return nil, domain.ErrInvalidPhone
 	}
 
 	hash, err := validator.HashPassword(rq.Password)
@@ -35,54 +35,45 @@ func (s *Service) RegisterOwner(ctx context.Context, rq RegisterRequest) (*Regis
 		return nil, err
 	}
 
-	repo := Repository{}
-
-	tx, err := s.db.Begin(ctx)
-
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback(ctx)
-
-	companyId, err := repo.CreateCompany(ctx, tx, rq.CompanyName)
-	if err != nil {
-		return nil, err
-	}
-	roleId, err := repo.CreateOwnerRole(ctx, tx, companyId)
-	if err != nil {
-		return nil, err
-	}
-
-	userId, err := repo.CreateUser(ctx, tx, companyId, roleId, rq.FirstName, rq.LastName, rq.Phone, hash)
-	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) &&
-			pgErr.Code == "23505" &&
-			pgErr.ConstraintName == "users_active_phone_unique" {
-			return nil, ErrPhoneTaken
+	var res domain.RegisterResponse
+	err = s.tx.WithinTx(ctx, func(ctx context.Context) error {
+		companyId, err := s.repo.CreateCompany(ctx, rq.CompanyName)
+		if err != nil {
+			return err
 		}
-		return nil, err
 
-	}
+		roleId, err := s.roles.CreateOwnerRole(ctx, companyId)
+		if err != nil {
+			return err
+		}
 
-	err = tx.Commit(ctx)
+		userId, err := s.repo.CreateUser(ctx, companyId, roleId, rq.FirstName, rq.LastName, rq.Phone, hash)
+		if err != nil {
+			return err
+		}
+
+		if err := s.roles.GivePermissions(ctx, userId, roleId); err != nil {
+			return err
+		}
+
+		res = domain.RegisterResponse{CompanyId: companyId, UserId: userId}
+		return nil
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &RegisterResponse{CompanyId: companyId, UserId: userId}, nil
+	return &res, nil
 }
 
-func (s *Service) Login(ctx context.Context, rq LoginRequest) (*LoginResponse, error) {
-	var repo Repository
-
-	user, err := repo.GetUserByPhone(ctx, s.db.GetDB(), rq.Phone)
+func (s *service) Login(ctx context.Context, rq domain.LoginRequest) (*domain.LoginResponse, error) {
+	user, err := s.repo.GetUserByPhone(ctx, rq.Phone)
 	if err != nil {
 		return nil, err
 	}
 
 	if !validator.CheckPasswordHash(rq.Password, user.PasswordHash) {
-		return nil, ErrInvalidCred
+		return nil, domain.ErrInvalidCred
 	}
 
 	token, err := validator.GenerateToken(user.Id, user.CompanyId, user.UserRoleId, time.Minute*30, s.jwtSecret)
@@ -90,16 +81,9 @@ func (s *Service) Login(ctx context.Context, rq LoginRequest) (*LoginResponse, e
 		return nil, err
 	}
 
-	return &LoginResponse{Token: token}, nil
+	return &domain.LoginResponse{Token: token}, nil
 }
 
-func (s *Service) GetUserById(ctx context.Context, userId string) (*domain.User, error) {
-	var repo Repository
-
-	user, err := repo.GetUserById(ctx, s.db.GetDB(), userId)
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
+func (s *service) GetUserById(ctx context.Context, userId string) (*domain.User, error) {
+	return s.repo.GetUserById(ctx, userId)
 }

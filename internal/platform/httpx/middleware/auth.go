@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"bazaar/internal/modules/auth"
+	"bazaar/internal/domain"
 	"bazaar/internal/platform/httpx/dto"
 	"bazaar/internal/platform/support/validator"
 	"errors"
@@ -28,7 +28,7 @@ func (m *Middleware) Auth(next http.Handler) http.Handler {
 
 		u, err := m.loadUser(r.Context(), userId)
 		if err != nil {
-			if errors.Is(err, auth.ErrInvalidCred) {
+			if errors.Is(err, domain.ErrInvalidCred) {
 				dto.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 				return
 			}

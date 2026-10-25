@@ -3,7 +3,6 @@ package httpx
 import (
 	"bazaar/internal/app/health"
 	"bazaar/internal/domain"
-	"bazaar/internal/modules/auth"
 	"log/slog"
 
 	"github.com/go-chi/chi/v5"
@@ -17,7 +16,7 @@ type Handler struct {
 
 type ServiceManager struct {
 	healthService     *health.Service
-	authService       *auth.Service
+	authService       domain.AuthService
 	userService       domain.UserService
 	locationService   domain.LocationService
 	productService    domain.ProductService
@@ -27,7 +26,7 @@ type ServiceManager struct {
 
 func NewServiceManager(
 	healthService *health.Service,
-	authService *auth.Service,
+	authService domain.AuthService,
 	userService domain.UserService,
 	locationService domain.LocationService,
 	productService domain.ProductService,
