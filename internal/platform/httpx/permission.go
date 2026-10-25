@@ -1,7 +1,7 @@
 package httpx
 
 import (
-	"bazaar/internal/modules/permission"
+	"bazaar/internal/domain"
 	"bazaar/internal/platform/httpx/dto"
 	"bazaar/internal/platform/httpx/middleware"
 	"context"
@@ -34,7 +34,7 @@ func (h *Handler) GetListPermissions(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, permission.ErrNotFound):
+		case errors.Is(err, domain.ErrPermissionNotFound):
 			status = http.StatusNotFound
 			code = "permission_not_found"
 			msg = "permission_not_found"
@@ -77,7 +77,7 @@ func (h *Handler) SetPermission(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rq := permission.ChangePermissionRequest{
+	rq := domain.ChangePermissionRequest{
 		GuarantorUserId: jwt.Id,
 		ApplyUserId:     body.UserId,
 		PermissionId:    body.PermissionId,
@@ -94,11 +94,11 @@ func (h *Handler) SetPermission(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, permission.ErrNotFound):
+		case errors.Is(err, domain.ErrPermissionNotFound):
 			status = http.StatusNotFound
 			code = "permission_not_found"
 			msg = "permission_not_found"
-		case errors.Is(err, permission.ErrInvalidCred):
+		case errors.Is(err, domain.ErrPermissionNotOwned):
 			status = http.StatusNotFound
 			code = "invalid_cred"
 			msg = "invalid credential"
@@ -132,7 +132,7 @@ func (h *Handler) RemovePermission(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rq := permission.ChangePermissionRequest{
+	rq := domain.ChangePermissionRequest{
 		GuarantorUserId: jwt.Id,
 		ApplyUserId:     body.UserId,
 		PermissionId:    body.PermissionId,
@@ -149,11 +149,11 @@ func (h *Handler) RemovePermission(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, permission.ErrNotFound):
+		case errors.Is(err, domain.ErrPermissionNotFound):
 			status = http.StatusNotFound
 			code = "permission_not_found"
 			msg = "permission_not_found"
-		case errors.Is(err, permission.ErrInvalidCred):
+		case errors.Is(err, domain.ErrPermissionNotOwned):
 			status = http.StatusNotFound
 			code = "invalid_cred"
 			msg = "invalid credential"

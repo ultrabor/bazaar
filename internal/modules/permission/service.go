@@ -1,18 +1,21 @@
 package permission
 
 import (
+	"bazaar/internal/domain"
 	"context"
 )
 
-type Service struct {
-	repo *Repository
+type service struct {
+	repo domain.PermissionRepository
 }
 
-func NewService(repo *Repository) *Service {
-	return &Service{repo: repo}
+var _ domain.PermissionService = (*service)(nil)
+
+func NewService(repo domain.PermissionRepository) domain.PermissionService {
+	return &service{repo: repo}
 }
 
-func (s *Service) GetListByUserId(ctx context.Context, userId string) ([]Permission, error) {
+func (s *service) GetListByUserId(ctx context.Context, userId string) ([]domain.Permission, error) {
 
 	res, err := s.repo.GetListByUserId(ctx, userId)
 
@@ -23,7 +26,7 @@ func (s *Service) GetListByUserId(ctx context.Context, userId string) ([]Permiss
 	return res, nil
 }
 
-func (s *Service) GetPermissionByCode(ctx context.Context, userId, code string) (*Permission, error) {
+func (s *service) GetPermissionByCode(ctx context.Context, userId, code string) (*domain.Permission, error) {
 
 	res, err := s.repo.GetPermissionByCode(ctx, userId, code)
 
@@ -34,7 +37,7 @@ func (s *Service) GetPermissionByCode(ctx context.Context, userId, code string) 
 	return res, nil
 }
 
-func (s *Service) SetPermission(ctx context.Context, rq ChangePermissionRequest) error {
+func (s *service) SetPermission(ctx context.Context, rq domain.ChangePermissionRequest) error {
 
 	res, err := s.repo.GetListByUserId(ctx, rq.GuarantorUserId)
 
@@ -51,13 +54,13 @@ func (s *Service) SetPermission(ctx context.Context, rq ChangePermissionRequest)
 	}
 
 	if !has {
-		return ErrInvalidCred
+		return domain.ErrPermissionNotOwned
 	}
 
 	return s.repo.SetPermission(ctx, rq.ApplyUserId, rq.PermissionId)
 }
 
-func (s *Service) RemovePermission(ctx context.Context, rq ChangePermissionRequest) error {
+func (s *service) RemovePermission(ctx context.Context, rq domain.ChangePermissionRequest) error {
 
 	res, err := s.repo.GetListByUserId(ctx, rq.GuarantorUserId)
 
@@ -74,7 +77,7 @@ func (s *Service) RemovePermission(ctx context.Context, rq ChangePermissionReque
 	}
 
 	if !has {
-		return ErrInvalidCred
+		return domain.ErrPermissionNotOwned
 	}
 
 	return s.repo.RemovePermission(ctx, rq.ApplyUserId, rq.PermissionId)
