@@ -78,10 +78,6 @@ func (d *Database) Ping(ctx context.Context) error {
 	return nil
 }
 
-func (d *Database) Begin(ctx context.Context) (pgx.Tx, error) {
-	return d.db.Begin(ctx)
-}
-
 // WithinTx runs fn inside a transaction stored in ctx.
 // It commits when fn returns nil and rolls back on error or panic.
 // A nested call reuses the transaction that is already in ctx.
@@ -99,10 +95,6 @@ func (d *Database) Conn(ctx context.Context) Querier {
 
 func (d *Database) Close() {
 	d.db.Close()
-}
-
-func (d *Database) GetDB() *pgxpool.Pool {
-	return d.db
 }
 
 func withinTx(ctx context.Context, b beginner, fn func(ctx context.Context) error) error {
