@@ -24,16 +24,13 @@ func (m *Middleware) Permission(next http.HandlerFunc, code string) http.Handler
 
 		_, err := m.loadPermision(ctx, user.Id, code)
 		if err != nil {
-			status := http.StatusInternalServerError
-			code := "internal_error"
-			msg := "internal error"
 			if errors.Is(err, domain.ErrPermissionNotFound) {
-				status = http.StatusForbidden
-				code = "do_not_have_enough_permission"
-				msg = "dont have enough permission"
+				m.logger.Info("permission denied", slog.String("user_id", user.Id), slog.String("permission", code))
+				dto.WriteError(w, http.StatusForbidden, "do_not_have_enough_permission", "dont have enough permission")
+				return
 			}
-			m.logger.Error("service unavailable", slog.Any("err", err))
-			dto.WriteError(w, status, code, msg)
+			m.logger.Error("permission check failed", slog.String("permission", code), slog.Any("err", err))
+			dto.WriteError(w, http.StatusInternalServerError, "internal_error", "internal error")
 			return
 		}
 
