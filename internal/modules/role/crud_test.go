@@ -4,6 +4,8 @@ import (
 	"bazaar/internal/domain"
 	"context"
 	"errors"
+	"fmt"
+	"slices"
 	"testing"
 )
 
@@ -57,13 +59,38 @@ func (f *crudRepo) UserHasPermission(ctx context.Context, userId, permissionId s
 	return f.held, nil
 }
 
+// write records a repository write with the WithinTx call it ran in.
+func (f *crudRepo) write(ctx context.Context, w string) {
+	f.writes = append(f.writes, fmt.Sprintf("%s@%d", w, txCall(ctx)))
+}
+
 func (f *crudRepo) AddPermission(ctx context.Context, roleId, permissionId string) error {
-	f.writes = append(f.writes, "add:"+permissionId)
+	f.write(ctx, "add:"+permissionId)
 	return nil
 }
 
 func (f *crudRepo) RemovePermission(ctx context.Context, roleId, permissionId string) error {
-	f.writes = append(f.writes, "remove:"+permissionId)
+	f.write(ctx, "remove:"+permissionId)
+	return nil
+}
+
+func (f *crudRepo) GivePermissionToRoleUsers(ctx context.Context, roleId, permissionId string) error {
+	f.write(ctx, "give-role-users:"+permissionId)
+	return nil
+}
+
+func (f *crudRepo) RevokePermissionFromRoleUsers(ctx context.Context, roleId, permissionId string) error {
+	f.write(ctx, "revoke-role-users:"+permissionId)
+	return nil
+}
+
+func (f *crudRepo) RevokeCurrentRolePermissions(ctx context.Context, userId string) error {
+	f.write(ctx, "revoke-current-package")
+	return nil
+}
+
+func (f *crudRepo) GivePermissions(ctx context.Context, userId, roleId string) error {
+	f.write(ctx, "give-package:"+roleId)
 	return nil
 }
 
@@ -79,7 +106,7 @@ func (f *crudRepo) GetUserRole(ctx context.Context, userId, companyId string) (*
 }
 
 func (f *crudRepo) SetUserRole(ctx context.Context, userId, roleId string) error {
-	f.writes = append(f.writes, "assign:"+roleId)
+	f.write(ctx, "set-role:"+roleId)
 	return nil
 }
 
@@ -184,12 +211,47 @@ func TestRolePermissionNeedsGrantorPermission(t *testing.T) {
 
 		err := newCrud(repo).AddRolePermission(context.Background(), rq)
 
-		if held && (err != nil || len(repo.writes) != 1) {
-			t.Fatalf("held: error = %v, writes = %v; want nil, one add", err, repo.writes)
-		}
 		if !held && (!errors.Is(err, domain.ErrPermissionNotOwned) || len(repo.writes) != 0) {
 			t.Fatalf("not held: error = %v, writes = %v; want %v, none", err, repo.writes, domain.ErrPermissionNotOwned)
 		}
+		if held && err != nil {
+			t.Fatalf("held: error = %v", err)
+		}
+	}
+}
+
+// A permission added to the package reaches the role users, and a removed
+// one is taken from them, in the same transaction as the package change.
+func TestRolePackageChangeReachesRoleUsers(t *testing.T) {
+	rq := domain.RolePermissionRequest{RoleId: plainRole.Id, CompanyId: companyId, PermissionId: "p-1", GrantorId: adminId}
+	tests := []struct {
+		name string
+		op   func(s domain.RoleService) error
+		want []string
+	}{
+		{
+			name: "add",
+			op:   func(s domain.RoleService) error { return s.AddRolePermission(context.Background(), rq) },
+			want: []string{"add:p-1@1", "give-role-users:p-1@1"},
+		},
+		{
+			name: "remove",
+			op:   func(s domain.RoleService) error { return s.RemoveRolePermission(context.Background(), rq) },
+			want: []string{"remove:p-1@1", "revoke-role-users:p-1@1"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &crudRepo{role: plainRole, held: true}
+
+			if err := tt.op(newCrud(repo)); err != nil {
+				t.Fatalf("error = %v", err)
+			}
+			if !slices.Equal(repo.writes, tt.want) {
+				t.Fatalf("writes = %v, want %v", repo.writes, tt.want)
+			}
+		})
 	}
 }
 
@@ -217,9 +279,14 @@ func TestAssignRole(t *testing.T) {
 			if !errors.Is(err, tt.want) {
 				t.Fatalf("AssignRole error = %v, want %v", err, tt.want)
 			}
-			assigned := len(tt.repo.writes) == 1 && tt.repo.writes[0] == "assign:"+plainRole.Id
-			if assigned != (tt.want == nil) {
-				t.Fatalf("writes = %v, want assignment only on success", tt.repo.writes)
+			// The old package goes before the role changes, because the
+			// revoke reads the current role; all in one transaction.
+			want := []string{"revoke-current-package@1", "set-role:" + plainRole.Id + "@1", "give-package:" + plainRole.Id + "@1"}
+			if tt.want != nil {
+				want = nil
+			}
+			if !slices.Equal(tt.repo.writes, want) {
+				t.Fatalf("writes = %v, want %v", tt.repo.writes, want)
 			}
 		})
 	}

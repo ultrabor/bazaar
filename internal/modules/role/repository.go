@@ -330,22 +330,45 @@ func (r *repository) GetUserRole(ctx context.Context, userId, companyId string) 
 }
 
 func (r *repository) SetUserRole(ctx context.Context, userId, roleId string) error {
-	return r.db.WithinTx(ctx, func(ctx context.Context) error {
-		if _, err := r.db.Conn(ctx).Exec(ctx, `
-			UPDATE users SET user_role_id = $2, updated_at = now()
-			WHERE id = $1 AND deleted_at = 0
-		`, userId, roleId); err != nil {
-			return err
-		}
+	_, err := r.db.Conn(ctx).Exec(ctx, `
+		UPDATE users SET user_role_id = $2, updated_at = now()
+		WHERE id = $1 AND deleted_at = 0
+	`, userId, roleId)
 
-		if _, err := r.db.Conn(ctx).Exec(ctx, `
-			DELETE FROM user_permissions WHERE user_id = $1
-		`, userId); err != nil {
-			return err
-		}
+	return err
+}
 
-		return r.GivePermissions(ctx, userId, roleId)
-	})
+func (r *repository) GivePermissionToRoleUsers(ctx context.Context, roleId, permissionId string) error {
+	_, err := r.db.Conn(ctx).Exec(ctx, `
+		INSERT INTO user_permissions(user_id, permission_id)
+		SELECT u.id, $2
+		FROM users u
+		WHERE u.user_role_id = $1 AND u.deleted_at = 0
+		ON CONFLICT DO NOTHING
+	`, roleId, permissionId)
+
+	return err
+}
+
+func (r *repository) RevokePermissionFromRoleUsers(ctx context.Context, roleId, permissionId string) error {
+	_, err := r.db.Conn(ctx).Exec(ctx, `
+		DELETE FROM user_permissions up
+		USING users u
+		WHERE up.user_id = u.id AND u.user_role_id = $1 AND up.permission_id = $2
+	`, roleId, permissionId)
+
+	return err
+}
+
+func (r *repository) RevokeCurrentRolePermissions(ctx context.Context, userId string) error {
+	_, err := r.db.Conn(ctx).Exec(ctx, `
+		DELETE FROM user_permissions up
+		USING users u
+		JOIN role_permissions rp ON rp.user_role_id = u.user_role_id
+		WHERE u.id = $1 AND up.user_id = u.id AND up.permission_id = rp.permission_id
+	`, userId)
+
+	return err
 }
 
 func isDuplicateName(err error) bool {

@@ -178,7 +178,7 @@ func (h *Handler) ArchiveRole(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary Add a permission to a role package
-// @Description Users who already hold the role keep their permissions.
+// @Description Users of the role get the permission too.
 // @Tags Role
 // @Accept json
 // @Security BearerAuth
@@ -221,7 +221,7 @@ func (h *Handler) AddRolePermission(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary Remove a permission from a role package
-// @Description Users who already hold the role keep their permissions.
+// @Description The permission is taken from users of the role too.
 // @Tags Role
 // @Security BearerAuth
 // @Param id path string true "Role ID"
@@ -257,7 +257,7 @@ func (h *Handler) RemoveRolePermission(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary Assign a role to a user
-// @Description Replaces the user's permissions with the role package.
+// @Description Takes the old role package from the user and gives the new one; personal permissions outside the old package stay.
 // @Tags Role
 // @Accept json
 // @Security BearerAuth
