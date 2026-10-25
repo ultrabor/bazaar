@@ -1,6 +1,10 @@
 package role
 
-import "context"
+import (
+	"bazaar/internal/domain"
+	"context"
+	"errors"
+)
 
 /*
 Маршрут	Право
@@ -13,18 +17,36 @@ DELETE /role/{id}/permission/{permissionId}	roles.edit
 PUT /user/{id}/role	roles.assign
 */
 
-type Service struct {
-	repo *Repository
+type service struct {
+	repo domain.RoleRepository
 }
 
-func NewService(repo *Repository) *Service {
-	return &Service{repo: repo}
+var _ domain.RoleService = (*service)(nil)
+
+func NewService(repo domain.RoleRepository) domain.RoleService {
+	return &service{repo: repo}
 }
 
-func (s *Service) GetList(ctx context.Context, companyId string) ([]Role, error) {
-	return s.repo.GetList(ctx, companyId)
+func (s *service) GetCompanyRoles(ctx context.Context, companyId string) ([]domain.Role, error) {
+	return s.repo.GetCompanyRoles(ctx, companyId)
 }
 
-func (s *Service) GetById(ctx context.Context, userId string) ([]Role, error)
+func (s *service) CheckAssignable(ctx context.Context, roleId, companyId string) error {
+	role, err := s.repo.GetById(ctx, roleId, companyId)
+	if err != nil {
+		if errors.Is(err, domain.ErrRoleNotFound) {
+			return domain.ErrRoleNotAssignable
+		}
+		return err
+	}
 
-func (s *Service) CreateRole(ctx context.Context, userId string) ([]Role, error)
+	if role.IsSystem {
+		return domain.ErrRoleNotAssignable
+	}
+
+	return nil
+}
+
+func (s *service) GivePermissions(ctx context.Context, userId, roleId string) error {
+	return s.repo.GivePermissions(ctx, userId, roleId)
+}

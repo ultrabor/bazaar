@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"bazaar/internal/modules/permission"
-	"bazaar/internal/modules/user"
 	"bazaar/internal/platform/httpx/dto"
 	"errors"
 	"log/slog"
@@ -17,7 +16,7 @@ func (m *Middleware) Permission(next http.HandlerFunc, code string) http.Handler
 			return
 		}
 
-		user, ok := ctx.Value(currentUserKey).(*user.User)
+		user, ok := CurrentUser(ctx)
 		if !ok {
 			dto.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 			return

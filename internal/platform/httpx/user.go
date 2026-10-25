@@ -1,7 +1,7 @@
 package httpx
 
 import (
-	"bazaar/internal/modules/user"
+	"bazaar/internal/domain"
 	"bazaar/internal/platform/httpx/dto"
 	"bazaar/internal/platform/httpx/middleware"
 	"bazaar/internal/platform/support/validator"
@@ -21,7 +21,7 @@ import (
 // @Produce json
 // @Security BearerAuth
 // @Param request body dto.CreateUserRequest true "User creation data"
-// @Success 201 {object} user.CreateUserResponse
+// @Success 201 {object} domain.CreateUserResponse
 // @Failure 400 {object} dto.Error "Invalid credential data"
 // @Failure 409 {object} dto.Error "Phone already registered"
 // @Failure 500 {object} dto.Error "Internal error"
@@ -48,7 +48,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rq := user.CreateUserRequest{
+	rq := domain.CreateUserRequest{
 		FirstName:  body.FirstName,
 		LastName:   body.LastName,
 		Phone:      body.Phone,
@@ -68,15 +68,15 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, user.ErrInvalidPhone):
+		case errors.Is(err, domain.ErrInvalidPhone):
 			status = http.StatusBadRequest
 			code = "invalid_phone"
 			msg = "not valid phone number"
-		case errors.Is(err, user.ErrPhoneTaken):
+		case errors.Is(err, domain.ErrPhoneTaken):
 			status = http.StatusConflict
 			code = "phone_taken"
 			msg = "phone is taken"
-		case errors.Is(err, user.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
@@ -84,7 +84,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusBadRequest
 			code = "invalid_password"
 			msg = "password is invalid"
-		case errors.Is(err, user.ErrInvalidRole):
+		case errors.Is(err, domain.ErrInvalidRole):
 			status = http.StatusBadRequest
 			code = "invalid_role"
 			msg = "invalid role for company"
@@ -114,7 +114,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "User ID"
 // @Security BearerAuth
-// @Success 200 {object} user.User
+// @Success 200 {object} domain.User
 // @Failure 400 {object} dto.Error "Invalid user ID"
 // @Failure 401 {object} dto.Error "Unauthorized"
 // @Failure 404 {object} dto.Error "User not found"
@@ -151,11 +151,11 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusServiceUnavailable
 			code = "service_unavailable"
 			msg = "service unavailable"
-		case errors.Is(err, user.ErrInvalidCred):
+		case errors.Is(err, domain.ErrInvalidCred):
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
-		case errors.Is(err, user.ErrNotFound):
+		case errors.Is(err, domain.ErrUserNotFound):
 			status = http.StatusNotFound
 			code = "user_not_found"
 			msg = "user not found"

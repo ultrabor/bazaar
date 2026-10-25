@@ -1,50 +1,43 @@
 package user
 
 import (
+	"bazaar/internal/domain"
 	"bazaar/internal/platform/support/validator"
 	"context"
 	"errors"
-
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
-type Service struct {
-	repo *Repository
+type service struct {
+	repo  domain.UserRepository
+	tx    domain.TxManager
+	roles domain.RoleService
 }
 
-func NewService(repo *Repository) *Service {
-	return &Service{repo: repo}
+var _ domain.UserService = (*service)(nil)
+
+func NewService(repo domain.UserRepository, tx domain.TxManager, roles domain.RoleService) domain.UserService {
+	return &service{repo: repo, tx: tx, roles: roles}
 }
 
-func (s *Service) GetUserById(ctx context.Context, userId, companyId string) (*User, error) {
+func (s *service) GetUserById(ctx context.Context, userId, companyId string) (*domain.User, error) {
 	return s.repo.GetUserById(ctx, userId, companyId)
 }
 
-func (s *Service) CreateUser(ctx context.Context, r *CreateUserRequest) (*CreateUserResponse, error) {
+func (s *service) CreateUser(ctx context.Context, r *domain.CreateUserRequest) (*domain.CreateUserResponse, error) {
 
 	if r.CompanyId == "" || r.FirstName == "" || r.Password == "" {
-		return nil, ErrInvalidCred
+		return nil, domain.ErrInvalidCred
 	}
 
 	if !validator.PhoneValid(r.Phone) {
-		return nil, ErrInvalidPhone
+		return nil, domain.ErrInvalidPhone
 	}
 
-	roles, err := s.repo.GetCompanyRoles(ctx, r.CompanyId)
-	if err != nil {
-		return nil, err
-	}
-
-	ok := false
-	for _, role := range roles {
-		if role.Id == r.UserRoleId {
-			ok = true
-			break
+	if err := s.roles.CheckAssignable(ctx, r.UserRoleId, r.CompanyId); err != nil {
+		if errors.Is(err, domain.ErrRoleNotAssignable) {
+			return nil, domain.ErrInvalidRole
 		}
-	}
-
-	if !ok {
-		return nil, ErrInvalidRole
+		return nil, err
 	}
 
 	hash, err := validator.HashPassword(r.Password)
@@ -54,31 +47,16 @@ func (s *Service) CreateUser(ctx context.Context, r *CreateUserRequest) (*Create
 
 	r.PasswordHash = hash
 
-	tx, err := s.repo.db.Begin(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	defer tx.Rollback(ctx)
-
-	res, err := s.repo.CreateUser(ctx, tx, r)
-	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) &&
-			pgErr.Code == "23505" &&
-			pgErr.ConstraintName == "users_active_phone_unique" {
-			return nil, ErrPhoneTaken
+	var res *domain.CreateUserResponse
+	err = s.tx.WithinTx(ctx, func(ctx context.Context) error {
+		var err error
+		res, err = s.repo.CreateUser(ctx, r)
+		if err != nil {
+			return err
 		}
-		return nil, err
-	}
 
-	err = s.repo.GiveRolePermissions(ctx, tx, res.UserID, r.UserRoleId)
-	if err != nil {
-		return nil, err
-	}
-
-	err = tx.Commit(ctx)
-
+		return s.roles.GivePermissions(ctx, res.UserID, r.UserRoleId)
+	})
 	if err != nil {
 		return nil, err
 	}
