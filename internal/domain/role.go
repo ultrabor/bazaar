@@ -15,6 +15,9 @@ type Role struct {
 var (
 	ErrRoleNotFound      = errors.New("role not found")
 	ErrRoleNotAssignable = errors.New("role cannot be assigned")
+	// ErrRoleExceedsPermissions means the role holds a permission the
+	// grantor does not have.
+	ErrRoleExceedsPermissions = errors.New("role exceeds grantor permissions")
 )
 
 type RoleRepository interface {
@@ -28,6 +31,9 @@ type RoleRepository interface {
 	CreateSystemRole(ctx context.Context, companyId string) (string, error)
 	// GiveAllPermissions puts every active permission into the role.
 	GiveAllPermissions(ctx context.Context, roleId string) error
+	// IsSubsetOfUser reports whether every active permission of the role
+	// is also held by the user.
+	IsSubsetOfUser(ctx context.Context, roleId, userId string) (bool, error)
 }
 
 type RoleService interface {
@@ -37,5 +43,8 @@ type RoleService interface {
 	// CheckAssignable returns ErrRoleNotAssignable when the role is missing,
 	// belongs to another company, is archived or is a system role.
 	CheckAssignable(ctx context.Context, roleId, companyId string) error
+	// CheckGrantable returns ErrRoleExceedsPermissions when the role holds a
+	// permission the grantor does not have.
+	CheckGrantable(ctx context.Context, roleId, grantorId string) error
 	GivePermissions(ctx context.Context, userId, roleId string) error
 }

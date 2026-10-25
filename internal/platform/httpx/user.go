@@ -23,6 +23,7 @@ import (
 // @Param request body dto.CreateUserRequest true "User creation data"
 // @Success 201 {object} domain.CreateUserResponse
 // @Failure 400 {object} dto.Error "Invalid credential data"
+// @Failure 403 {object} dto.Error "Role has permissions the creator lacks"
 // @Failure 409 {object} dto.Error "Phone already registered"
 // @Failure 500 {object} dto.Error "Internal error"
 // @Failure 503 {object} dto.Error "Service unavailable"
@@ -55,6 +56,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		Password:   body.Password,
 		CompanyId:  u.CompanyId,
 		UserRoleId: body.UserRoleId,
+		CreatorId:  u.Id,
 	}
 
 	res, err := h.sm.userService.CreateUser(ctx, &rq)
@@ -88,6 +90,10 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusBadRequest
 			code = "invalid_role"
 			msg = "invalid role for company"
+		case errors.Is(err, domain.ErrRoleExceedsPermissions):
+			status = http.StatusForbidden
+			code = "role_exceeds_permissions"
+			msg = "role has permissions you do not have"
 		}
 
 		dto.WriteError(w, status, code, msg)

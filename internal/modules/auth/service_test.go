@@ -74,6 +74,10 @@ func (f *fakeRoles) CheckAssignable(ctx context.Context, roleId, companyId strin
 	return nil
 }
 
+func (f *fakeRoles) CheckGrantable(ctx context.Context, roleId, grantorId string) error {
+	return nil
+}
+
 func (f *fakeRoles) CreateOwnerRole(ctx context.Context, companyId string) (string, error) {
 	f.ownerCompanyId = companyId
 	f.ownerTx = txCall(ctx)

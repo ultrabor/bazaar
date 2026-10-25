@@ -1333,6 +1333,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
                         }
                     },
+                    "403": {
+                        "description": "Role has permissions the creator lacks",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                        }
+                    },
                     "409": {
                         "description": "Phone already registered",
                         "schema": {

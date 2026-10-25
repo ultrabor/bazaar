@@ -90,6 +90,22 @@ func TestCreateUserTakesCompanyFromToken(t *testing.T) {
 	if svc.created.UserRoleId != "role-1" {
 		t.Fatalf("UserRoleId = %q, want role-1", svc.created.UserRoleId)
 	}
+	if svc.created.CreatorId != "admin-1" {
+		t.Fatalf("CreatorId = %q, want admin-1 from token", svc.created.CreatorId)
+	}
+}
+
+func TestCreateUserRoleExceedsPermissions(t *testing.T) {
+	svc := &fakeUserService{createErr: domain.ErrRoleExceedsPermissions}
+
+	res := serve(t, newUserRouter(svc), http.MethodPost, "/user", `{}`)
+
+	if res.Code != http.StatusForbidden {
+		t.Fatalf("status = %d, want %d", res.Code, http.StatusForbidden)
+	}
+	if code := errorCode(t, res); code != "role_exceeds_permissions" {
+		t.Fatalf("code = %q, want role_exceeds_permissions", code)
+	}
 }
 
 func TestCreateUserBadRequest(t *testing.T) {
