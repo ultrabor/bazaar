@@ -51,8 +51,8 @@ type RolePermissionRequest struct {
 	GrantorId    string `json:"-"`
 }
 
-// AssignRoleRequest gives a user a new role. The user's permissions are
-// replaced by the role package.
+// AssignRoleRequest gives a user a new role. The old package is taken
+// from the user and the new one is given.
 type AssignRoleRequest struct {
 	UserId     string `json:"user_id"`
 	CompanyId  string `json:"company_id"`
@@ -107,11 +107,19 @@ type RoleRepository interface {
 	// RemovePermission returns ErrPermissionNotFound when the role does not
 	// have the permission.
 	RemovePermission(ctx context.Context, roleId, permissionId string) error
+	// GivePermissionToRoleUsers gives the permission to every active user
+	// holding the role.
+	GivePermissionToRoleUsers(ctx context.Context, roleId, permissionId string) error
+	// RevokePermissionFromRoleUsers takes the permission from every user
+	// holding the role.
+	RevokePermissionFromRoleUsers(ctx context.Context, roleId, permissionId string) error
+	// RevokeCurrentRolePermissions takes from the user the permissions of
+	// the user's current role package; personal permissions outside it stay.
+	RevokeCurrentRolePermissions(ctx context.Context, userId string) error
 	// GetUserRole returns the role of an active user of the company or
 	// ErrUserNotFound.
 	GetUserRole(ctx context.Context, userId, companyId string) (*Role, error)
-	// SetUserRole points the user at the role and replaces the user's
-	// permissions with the role package.
+	// SetUserRole points the user at the role; permissions are not touched.
 	SetUserRole(ctx context.Context, userId, roleId string) error
 }
 
@@ -135,12 +143,14 @@ type RoleService interface {
 	// ArchiveRole returns ErrSystemRole for the owner role and ErrRoleInUse
 	// while active users hold the role.
 	ArchiveRole(ctx context.Context, roleId, companyId string) error
-	// AddRolePermission and RemoveRolePermission change the role package
-	// only; users who already hold the role keep their permissions.
+	// AddRolePermission and RemoveRolePermission change the role package and,
+	// in the same transaction, the permissions of every user of the role.
 	AddRolePermission(ctx context.Context, rq RolePermissionRequest) error
 	RemoveRolePermission(ctx context.Context, rq RolePermissionRequest) error
 	// AssignRole checks that the user is in the company and not the owner,
-	// that the role is assignable and not wider than the assigner, then sets
-	// the role and replaces the user's permissions in one transaction.
+	// that the role is assignable and not wider than the assigner. Then, in
+	// one transaction, it takes the old package from the user, sets the role
+	// and gives the new package; personal permissions outside the old
+	// package stay.
 	AssignRole(ctx context.Context, rq AssignRoleRequest) error
 }

@@ -1609,7 +1609,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Users who already hold the role keep their permissions.",
+                "description": "Users of the role get the permission too.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1685,7 +1685,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Users who already hold the role keep their permissions.",
+                "description": "The permission is taken from users of the role too.",
                 "tags": [
                     "Role"
                 ],
@@ -1881,7 +1881,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Replaces the user's permissions with the role package.",
+                "description": "Takes the old role package from the user and gives the new one; personal permissions outside the old package stay.",
                 "consumes": [
                     "application/json"
                 ],

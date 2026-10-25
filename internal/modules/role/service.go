@@ -159,14 +159,24 @@ func (s *service) AddRolePermission(ctx context.Context, rq domain.RolePermissio
 	if err := s.checkRolePermissionChange(ctx, rq); err != nil {
 		return err
 	}
-	return s.repo.AddPermission(ctx, rq.RoleId, rq.PermissionId)
+	return s.tx.WithinTx(ctx, func(ctx context.Context) error {
+		if err := s.repo.AddPermission(ctx, rq.RoleId, rq.PermissionId); err != nil {
+			return err
+		}
+		return s.repo.GivePermissionToRoleUsers(ctx, rq.RoleId, rq.PermissionId)
+	})
 }
 
 func (s *service) RemoveRolePermission(ctx context.Context, rq domain.RolePermissionRequest) error {
 	if err := s.checkRolePermissionChange(ctx, rq); err != nil {
 		return err
 	}
-	return s.repo.RemovePermission(ctx, rq.RoleId, rq.PermissionId)
+	return s.tx.WithinTx(ctx, func(ctx context.Context) error {
+		if err := s.repo.RemovePermission(ctx, rq.RoleId, rq.PermissionId); err != nil {
+			return err
+		}
+		return s.repo.RevokePermissionFromRoleUsers(ctx, rq.RoleId, rq.PermissionId)
+	})
 }
 
 func (s *service) AssignRole(ctx context.Context, rq domain.AssignRoleRequest) error {
@@ -174,24 +184,33 @@ func (s *service) AssignRole(ctx context.Context, rq domain.AssignRoleRequest) e
 		return domain.ErrInvalidUserID
 	}
 
-	current, err := s.repo.GetUserRole(ctx, rq.UserId, rq.CompanyId)
-	if err != nil {
-		return err
-	}
-	// The owner keeps the system role; otherwise a company could lose its
-	// only user with all permissions.
-	if current.IsSystem {
-		return domain.ErrSystemRole
-	}
+	return s.tx.WithinTx(ctx, func(ctx context.Context) error {
+		current, err := s.repo.GetUserRole(ctx, rq.UserId, rq.CompanyId)
+		if err != nil {
+			return err
+		}
+		// The owner keeps the system role; otherwise a company could lose
+		// its only user with all permissions.
+		if current.IsSystem {
+			return domain.ErrSystemRole
+		}
 
-	if err := s.CheckAssignable(ctx, rq.RoleId, rq.CompanyId); err != nil {
-		return err
-	}
-	if err := s.CheckGrantable(ctx, rq.RoleId, rq.AssignerId); err != nil {
-		return err
-	}
+		if err := s.CheckAssignable(ctx, rq.RoleId, rq.CompanyId); err != nil {
+			return err
+		}
+		if err := s.CheckGrantable(ctx, rq.RoleId, rq.AssignerId); err != nil {
+			return err
+		}
 
-	return s.repo.SetUserRole(ctx, rq.UserId, rq.RoleId)
+		// Revoke reads the current role, so it must run before SetUserRole.
+		if err := s.repo.RevokeCurrentRolePermissions(ctx, rq.UserId); err != nil {
+			return err
+		}
+		if err := s.repo.SetUserRole(ctx, rq.UserId, rq.RoleId); err != nil {
+			return err
+		}
+		return s.repo.GivePermissions(ctx, rq.UserId, rq.RoleId)
+	})
 }
 
 // editableRole returns an active role of the company that is not the
