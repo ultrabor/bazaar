@@ -34,6 +34,8 @@ func (r *repository) GetListByUserId(ctx context.Context, userId string) ([]doma
 		return nil, err
 	}
 
+	defer rows.Close()
+
 	for rows.Next() {
 		var perm domain.Permission
 
@@ -48,7 +50,7 @@ func (r *repository) GetListByUserId(ctx context.Context, userId string) ([]doma
 
 	if err := rows.Err(); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, domain.ErrPermissionNotFound
+			return []domain.Permission{}, nil
 		}
 		return nil, err
 	}
@@ -88,7 +90,7 @@ func (repo *repository) SetPermission(ctx context.Context, userId, permissionId 
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) &&
 			pgErr.Code == "23505" &&
-			pgErr.ConstraintName == "locations_unique_active_name_idx" {
+			pgErr.ConstraintName == "user_permissions_pkey" {
 			return domain.ErrPermissionAlreadyExists
 		}
 		if errors.Is(err, pgx.ErrNoRows) {

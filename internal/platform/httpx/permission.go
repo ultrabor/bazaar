@@ -108,13 +108,17 @@ func (h *Handler) SetPermission(w http.ResponseWriter, r *http.Request) {
 			code = "permission_not_found"
 			msg = "permission_not_found"
 		case errors.Is(err, domain.ErrPermissionNotOwned):
-			status = http.StatusNotFound
+			status = http.StatusForbidden
 			code = "invalid_cred"
 			msg = "invalid credential"
 		case errors.Is(err, domain.ErrInvalidUserID):
 			status = http.StatusBadRequest
 			code = "invalid_user_id"
 			msg = "user id must be a valid UUID"
+		case errors.Is(err, domain.ErrPermissionAlreadyExists):
+			status = http.StatusConflict
+			code = "permission_already_exists"
+			msg = "permission already exists"
 		case errors.Is(err, domain.ErrUserNotFound):
 			status = http.StatusNotFound
 			code = "user_not_found"
@@ -172,7 +176,7 @@ func (h *Handler) RemovePermission(w http.ResponseWriter, r *http.Request) {
 			code = "permission_not_found"
 			msg = "permission_not_found"
 		case errors.Is(err, domain.ErrPermissionNotOwned):
-			status = http.StatusNotFound
+			status = http.StatusForbidden
 			code = "invalid_cred"
 			msg = "invalid credential"
 		case errors.Is(err, domain.ErrInvalidUserID):
