@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"bazaar/internal/modules/permission"
+	"bazaar/internal/domain"
 	"bazaar/internal/platform/httpx/dto"
 	"errors"
 	"log/slog"
@@ -27,7 +27,7 @@ func (m *Middleware) Permission(next http.HandlerFunc, code string) http.Handler
 			status := http.StatusInternalServerError
 			code := "internal_error"
 			msg := "internal error"
-			if errors.Is(err, permission.ErrNotFound) {
+			if errors.Is(err, domain.ErrPermissionNotFound) {
 				status = http.StatusForbidden
 				code = "do_not_have_enough_permission"
 				msg = "dont have enough permission"

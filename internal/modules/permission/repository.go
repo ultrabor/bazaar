@@ -1,6 +1,7 @@
 package permission
 
 import (
+	"bazaar/internal/domain"
 	"bazaar/internal/platform/database"
 	"context"
 	"errors"
@@ -9,30 +10,32 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-type Repository struct {
+type repository struct {
 	db *database.Database
 }
 
-func NewRepository(db *database.Database) *Repository {
-	return &Repository{db: db}
+var _ domain.PermissionRepository = (*repository)(nil)
+
+func NewRepository(db *database.Database) domain.PermissionRepository {
+	return &repository{db: db}
 }
 
-func (r *Repository) GetListByUserId(ctx context.Context, userId string) ([]Permission, error) {
-	var permissions []Permission
+func (r *repository) GetListByUserId(ctx context.Context, userId string) ([]domain.Permission, error) {
+	var permissions []domain.Permission
 
 	query := `
 		select id, label, code from permissions p
 		join user_permissions u on u.permission_id = p.id and u.user_id = $1
 	`
 
-	rows, err := r.db.GetDB().Query(ctx, query, userId)
+	rows, err := r.db.Conn(ctx).Query(ctx, query, userId)
 
 	if err != nil {
 		return nil, err
 	}
 
 	for rows.Next() {
-		var perm Permission
+		var perm domain.Permission
 
 		if err := rows.Scan(
 			&perm.Id,
@@ -44,8 +47,8 @@ func (r *Repository) GetListByUserId(ctx context.Context, userId string) ([]Perm
 	}
 
 	if err := rows.Err(); err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, ErrNotFound
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, domain.ErrPermissionNotFound
 		}
 		return nil, err
 	}
@@ -53,19 +56,19 @@ func (r *Repository) GetListByUserId(ctx context.Context, userId string) ([]Perm
 	return permissions, nil
 }
 
-func (repo *Repository) GetPermissionByCode(ctx context.Context, userId, code string) (*Permission, error) {
+func (repo *repository) GetPermissionByCode(ctx context.Context, userId, code string) (*domain.Permission, error) {
 	query := `
 		select id, label, code from permissions p
 		join user_permissions u on u.permission_id = p.id and u.user_id = $1
 		where p.code = $2
 	`
-	per := Permission{}
+	per := domain.Permission{}
 
-	err := repo.db.GetDB().QueryRow(ctx, query, userId, code).Scan(&per.Id, &per.Label, &per.Code)
+	err := repo.db.Conn(ctx).QueryRow(ctx, query, userId, code).Scan(&per.Id, &per.Label, &per.Code)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, ErrNotFound
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, domain.ErrPermissionNotFound
 		}
 		return nil, err
 	}
@@ -73,23 +76,23 @@ func (repo *Repository) GetPermissionByCode(ctx context.Context, userId, code st
 	return &per, nil
 }
 
-func (repo *Repository) SetPermission(ctx context.Context, userId, permissionId string) error {
+func (repo *repository) SetPermission(ctx context.Context, userId, permissionId string) error {
 	query := `
 		INSERT INTO user_permissions(user_id, permission_id)
 		VALUES ($1, $2)
 	`
 
-	_, err := repo.db.GetDB().Exec(ctx, query, userId, permissionId)
+	_, err := repo.db.Conn(ctx).Exec(ctx, query, userId, permissionId)
 
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) &&
 			pgErr.Code == "23505" &&
 			pgErr.ConstraintName == "locations_unique_active_name_idx" {
-			return ErrPermissionAlreadyExists
+			return domain.ErrPermissionAlreadyExists
 		}
 		if errors.Is(err, pgx.ErrNoRows) {
-			return ErrNotFound
+			return domain.ErrPermissionNotFound
 		}
 		return err
 	}
@@ -97,21 +100,21 @@ func (repo *Repository) SetPermission(ctx context.Context, userId, permissionId 
 	return nil
 }
 
-func (repo *Repository) RemovePermission(ctx context.Context, userId, permissionId string) error {
+func (repo *repository) RemovePermission(ctx context.Context, userId, permissionId string) error {
 
 	query := `
 		DELETE FROM user_permissions 
 		where user_id = $1 and permission_id = $2
 	`
 
-	cmdTag, err := repo.db.GetDB().Exec(ctx, query, userId, permissionId)
+	cmdTag, err := repo.db.Conn(ctx).Exec(ctx, query, userId, permissionId)
 
 	if err != nil {
 		return err
 	}
 
 	if cmdTag.RowsAffected() == 0 {
-		return ErrNotFound
+		return domain.ErrPermissionNotFound
 	}
 
 	return nil
