@@ -1,3 +1,5 @@
+> Устройство кода и правила модулей: [architecture.md](architecture.md).
+
 # Params of get list 
 
     page  int  

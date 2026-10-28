@@ -1,18 +1,9 @@
 package main
 
 import (
-	"bazaar/internal/app/health"
-	"bazaar/internal/modules/auth"
-	"bazaar/internal/modules/category"
-	"bazaar/internal/modules/location"
-	"bazaar/internal/modules/permission"
-	"bazaar/internal/modules/product"
-	"bazaar/internal/modules/role"
-	"bazaar/internal/modules/user"
+	"bazaar/internal/app"
 	"bazaar/internal/platform/config"
 	"bazaar/internal/platform/database"
-	"bazaar/internal/platform/httpx"
-	"bazaar/internal/platform/httpx/middleware"
 	"bazaar/internal/platform/logger"
 	"bazaar/internal/platform/support/goose"
 	"context"
@@ -23,8 +14,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
-	"github.com/go-chi/chi/v5"
 )
 
 // @title Bazaar
@@ -72,29 +61,9 @@ func main() {
 
 	defer db.Close()
 
-	router := chi.NewRouter()
-
-	roleService := role.NewService(role.NewRepository(db), db)
-	authService := auth.NewService(auth.NewRepository(db), db, roleService, []byte(cfg.JWTSecret))
-	userService := user.NewService(user.NewRepository(db), db, roleService)
-	permissionService := permission.NewService(permission.NewRepository(db), userService)
-
-	handler := httpx.New(log, router, httpx.NewServiceManager(
-		health.New(db),
-		authService,
-		userService,
-		location.NewService(location.NewRepository(db)),
-		product.NewService(product.NewRepository(db)),
-		category.NewService(category.NewRepository(db)),
-		permissionService,
-		roleService,
-	))
-
-	handler.Routes(middleware.New(log, cfg.JWTSecret, authService.GetUserById, permissionService.GetPermissionByCode))
-
 	server := http.Server{
 		Addr:              cfg.HttpHost + ":" + cfg.HttpPort,
-		Handler:           router,
+		Handler:           app.New(cfg, db, log),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      30 * time.Second,

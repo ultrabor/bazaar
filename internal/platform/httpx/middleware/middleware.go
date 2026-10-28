@@ -1,26 +1,30 @@
 package middleware
 
 import (
-	"bazaar/internal/domain"
+	"bazaar/internal/platform/identity"
 	"context"
 	"log/slog"
 )
 
-type UserLoader func(context.Context, string) (*domain.User, error)
-type PermissionLoader func(context.Context, string, string) (*domain.Permission, error)
+// UserLoader returns the active user by id. It must return
+// apperror.ErrInvalidCred when there is no such user.
+type UserLoader func(ctx context.Context, userId string) (*identity.User, error)
+
+// PermissionChecker reports whether the user holds the permission code.
+type PermissionChecker func(ctx context.Context, userId, code string) (bool, error)
 
 type Middleware struct {
 	secretKey     string
 	logger        *slog.Logger
 	loadUser      UserLoader
-	loadPermision PermissionLoader
+	hasPermission PermissionChecker
 }
 
-func New(logger *slog.Logger, secretKey string, loadUser UserLoader, loadPermision PermissionLoader) *Middleware {
+func New(logger *slog.Logger, secretKey string, loadUser UserLoader, hasPermission PermissionChecker) *Middleware {
 	return &Middleware{
 		logger:        logger,
 		secretKey:     secretKey,
 		loadUser:      loadUser,
-		loadPermision: loadPermision,
+		hasPermission: hasPermission,
 	}
 }

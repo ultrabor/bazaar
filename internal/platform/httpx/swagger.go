@@ -6,7 +6,8 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
-var swaggerHandler = httpSwagger.Handler(
+// SwaggerHandler serves the Swagger UI and the generated spec.
+var SwaggerHandler = httpSwagger.Handler(
 	httpSwagger.URL("/swagger/doc.json"),
 	httpSwagger.UIConfig(map[string]string{
 		"requestInterceptor": `(req) => {

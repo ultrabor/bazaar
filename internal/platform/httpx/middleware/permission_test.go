@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"bazaar/internal/domain"
+	"bazaar/internal/platform/identity"
 	"bytes"
 	"context"
 	"errors"
@@ -15,12 +15,13 @@ import (
 func TestPermissionLogsOnlyFailuresAsError(t *testing.T) {
 	tests := []struct {
 		name       string
+		allowed    bool
 		loadErr    error
 		wantStatus int
 		wantError  bool
 	}{
-		{name: "allowed", wantStatus: http.StatusOK},
-		{name: "denied", loadErr: domain.ErrPermissionNotFound, wantStatus: http.StatusForbidden},
+		{name: "allowed", allowed: true, wantStatus: http.StatusOK},
+		{name: "denied", wantStatus: http.StatusForbidden},
 		{name: "database error", loadErr: errors.New("db down"), wantStatus: http.StatusInternalServerError, wantError: true},
 	}
 
@@ -28,17 +29,14 @@ func TestPermissionLogsOnlyFailuresAsError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var logs bytes.Buffer
 			log := slog.New(slog.NewTextHandler(&logs, nil))
-			load := func(ctx context.Context, userId, code string) (*domain.Permission, error) {
-				if tt.loadErr != nil {
-					return nil, tt.loadErr
-				}
-				return &domain.Permission{Code: code}, nil
+			load := func(ctx context.Context, userId, code string) (bool, error) {
+				return tt.allowed, tt.loadErr
 			}
 			next := func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) }
 			handler := New(log, "secret", nil, load).Permission(next, "users.view")
 
 			req := httptest.NewRequest(http.MethodGet, "/", nil)
-			req = req.WithContext(WithCurrentUser(req.Context(), &domain.User{Id: "user-1"}))
+			req = req.WithContext(identity.WithUser(req.Context(), &identity.User{Id: "user-1"}))
 			res := httptest.NewRecorder()
 			handler.ServeHTTP(res, req)
 

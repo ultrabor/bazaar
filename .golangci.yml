@@ -1,0 +1,134 @@
+version: "2"
+
+linters:
+  enable:
+    - depguard
+  settings:
+    depguard:
+      # Module boundaries: see docs/architecture.md. A module may import
+      # only the modules listed for it; platform imports no module.
+      rules:
+        platform:
+          files:
+            - "**/internal/platform/**"
+          deny:
+            - pkg: "bazaar/internal/auth"
+              desc: platform must not depend on modules
+            - pkg: "bazaar/internal/category"
+              desc: platform must not depend on modules
+            - pkg: "bazaar/internal/location"
+              desc: platform must not depend on modules
+            - pkg: "bazaar/internal/permission"
+              desc: platform must not depend on modules
+            - pkg: "bazaar/internal/product"
+              desc: platform must not depend on modules
+            - pkg: "bazaar/internal/role"
+              desc: platform must not depend on modules
+            - pkg: "bazaar/internal/user"
+              desc: platform must not depend on modules
+        auth:
+          files:
+            - "**/internal/auth/**"
+          deny:
+            - pkg: "bazaar/internal/category"
+              desc: "auth may import only: role"
+            - pkg: "bazaar/internal/location"
+              desc: "auth may import only: role"
+            - pkg: "bazaar/internal/permission"
+              desc: "auth may import only: role"
+            - pkg: "bazaar/internal/product"
+              desc: "auth may import only: role"
+            - pkg: "bazaar/internal/user"
+              desc: "auth may import only: role"
+        category:
+          files:
+            - "**/internal/category/**"
+          deny:
+            - pkg: "bazaar/internal/auth"
+              desc: "category may import only: no other module"
+            - pkg: "bazaar/internal/location"
+              desc: "category may import only: no other module"
+            - pkg: "bazaar/internal/permission"
+              desc: "category may import only: no other module"
+            - pkg: "bazaar/internal/product"
+              desc: "category may import only: no other module"
+            - pkg: "bazaar/internal/role"
+              desc: "category may import only: no other module"
+            - pkg: "bazaar/internal/user"
+              desc: "category may import only: no other module"
+        location:
+          files:
+            - "**/internal/location/**"
+          deny:
+            - pkg: "bazaar/internal/auth"
+              desc: "location may import only: no other module"
+            - pkg: "bazaar/internal/category"
+              desc: "location may import only: no other module"
+            - pkg: "bazaar/internal/permission"
+              desc: "location may import only: no other module"
+            - pkg: "bazaar/internal/product"
+              desc: "location may import only: no other module"
+            - pkg: "bazaar/internal/role"
+              desc: "location may import only: no other module"
+            - pkg: "bazaar/internal/user"
+              desc: "location may import only: no other module"
+        permission:
+          files:
+            - "**/internal/permission/**"
+          deny:
+            - pkg: "bazaar/internal/auth"
+              desc: "permission may import only: user"
+            - pkg: "bazaar/internal/category"
+              desc: "permission may import only: user"
+            - pkg: "bazaar/internal/location"
+              desc: "permission may import only: user"
+            - pkg: "bazaar/internal/product"
+              desc: "permission may import only: user"
+            - pkg: "bazaar/internal/role"
+              desc: "permission may import only: user"
+        product:
+          files:
+            - "**/internal/product/**"
+          deny:
+            - pkg: "bazaar/internal/auth"
+              desc: "product may import only: no other module"
+            - pkg: "bazaar/internal/category"
+              desc: "product may import only: no other module"
+            - pkg: "bazaar/internal/location"
+              desc: "product may import only: no other module"
+            - pkg: "bazaar/internal/permission"
+              desc: "product may import only: no other module"
+            - pkg: "bazaar/internal/role"
+              desc: "product may import only: no other module"
+            - pkg: "bazaar/internal/user"
+              desc: "product may import only: no other module"
+        role:
+          files:
+            - "**/internal/role/**"
+          deny:
+            - pkg: "bazaar/internal/auth"
+              desc: "role may import only: no other module"
+            - pkg: "bazaar/internal/category"
+              desc: "role may import only: no other module"
+            - pkg: "bazaar/internal/location"
+              desc: "role may import only: no other module"
+            - pkg: "bazaar/internal/permission"
+              desc: "role may import only: no other module"
+            - pkg: "bazaar/internal/product"
+              desc: "role may import only: no other module"
+            - pkg: "bazaar/internal/user"
+              desc: "role may import only: no other module"
+        user:
+          files:
+            - "**/internal/user/**"
+          deny:
+            - pkg: "bazaar/internal/auth"
+              desc: "user may import only: role"
+            - pkg: "bazaar/internal/category"
+              desc: "user may import only: role"
+            - pkg: "bazaar/internal/location"
+              desc: "user may import only: role"
+            - pkg: "bazaar/internal/permission"
+              desc: "user may import only: role"
+            - pkg: "bazaar/internal/product"
+              desc: "user may import only: role"
