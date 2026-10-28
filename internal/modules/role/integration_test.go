@@ -1,9 +1,9 @@
 package role_test
 
 import (
+	"bazaar/internal/modules/role"
 	"bazaar/internal/platform/config"
 	"bazaar/internal/platform/database"
-	"bazaar/internal/role"
 	"context"
 	"errors"
 	"fmt"

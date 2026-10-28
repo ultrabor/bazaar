@@ -1,10 +1,10 @@
 package permission
 
 import (
+	"bazaar/internal/modules/user"
 	"bazaar/internal/platform/httpx"
 	"bazaar/internal/platform/identity"
 	"bazaar/internal/platform/support/apperror"
-	"bazaar/internal/user"
 	"context"
 	"encoding/json"
 	"errors"

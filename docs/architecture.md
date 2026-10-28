@@ -1,6 +1,7 @@
 # Архитектура
 
-Bazaar — модульный монолит. Один модуль — один Go-пакет в `internal/<name>`,
+Bazaar — модульный монолит. Один модуль — один Go-пакет в
+`internal/modules/<name>`,
 а слои — это файлы внутри пакета: `handler → service → repository`.
 
 ## Структура
@@ -9,14 +10,15 @@ Bazaar — модульный монолит. Один модуль — один
 cmd/api/main.go           конфиг, БД, миграции, HTTP-сервер
 internal/
   app/                    сборка модулей и роутер
-  <module>/               auth, user, role, permission, product, category, location
-    model.go              сущности и ошибки модуля
-    repository.go         SQL (pgx), пишет только в таблицы модуля
-    service.go            бизнес-логика и интерфейсы зависимостей
-    handler.go            HTTP-хендлеры и тела запросов (*Body)
-    routes.go             интерфейс для хендлеров, Handler, Routes
-    module.go             New, Service(), Routes — всё, что нужно app
-    *_test.go
+  modules/
+    <module>/             auth, user, role, permission, product, category, location
+      model.go            сущности и ошибки модуля
+      repository.go       SQL (pgx), пишет только в таблицы модуля
+      service.go          бизнес-логика и интерфейсы зависимостей
+      handler.go          HTTP-хендлеры и тела запросов (*Body)
+      routes.go           интерфейс для хендлеров, Handler, Routes
+      module.go           New, Service(), Routes — всё, что нужно app
+      *_test.go
   platform/               инфраструктура без бизнес-логики
     database/             пул pgx, TxManager, Querier
     httpx/                WriteError, WriteJSON, CurrentUser, swagger
@@ -61,7 +63,7 @@ internal/
 
 ## Как добавить модуль
 
-1. Создать `internal/<name>/` с файлами `model.go`, `repository.go`,
+1. Создать `internal/modules/<name>/` с файлами `model.go`, `repository.go`,
    `service.go`, `handler.go`, `routes.go`, `module.go`.
 2. В `internal/app/app.go` вызвать `<name>.New(...)` и передать модуль в
    `NewRouter`.
