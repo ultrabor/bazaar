@@ -1,8 +1,8 @@
 package permission
 
 import (
+	"bazaar/internal/modules/user"
 	"bazaar/internal/platform/support/apperror"
-	"bazaar/internal/user"
 	"context"
 	"errors"
 

@@ -4,17 +4,17 @@
 package app
 
 import (
-	"bazaar/internal/auth"
-	"bazaar/internal/category"
-	"bazaar/internal/location"
-	"bazaar/internal/permission"
+	"bazaar/internal/modules/auth"
+	"bazaar/internal/modules/category"
+	"bazaar/internal/modules/location"
+	"bazaar/internal/modules/permission"
+	"bazaar/internal/modules/product"
+	"bazaar/internal/modules/role"
+	"bazaar/internal/modules/user"
 	"bazaar/internal/platform/config"
 	"bazaar/internal/platform/database"
 	"bazaar/internal/platform/health"
 	"bazaar/internal/platform/httpx/middleware"
-	"bazaar/internal/product"
-	"bazaar/internal/role"
-	"bazaar/internal/user"
 	"log/slog"
 	"net/http"
 )

@@ -1,8 +1,8 @@
 package user
 
 import (
+	"bazaar/internal/modules/role"
 	"bazaar/internal/platform/httpx/httpxtest"
-	"bazaar/internal/role"
 	"context"
 	"io"
 	"log/slog"

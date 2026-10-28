@@ -1,10 +1,10 @@
 package user
 
 import (
+	"bazaar/internal/modules/role"
 	"bazaar/internal/platform/database"
 	"bazaar/internal/platform/support/apperror"
 	"bazaar/internal/platform/support/validator"
-	"bazaar/internal/role"
 	"context"
 	"errors"
 )

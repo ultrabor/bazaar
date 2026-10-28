@@ -1,11 +1,11 @@
 package user
 
 import (
+	"bazaar/internal/modules/role"
 	"bazaar/internal/platform/httpx"
 	"bazaar/internal/platform/identity"
 	"bazaar/internal/platform/support/apperror"
 	"bazaar/internal/platform/support/validator"
-	"bazaar/internal/role"
 	"context"
 	"encoding/json"
 	"errors"

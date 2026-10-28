@@ -1,7 +1,7 @@
 package user
 
 import (
-	"bazaar/internal/role"
+	"bazaar/internal/modules/role"
 	"context"
 	"errors"
 	"testing"

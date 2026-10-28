@@ -34,7 +34,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_auth.LoginBody"
+                            "$ref": "#/definitions/internal_modules_auth.LoginBody"
                         }
                     }
                 ],
@@ -42,7 +42,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_auth.LoginResponse"
+                            "$ref": "#/definitions/internal_modules_auth.LoginResponse"
                         }
                     },
                     "400": {
@@ -133,7 +133,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_auth.RegisterOwnerBody"
+                            "$ref": "#/definitions/internal_modules_auth.RegisterOwnerBody"
                         }
                     }
                 ],
@@ -141,7 +141,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_auth.RegisterResponse"
+                            "$ref": "#/definitions/internal_modules_auth.RegisterResponse"
                         }
                     },
                     "400": {
@@ -210,7 +210,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/internal_category.Category"
+                                "$ref": "#/definitions/internal_modules_category.Category"
                             }
                         }
                     },
@@ -263,7 +263,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_category.CreateCategoryBody"
+                            "$ref": "#/definitions/internal_modules_category.CreateCategoryBody"
                         }
                     }
                 ],
@@ -271,7 +271,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_category.CreateCategoryResponse"
+                            "$ref": "#/definitions/internal_modules_category.CreateCategoryResponse"
                         }
                     },
                     "400": {
@@ -337,7 +337,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_category.Category"
+                            "$ref": "#/definitions/internal_modules_category.Category"
                         }
                     },
                     "400": {
@@ -402,7 +402,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_category.UpdateCategoryBody"
+                            "$ref": "#/definitions/internal_modules_category.UpdateCategoryBody"
                         }
                     }
                 ],
@@ -410,7 +410,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_category.UpdateCategoryResponse"
+                            "$ref": "#/definitions/internal_modules_category.UpdateCategoryResponse"
                         }
                     },
                     "400": {
@@ -561,7 +561,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/internal_location.Location"
+                                "$ref": "#/definitions/internal_modules_location.Location"
                             }
                         }
                     },
@@ -620,7 +620,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_location.CreateLocationBody"
+                            "$ref": "#/definitions/internal_modules_location.CreateLocationBody"
                         }
                     }
                 ],
@@ -628,7 +628,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_location.CreateLocationResponse"
+                            "$ref": "#/definitions/internal_modules_location.CreateLocationResponse"
                         }
                     },
                     "400": {
@@ -694,7 +694,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_location.Location"
+                            "$ref": "#/definitions/internal_modules_location.Location"
                         }
                     },
                     "400": {
@@ -759,7 +759,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_location.UpdateLocationBody"
+                            "$ref": "#/definitions/internal_modules_location.UpdateLocationBody"
                         }
                     }
                 ],
@@ -767,7 +767,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_location.UpdateLocationResponse"
+                            "$ref": "#/definitions/internal_modules_location.UpdateLocationResponse"
                         }
                     },
                     "400": {
@@ -944,7 +944,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/internal_product.Product"
+                                "$ref": "#/definitions/internal_modules_product.Product"
                             }
                         }
                     },
@@ -998,7 +998,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_product.CreateProductBody"
+                            "$ref": "#/definitions/internal_modules_product.CreateProductBody"
                         }
                     }
                 ],
@@ -1006,7 +1006,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_product.CreateProductResponse"
+                            "$ref": "#/definitions/internal_modules_product.CreateProductResponse"
                         }
                     },
                     "400": {
@@ -1078,7 +1078,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_product.Product"
+                            "$ref": "#/definitions/internal_modules_product.Product"
                         }
                     },
                     "400": {
@@ -1144,7 +1144,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_product.UpdateProductBody"
+                            "$ref": "#/definitions/internal_modules_product.UpdateProductBody"
                         }
                     }
                 ],
@@ -1152,7 +1152,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_product.UpdateProductResponse"
+                            "$ref": "#/definitions/internal_modules_product.UpdateProductResponse"
                         }
                     },
                     "400": {
@@ -1312,7 +1312,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/internal_role.RoleSummary"
+                                "$ref": "#/definitions/internal_modules_role.RoleSummary"
                             }
                         }
                     },
@@ -1359,7 +1359,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_role.CreateRoleBody"
+                            "$ref": "#/definitions/internal_modules_role.CreateRoleBody"
                         }
                     }
                 ],
@@ -1367,7 +1367,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_role.CreateRoleResponse"
+                            "$ref": "#/definitions/internal_modules_role.CreateRoleResponse"
                         }
                     },
                     "400": {
@@ -1430,7 +1430,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_role.RoleDetails"
+                            "$ref": "#/definitions/internal_modules_role.RoleDetails"
                         }
                     },
                     "401": {
@@ -1486,7 +1486,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_role.UpdateRoleBody"
+                            "$ref": "#/definitions/internal_modules_role.UpdateRoleBody"
                         }
                     }
                 ],
@@ -1631,7 +1631,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_role.AddRolePermissionBody"
+                            "$ref": "#/definitions/internal_modules_role.AddRolePermissionBody"
                         }
                     }
                 ],
@@ -1767,7 +1767,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_user.CreateUserBody"
+                            "$ref": "#/definitions/internal_modules_user.CreateUserBody"
                         }
                     }
                 ],
@@ -1775,7 +1775,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_user.CreateUserResponse"
+                            "$ref": "#/definitions/internal_modules_user.CreateUserResponse"
                         }
                     },
                     "400": {
@@ -1838,7 +1838,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_user.User"
+                            "$ref": "#/definitions/internal_modules_user.User"
                         }
                     },
                     "400": {
@@ -1903,7 +1903,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_role.AssignRoleBody"
+                            "$ref": "#/definitions/internal_modules_role.AssignRoleBody"
                         }
                     }
                 ],
@@ -1994,7 +1994,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_auth.LoginBody": {
+        "internal_modules_auth.LoginBody": {
             "type": "object",
             "properties": {
                 "password": {
@@ -2005,7 +2005,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_auth.LoginResponse": {
+        "internal_modules_auth.LoginResponse": {
             "type": "object",
             "properties": {
                 "token": {
@@ -2013,7 +2013,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_auth.RegisterOwnerBody": {
+        "internal_modules_auth.RegisterOwnerBody": {
             "type": "object",
             "properties": {
                 "company_name": {
@@ -2033,7 +2033,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_auth.RegisterResponse": {
+        "internal_modules_auth.RegisterResponse": {
             "type": "object",
             "properties": {
                 "company_id": {
@@ -2044,7 +2044,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_category.Category": {
+        "internal_modules_category.Category": {
             "type": "object",
             "properties": {
                 "archived": {
@@ -2067,7 +2067,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_category.CreateCategoryBody": {
+        "internal_modules_category.CreateCategoryBody": {
             "type": "object",
             "properties": {
                 "name": {
@@ -2075,7 +2075,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_category.CreateCategoryResponse": {
+        "internal_modules_category.CreateCategoryResponse": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -2083,7 +2083,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_category.UpdateCategoryBody": {
+        "internal_modules_category.UpdateCategoryBody": {
             "type": "object",
             "properties": {
                 "name": {
@@ -2091,7 +2091,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_category.UpdateCategoryResponse": {
+        "internal_modules_category.UpdateCategoryResponse": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -2099,7 +2099,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_location.CreateLocationBody": {
+        "internal_modules_location.CreateLocationBody": {
             "type": "object",
             "properties": {
                 "address": {
@@ -2109,11 +2109,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/internal_location.LocationType"
+                    "$ref": "#/definitions/internal_modules_location.LocationType"
                 }
             }
         },
-        "internal_location.CreateLocationResponse": {
+        "internal_modules_location.CreateLocationResponse": {
             "type": "object",
             "properties": {
                 "location_id": {
@@ -2121,7 +2121,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_location.Location": {
+        "internal_modules_location.Location": {
             "type": "object",
             "properties": {
                 "address": {
@@ -2140,11 +2140,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/internal_location.LocationType"
+                    "$ref": "#/definitions/internal_modules_location.LocationType"
                 }
             }
         },
-        "internal_location.LocationType": {
+        "internal_modules_location.LocationType": {
             "type": "string",
             "enum": [
                 "store",
@@ -2155,7 +2155,7 @@ const docTemplate = `{
                 "LocationTypeWarehouse"
             ]
         },
-        "internal_location.UpdateLocationBody": {
+        "internal_modules_location.UpdateLocationBody": {
             "type": "object",
             "properties": {
                 "address": {
@@ -2165,11 +2165,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/internal_location.LocationType"
+                    "$ref": "#/definitions/internal_modules_location.LocationType"
                 }
             }
         },
-        "internal_location.UpdateLocationResponse": {
+        "internal_modules_location.UpdateLocationResponse": {
             "type": "object",
             "properties": {
                 "location_id": {
@@ -2177,7 +2177,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_product.CreateProductBody": {
+        "internal_modules_product.CreateProductBody": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -2190,11 +2190,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "unit": {
-                    "$ref": "#/definitions/internal_product.ProductUnit"
+                    "$ref": "#/definitions/internal_modules_product.ProductUnit"
                 }
             }
         },
-        "internal_product.CreateProductResponse": {
+        "internal_modules_product.CreateProductResponse": {
             "type": "object",
             "properties": {
                 "product_id": {
@@ -2202,7 +2202,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_product.Product": {
+        "internal_modules_product.Product": {
             "type": "object",
             "properties": {
                 "archived": {
@@ -2227,14 +2227,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "unit": {
-                    "$ref": "#/definitions/internal_product.ProductUnit"
+                    "$ref": "#/definitions/internal_modules_product.ProductUnit"
                 },
                 "updated_at": {
                     "type": "string"
                 }
             }
         },
-        "internal_product.ProductUnit": {
+        "internal_modules_product.ProductUnit": {
             "type": "string",
             "enum": [
                 "kg",
@@ -2249,7 +2249,7 @@ const docTemplate = `{
                 "ProductUnitLiter"
             ]
         },
-        "internal_product.UpdateProductBody": {
+        "internal_modules_product.UpdateProductBody": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -2262,11 +2262,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "unit": {
-                    "$ref": "#/definitions/internal_product.ProductUnit"
+                    "$ref": "#/definitions/internal_modules_product.ProductUnit"
                 }
             }
         },
-        "internal_product.UpdateProductResponse": {
+        "internal_modules_product.UpdateProductResponse": {
             "type": "object",
             "properties": {
                 "product_id": {
@@ -2274,7 +2274,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_role.AddRolePermissionBody": {
+        "internal_modules_role.AddRolePermissionBody": {
             "type": "object",
             "properties": {
                 "permission_id": {
@@ -2282,7 +2282,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_role.AssignRoleBody": {
+        "internal_modules_role.AssignRoleBody": {
             "type": "object",
             "properties": {
                 "role_id": {
@@ -2290,7 +2290,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_role.CreateRoleBody": {
+        "internal_modules_role.CreateRoleBody": {
             "type": "object",
             "properties": {
                 "name": {
@@ -2298,7 +2298,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_role.CreateRoleResponse": {
+        "internal_modules_role.CreateRoleResponse": {
             "type": "object",
             "properties": {
                 "role_id": {
@@ -2306,7 +2306,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_role.Permission": {
+        "internal_modules_role.Permission": {
             "type": "object",
             "properties": {
                 "code": {
@@ -2320,7 +2320,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_role.RoleDetails": {
+        "internal_modules_role.RoleDetails": {
             "type": "object",
             "properties": {
                 "company_id": {
@@ -2338,12 +2338,12 @@ const docTemplate = `{
                 "permissions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/internal_role.Permission"
+                        "$ref": "#/definitions/internal_modules_role.Permission"
                     }
                 }
             }
         },
-        "internal_role.RoleSummary": {
+        "internal_modules_role.RoleSummary": {
             "type": "object",
             "properties": {
                 "id": {
@@ -2363,7 +2363,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_role.UpdateRoleBody": {
+        "internal_modules_role.UpdateRoleBody": {
             "type": "object",
             "properties": {
                 "name": {
@@ -2371,7 +2371,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_user.CreateUserBody": {
+        "internal_modules_user.CreateUserBody": {
             "type": "object",
             "properties": {
                 "first_name": {
@@ -2391,7 +2391,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_user.CreateUserResponse": {
+        "internal_modules_user.CreateUserResponse": {
             "type": "object",
             "properties": {
                 "user_id": {
@@ -2399,7 +2399,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_user.User": {
+        "internal_modules_user.User": {
             "type": "object",
             "properties": {
                 "company_id": {
