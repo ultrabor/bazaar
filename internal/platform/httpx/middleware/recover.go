@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"bazaar/internal/platform/httpx/dto"
+	"bazaar/internal/platform/httpx"
 	"log/slog"
 	"net/http"
 	"runtime/debug"
@@ -18,7 +18,7 @@ func (m *Middleware) Recover(next http.Handler) http.Handler {
 				m.logger.Error("Recover", slog.Any("error", err), slog.String("stack", string(debug.Stack())))
 
 				w.Header().Set("Connection", "close")
-				dto.WriteError(w, http.StatusInternalServerError, "internal_error", "internal error")
+				httpx.WriteError(w, http.StatusInternalServerError, "internal_error", "internal error")
 			}
 		}()
 

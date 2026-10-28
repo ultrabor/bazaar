@@ -1,253 +1,45 @@
 basePath: /
 definitions:
-  bazaar_internal_domain.Category:
-    properties:
-      archived:
-        type: boolean
-      company_id:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  bazaar_internal_domain.CreateCategoryResponse:
-    properties:
-      category_id:
-        type: string
-    type: object
-  bazaar_internal_domain.CreateLocationResponse:
-    properties:
-      location_id:
-        type: string
-    type: object
-  bazaar_internal_domain.CreateProductResponse:
-    properties:
-      product_id:
-        type: string
-    type: object
-  bazaar_internal_domain.CreateRoleResponse:
-    properties:
-      role_id:
-        type: string
-    type: object
-  bazaar_internal_domain.CreateUserResponse:
-    properties:
-      user_id:
-        type: string
-    type: object
-  bazaar_internal_domain.Location:
-    properties:
-      address:
-        type: string
-      archived:
-        type: boolean
-      company_id:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      type:
-        $ref: '#/definitions/bazaar_internal_domain.LocationType'
-    type: object
-  bazaar_internal_domain.LocationType:
-    enum:
-    - store
-    - warehouse
-    type: string
-    x-enum-varnames:
-    - LocationTypeStore
-    - LocationTypeWarehouse
-  bazaar_internal_domain.LoginResponse:
-    properties:
-      token:
-        type: string
-    type: object
-  bazaar_internal_domain.Permission:
-    properties:
-      code:
-        type: string
-      id:
-        type: string
-      label:
-        type: string
-    type: object
-  bazaar_internal_domain.Product:
-    properties:
-      archived:
-        type: boolean
-      category_id:
-        type: string
-      company_id:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      sku:
-        type: string
-      unit:
-        $ref: '#/definitions/bazaar_internal_domain.ProductUnit'
-      updated_at:
-        type: string
-    type: object
-  bazaar_internal_domain.ProductUnit:
-    enum:
-    - kg
-    - meter
-    - piece
-    - liter
-    type: string
-    x-enum-varnames:
-    - ProductUnitKg
-    - ProductUnitMeter
-    - ProductUnitPiece
-    - ProductUnitLiter
-  bazaar_internal_domain.RegisterResponse:
-    properties:
-      company_id:
-        type: string
-      user_id:
-        type: string
-    type: object
-  bazaar_internal_domain.RoleDetails:
-    properties:
-      company_id:
-        type: string
-      id:
-        type: string
-      is_system:
-        type: boolean
-      name:
-        type: string
-      permissions:
-        items:
-          $ref: '#/definitions/bazaar_internal_domain.Permission'
-        type: array
-    type: object
-  bazaar_internal_domain.RoleSummary:
-    properties:
-      id:
-        type: string
-      is_system:
-        type: boolean
-      name:
-        type: string
-      permissions_count:
-        type: integer
-      user_count:
-        type: integer
-    type: object
-  bazaar_internal_domain.UpdateCategoryResponse:
-    properties:
-      category_id:
-        type: string
-    type: object
-  bazaar_internal_domain.UpdateLocationResponse:
-    properties:
-      location_id:
-        type: string
-    type: object
-  bazaar_internal_domain.UpdateProductResponse:
-    properties:
-      product_id:
-        type: string
-    type: object
-  bazaar_internal_domain.User:
-    properties:
-      company_id:
-        type: string
-      first_name:
-        type: string
-      id:
-        type: string
-      last_name:
-        type: string
-      phone:
-        type: string
-      user_role_id:
-        type: string
-    type: object
-  bazaar_internal_platform_httpx_dto.AddRolePermissionRequest:
-    properties:
-      permission_id:
-        type: string
-    type: object
-  bazaar_internal_platform_httpx_dto.AssignRoleRequest:
-    properties:
-      role_id:
-        type: string
-    type: object
-  bazaar_internal_platform_httpx_dto.CreateCategoryRequest:
-    properties:
-      name:
-        type: string
-    type: object
-  bazaar_internal_platform_httpx_dto.CreateLocationRequest:
-    properties:
-      address:
-        type: string
-      name:
-        type: string
-      type:
-        $ref: '#/definitions/bazaar_internal_domain.LocationType'
-    type: object
-  bazaar_internal_platform_httpx_dto.CreateProductRequest:
-    properties:
-      category_id:
-        type: string
-      name:
-        type: string
-      sku:
-        type: string
-      unit:
-        $ref: '#/definitions/bazaar_internal_domain.ProductUnit'
-    type: object
-  bazaar_internal_platform_httpx_dto.CreateRoleRequest:
-    properties:
-      name:
-        type: string
-    type: object
-  bazaar_internal_platform_httpx_dto.CreateUserRequest:
-    properties:
-      first_name:
-        type: string
-      last_name:
-        type: string
-      password:
-        type: string
-      phone:
-        type: string
-      user_role_id:
-        type: string
-    type: object
-  bazaar_internal_platform_httpx_dto.Error:
+  bazaar_internal_platform_httpx.Error:
     properties:
       error:
-        $ref: '#/definitions/bazaar_internal_platform_httpx_dto.ErrorDetail'
+        $ref: '#/definitions/bazaar_internal_platform_httpx.ErrorDetail'
     type: object
-  bazaar_internal_platform_httpx_dto.ErrorDetail:
+  bazaar_internal_platform_httpx.ErrorDetail:
     properties:
       code:
         type: string
       message:
         type: string
     type: object
-  bazaar_internal_platform_httpx_dto.LoginRequest:
+  bazaar_internal_platform_identity.User:
+    properties:
+      company_id:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+      user_role_id:
+        type: string
+    type: object
+  internal_auth.LoginBody:
     properties:
       password:
         type: string
       phone:
         type: string
     type: object
-  bazaar_internal_platform_httpx_dto.RegisterOwnerRequest:
+  internal_auth.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  internal_auth.RegisterOwnerBody:
     properties:
       company_name:
         type: string
@@ -260,21 +52,100 @@ definitions:
       phone:
         type: string
     type: object
-  bazaar_internal_platform_httpx_dto.UpdateCategoryRequest:
+  internal_auth.RegisterResponse:
+    properties:
+      company_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  internal_category.Category:
+    properties:
+      archived:
+        type: boolean
+      company_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  internal_category.CreateCategoryBody:
     properties:
       name:
         type: string
     type: object
-  bazaar_internal_platform_httpx_dto.UpdateLocationRequest:
+  internal_category.CreateCategoryResponse:
+    properties:
+      category_id:
+        type: string
+    type: object
+  internal_category.UpdateCategoryBody:
+    properties:
+      name:
+        type: string
+    type: object
+  internal_category.UpdateCategoryResponse:
+    properties:
+      category_id:
+        type: string
+    type: object
+  internal_location.CreateLocationBody:
     properties:
       address:
         type: string
       name:
         type: string
       type:
-        $ref: '#/definitions/bazaar_internal_domain.LocationType'
+        $ref: '#/definitions/internal_location.LocationType'
     type: object
-  bazaar_internal_platform_httpx_dto.UpdateProductRequest:
+  internal_location.CreateLocationResponse:
+    properties:
+      location_id:
+        type: string
+    type: object
+  internal_location.Location:
+    properties:
+      address:
+        type: string
+      archived:
+        type: boolean
+      company_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/internal_location.LocationType'
+    type: object
+  internal_location.LocationType:
+    enum:
+    - store
+    - warehouse
+    type: string
+    x-enum-varnames:
+    - LocationTypeStore
+    - LocationTypeWarehouse
+  internal_location.UpdateLocationBody:
+    properties:
+      address:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/internal_location.LocationType'
+    type: object
+  internal_location.UpdateLocationResponse:
+    properties:
+      location_id:
+        type: string
+    type: object
+  internal_product.CreateProductBody:
     properties:
       category_id:
         type: string
@@ -283,11 +154,155 @@ definitions:
       sku:
         type: string
       unit:
-        $ref: '#/definitions/bazaar_internal_domain.ProductUnit'
+        $ref: '#/definitions/internal_product.ProductUnit'
     type: object
-  bazaar_internal_platform_httpx_dto.UpdateRoleRequest:
+  internal_product.CreateProductResponse:
+    properties:
+      product_id:
+        type: string
+    type: object
+  internal_product.Product:
+    properties:
+      archived:
+        type: boolean
+      category_id:
+        type: string
+      company_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      sku:
+        type: string
+      unit:
+        $ref: '#/definitions/internal_product.ProductUnit'
+      updated_at:
+        type: string
+    type: object
+  internal_product.ProductUnit:
+    enum:
+    - kg
+    - meter
+    - piece
+    - liter
+    type: string
+    x-enum-varnames:
+    - ProductUnitKg
+    - ProductUnitMeter
+    - ProductUnitPiece
+    - ProductUnitLiter
+  internal_product.UpdateProductBody:
+    properties:
+      category_id:
+        type: string
+      name:
+        type: string
+      sku:
+        type: string
+      unit:
+        $ref: '#/definitions/internal_product.ProductUnit'
+    type: object
+  internal_product.UpdateProductResponse:
+    properties:
+      product_id:
+        type: string
+    type: object
+  internal_role.AddRolePermissionBody:
+    properties:
+      permission_id:
+        type: string
+    type: object
+  internal_role.AssignRoleBody:
+    properties:
+      role_id:
+        type: string
+    type: object
+  internal_role.CreateRoleBody:
     properties:
       name:
+        type: string
+    type: object
+  internal_role.CreateRoleResponse:
+    properties:
+      role_id:
+        type: string
+    type: object
+  internal_role.Permission:
+    properties:
+      code:
+        type: string
+      id:
+        type: string
+      label:
+        type: string
+    type: object
+  internal_role.RoleDetails:
+    properties:
+      company_id:
+        type: string
+      id:
+        type: string
+      is_system:
+        type: boolean
+      name:
+        type: string
+      permissions:
+        items:
+          $ref: '#/definitions/internal_role.Permission'
+        type: array
+    type: object
+  internal_role.RoleSummary:
+    properties:
+      id:
+        type: string
+      is_system:
+        type: boolean
+      name:
+        type: string
+      permissions_count:
+        type: integer
+      user_count:
+        type: integer
+    type: object
+  internal_role.UpdateRoleBody:
+    properties:
+      name:
+        type: string
+    type: object
+  internal_user.CreateUserBody:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      user_role_id:
+        type: string
+    type: object
+  internal_user.CreateUserResponse:
+    properties:
+      user_id:
+        type: string
+    type: object
+  internal_user.User:
+    properties:
+      company_id:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+      user_role_id:
         type: string
     type: object
 info:
@@ -306,30 +321,30 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.LoginRequest'
+          $ref: '#/definitions/internal_auth.LoginBody'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.LoginResponse'
+            $ref: '#/definitions/internal_auth.LoginResponse'
         "400":
           description: Invalid login data
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       summary: Login a user
       tags:
       - Auth
@@ -341,19 +356,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.User'
+            $ref: '#/definitions/bazaar_internal_platform_identity.User'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Get current user info
@@ -369,30 +384,30 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.RegisterOwnerRequest'
+          $ref: '#/definitions/internal_auth.RegisterOwnerBody'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.RegisterResponse'
+            $ref: '#/definitions/internal_auth.RegisterResponse'
         "400":
           description: Invalid registration data
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "409":
           description: Phone already registered
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       summary: Register a company owner
       tags:
       - Auth
@@ -418,24 +433,24 @@ paths:
           description: Active categories; empty array when no categories match
           schema:
             items:
-              $ref: '#/definitions/bazaar_internal_domain.Category'
+              $ref: '#/definitions/internal_category.Category'
             type: array
         "400":
           description: Invalid pagination
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Get active categories for the current user's company
@@ -450,34 +465,34 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.CreateCategoryRequest'
+          $ref: '#/definitions/internal_category.CreateCategoryBody'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.CreateCategoryResponse'
+            $ref: '#/definitions/internal_category.CreateCategoryResponse'
         "400":
           description: Invalid JSON or empty name
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "409":
           description: Active category name already exists
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Create a category
@@ -499,27 +514,27 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.Category'
+            $ref: '#/definitions/internal_category.Category'
         "400":
           description: Invalid category UUID
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Category not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Get a category by ID
@@ -539,38 +554,38 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.UpdateCategoryRequest'
+          $ref: '#/definitions/internal_category.UpdateCategoryBody'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.UpdateCategoryResponse'
+            $ref: '#/definitions/internal_category.UpdateCategoryResponse'
         "400":
           description: Invalid category UUID, JSON, or empty name
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Category not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "409":
           description: Active category name already exists
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Rename a category
@@ -598,23 +613,23 @@ paths:
         "400":
           description: Invalid category UUID
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Category not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Archive a category
@@ -643,28 +658,28 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/bazaar_internal_domain.Location'
+              $ref: '#/definitions/internal_location.Location'
             type: array
         "400":
           description: Invalid credential data
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Location not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Get all locations for the current user's company
@@ -679,34 +694,34 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.CreateLocationRequest'
+          $ref: '#/definitions/internal_location.CreateLocationBody'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.CreateLocationResponse'
+            $ref: '#/definitions/internal_location.CreateLocationResponse'
         "400":
           description: Invalid credential data
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "409":
           description: Location already exists
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Create a new location
@@ -728,27 +743,27 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.Location'
+            $ref: '#/definitions/internal_location.Location'
         "400":
           description: Invalid credential data
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Location not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Get location by ID
@@ -768,38 +783,38 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.UpdateLocationRequest'
+          $ref: '#/definitions/internal_location.UpdateLocationBody'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.UpdateLocationResponse'
+            $ref: '#/definitions/internal_location.UpdateLocationResponse'
         "400":
           description: Invalid credential data
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Location not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "409":
           description: Location already exists
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Update location by ID
@@ -825,23 +840,23 @@ paths:
         "400":
           description: Invalid credential data
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Location not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Archive location by ID
@@ -890,24 +905,24 @@ paths:
           description: Matching active products; empty array when no products match
           schema:
             items:
-              $ref: '#/definitions/bazaar_internal_domain.Product'
+              $ref: '#/definitions/internal_product.Product'
             type: array
         "400":
           description: Invalid unit, category UUID, or pagination parameters
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Get all Products for the current user's company
@@ -924,38 +939,38 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.CreateProductRequest'
+          $ref: '#/definitions/internal_product.CreateProductBody'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.CreateProductResponse'
+            $ref: '#/definitions/internal_product.CreateProductResponse'
         "400":
           description: Invalid JSON, product fields, or category UUID
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Category not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "409":
           description: Duplicate SKU
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Create a new Product
@@ -977,27 +992,27 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.Product'
+            $ref: '#/definitions/internal_product.Product'
         "400":
           description: Invalid product ID or credential
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Product not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Get Product by ID
@@ -1019,38 +1034,38 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.UpdateProductRequest'
+          $ref: '#/definitions/internal_product.UpdateProductBody'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.UpdateProductResponse'
+            $ref: '#/definitions/internal_product.UpdateProductResponse'
         "400":
           description: Invalid JSON, product fields, product UUID, or category UUID
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Product or category not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "409":
           description: Duplicate SKU
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Update Product by ID
@@ -1076,23 +1091,23 @@ paths:
         "400":
           description: Invalid credential data
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Product not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Archive Product by ID
@@ -1111,11 +1126,11 @@ paths:
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       summary: Readiness probe
       tags:
       - Health
@@ -1128,20 +1143,20 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/bazaar_internal_domain.RoleSummary'
+              $ref: '#/definitions/internal_role.RoleSummary'
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: List roles of the current user's company
@@ -1156,34 +1171,34 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.CreateRoleRequest'
+          $ref: '#/definitions/internal_role.CreateRoleBody'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.CreateRoleResponse'
+            $ref: '#/definitions/internal_role.CreateRoleResponse'
         "400":
           description: Invalid JSON or role name
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "409":
           description: Active role name already exists
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Create a role without permissions
@@ -1203,23 +1218,23 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.RoleDetails'
+            $ref: '#/definitions/internal_role.RoleDetails'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Role not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Get a role with its permissions
@@ -1239,38 +1254,38 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.UpdateRoleRequest'
+          $ref: '#/definitions/internal_role.UpdateRoleBody'
       responses:
         "204":
           description: No Content
         "400":
           description: Invalid JSON or role name
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "403":
           description: System role
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Role not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "409":
           description: Active role name already exists
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Rename a role
@@ -1290,27 +1305,27 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "403":
           description: System role
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Role not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "409":
           description: Role is assigned to active users
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Archive a role
@@ -1332,34 +1347,34 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.AddRolePermissionRequest'
+          $ref: '#/definitions/internal_role.AddRolePermissionBody'
       responses:
         "204":
           description: No Content
         "400":
           description: Invalid JSON
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "403":
           description: System role or permission not held
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Role not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Add a permission to a role package
@@ -1385,23 +1400,23 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "403":
           description: System role or permission not held
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: Role or permission not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Remove a permission from a role package
@@ -1417,34 +1432,34 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.CreateUserRequest'
+          $ref: '#/definitions/internal_user.CreateUserBody'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.CreateUserResponse'
+            $ref: '#/definitions/internal_user.CreateUserResponse'
         "400":
           description: Invalid credential data
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "403":
           description: Role has permissions the creator lacks
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "409":
           description: Phone already registered
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Create a new user
@@ -1464,27 +1479,27 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/bazaar_internal_domain.User'
+            $ref: '#/definitions/internal_user.User'
         "400":
           description: Invalid user ID
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Get user info
@@ -1507,34 +1522,34 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/bazaar_internal_platform_httpx_dto.AssignRoleRequest'
+          $ref: '#/definitions/internal_role.AssignRoleBody'
       responses:
         "204":
           description: No Content
         "400":
           description: Invalid JSON, user id or role
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "403":
           description: Owner or role wider than the assigner
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "500":
           description: Internal error
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "503":
           description: Service unavailable
           schema:
-            $ref: '#/definitions/bazaar_internal_platform_httpx_dto.Error'
+            $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
       security:
       - BearerAuth: []
       summary: Assign a role to a user

@@ -34,7 +34,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.LoginRequest"
+                            "$ref": "#/definitions/internal_auth.LoginBody"
                         }
                     }
                 ],
@@ -42,31 +42,31 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.LoginResponse"
+                            "$ref": "#/definitions/internal_auth.LoginResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid login data",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -90,25 +90,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.User"
+                            "$ref": "#/definitions/bazaar_internal_platform_identity.User"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -133,7 +133,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.RegisterOwnerRequest"
+                            "$ref": "#/definitions/internal_auth.RegisterOwnerBody"
                         }
                     }
                 ],
@@ -141,31 +141,31 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.RegisterResponse"
+                            "$ref": "#/definitions/internal_auth.RegisterResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid registration data",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "409": {
                         "description": "Phone already registered",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -210,32 +210,32 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/bazaar_internal_domain.Category"
+                                "$ref": "#/definitions/internal_category.Category"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid pagination",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -263,7 +263,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.CreateCategoryRequest"
+                            "$ref": "#/definitions/internal_category.CreateCategoryBody"
                         }
                     }
                 ],
@@ -271,37 +271,37 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.CreateCategoryResponse"
+                            "$ref": "#/definitions/internal_category.CreateCategoryResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid JSON or empty name",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "409": {
                         "description": "Active category name already exists",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -337,37 +337,37 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.Category"
+                            "$ref": "#/definitions/internal_category.Category"
                         }
                     },
                     "400": {
                         "description": "Invalid category UUID",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Category not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -402,7 +402,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.UpdateCategoryRequest"
+                            "$ref": "#/definitions/internal_category.UpdateCategoryBody"
                         }
                     }
                 ],
@@ -410,43 +410,43 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.UpdateCategoryResponse"
+                            "$ref": "#/definitions/internal_category.UpdateCategoryResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid category UUID, JSON, or empty name",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Category not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "409": {
                         "description": "Active category name already exists",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -489,31 +489,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid category UUID",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Category not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -561,38 +561,38 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/bazaar_internal_domain.Location"
+                                "$ref": "#/definitions/internal_location.Location"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Location not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -620,7 +620,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.CreateLocationRequest"
+                            "$ref": "#/definitions/internal_location.CreateLocationBody"
                         }
                     }
                 ],
@@ -628,37 +628,37 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.CreateLocationResponse"
+                            "$ref": "#/definitions/internal_location.CreateLocationResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "409": {
                         "description": "Location already exists",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -694,37 +694,37 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.Location"
+                            "$ref": "#/definitions/internal_location.Location"
                         }
                     },
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Location not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -759,7 +759,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.UpdateLocationRequest"
+                            "$ref": "#/definitions/internal_location.UpdateLocationBody"
                         }
                     }
                 ],
@@ -767,43 +767,43 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.UpdateLocationResponse"
+                            "$ref": "#/definitions/internal_location.UpdateLocationResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Location not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "409": {
                         "description": "Location already exists",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -845,31 +845,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Location not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -944,32 +944,32 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/bazaar_internal_domain.Product"
+                                "$ref": "#/definitions/internal_product.Product"
                             }
                         }
                     },
                     "400": {
                         "description": "Invalid unit, category UUID, or pagination parameters",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -998,7 +998,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.CreateProductRequest"
+                            "$ref": "#/definitions/internal_product.CreateProductBody"
                         }
                     }
                 ],
@@ -1006,43 +1006,43 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.CreateProductResponse"
+                            "$ref": "#/definitions/internal_product.CreateProductResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid JSON, product fields, or category UUID",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Category not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "409": {
                         "description": "Duplicate SKU",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1078,37 +1078,37 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.Product"
+                            "$ref": "#/definitions/internal_product.Product"
                         }
                     },
                     "400": {
                         "description": "Invalid product ID or credential",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Product not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1144,7 +1144,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.UpdateProductRequest"
+                            "$ref": "#/definitions/internal_product.UpdateProductBody"
                         }
                     }
                 ],
@@ -1152,43 +1152,43 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.UpdateProductResponse"
+                            "$ref": "#/definitions/internal_product.UpdateProductResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid JSON, product fields, product UUID, or category UUID",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Product or category not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "409": {
                         "description": "Duplicate SKU",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1230,31 +1230,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Product not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1280,13 +1280,13 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1312,26 +1312,26 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/bazaar_internal_domain.RoleSummary"
+                                "$ref": "#/definitions/internal_role.RoleSummary"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1359,7 +1359,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.CreateRoleRequest"
+                            "$ref": "#/definitions/internal_role.CreateRoleBody"
                         }
                     }
                 ],
@@ -1367,37 +1367,37 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.CreateRoleResponse"
+                            "$ref": "#/definitions/internal_role.CreateRoleResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid JSON or role name",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "409": {
                         "description": "Active role name already exists",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1430,31 +1430,31 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.RoleDetails"
+                            "$ref": "#/definitions/internal_role.RoleDetails"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Role not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1486,7 +1486,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.UpdateRoleRequest"
+                            "$ref": "#/definitions/internal_role.UpdateRoleBody"
                         }
                     }
                 ],
@@ -1497,43 +1497,43 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid JSON or role name",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "403": {
                         "description": "System role",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Role not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "409": {
                         "description": "Active role name already exists",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1566,37 +1566,37 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "403": {
                         "description": "System role",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Role not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "409": {
                         "description": "Role is assigned to active users",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1631,7 +1631,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.AddRolePermissionRequest"
+                            "$ref": "#/definitions/internal_role.AddRolePermissionBody"
                         }
                     }
                 ],
@@ -1642,37 +1642,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid JSON",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "403": {
                         "description": "System role or permission not held",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Role not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1713,31 +1713,31 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "403": {
                         "description": "System role or permission not held",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "Role or permission not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1767,7 +1767,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.CreateUserRequest"
+                            "$ref": "#/definitions/internal_user.CreateUserBody"
                         }
                     }
                 ],
@@ -1775,37 +1775,37 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.CreateUserResponse"
+                            "$ref": "#/definitions/internal_user.CreateUserResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid credential data",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "403": {
                         "description": "Role has permissions the creator lacks",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "409": {
                         "description": "Phone already registered",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1838,37 +1838,37 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_domain.User"
+                            "$ref": "#/definitions/internal_user.User"
                         }
                     },
                     "400": {
                         "description": "Invalid user ID",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1903,7 +1903,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.AssignRoleRequest"
+                            "$ref": "#/definitions/internal_role.AssignRoleBody"
                         }
                     }
                 ],
@@ -1914,37 +1914,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid JSON, user id or role",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "403": {
                         "description": "Owner or role wider than the assigner",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "500": {
                         "description": "Internal error",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     },
                     "503": {
                         "description": "Service unavailable",
                         "schema": {
-                            "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.Error"
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
                     }
                 }
@@ -1952,365 +1952,15 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "bazaar_internal_domain.Category": {
-            "type": "object",
-            "properties": {
-                "archived": {
-                    "type": "boolean"
-                },
-                "company_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_domain.CreateCategoryResponse": {
-            "type": "object",
-            "properties": {
-                "category_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_domain.CreateLocationResponse": {
-            "type": "object",
-            "properties": {
-                "location_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_domain.CreateProductResponse": {
-            "type": "object",
-            "properties": {
-                "product_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_domain.CreateRoleResponse": {
-            "type": "object",
-            "properties": {
-                "role_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_domain.CreateUserResponse": {
-            "type": "object",
-            "properties": {
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_domain.Location": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "archived": {
-                    "type": "boolean"
-                },
-                "company_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/bazaar_internal_domain.LocationType"
-                }
-            }
-        },
-        "bazaar_internal_domain.LocationType": {
-            "type": "string",
-            "enum": [
-                "store",
-                "warehouse"
-            ],
-            "x-enum-varnames": [
-                "LocationTypeStore",
-                "LocationTypeWarehouse"
-            ]
-        },
-        "bazaar_internal_domain.LoginResponse": {
-            "type": "object",
-            "properties": {
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_domain.Permission": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "label": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_domain.Product": {
-            "type": "object",
-            "properties": {
-                "archived": {
-                    "type": "boolean"
-                },
-                "category_id": {
-                    "type": "string"
-                },
-                "company_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "sku": {
-                    "type": "string"
-                },
-                "unit": {
-                    "$ref": "#/definitions/bazaar_internal_domain.ProductUnit"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_domain.ProductUnit": {
-            "type": "string",
-            "enum": [
-                "kg",
-                "meter",
-                "piece",
-                "liter"
-            ],
-            "x-enum-varnames": [
-                "ProductUnitKg",
-                "ProductUnitMeter",
-                "ProductUnitPiece",
-                "ProductUnitLiter"
-            ]
-        },
-        "bazaar_internal_domain.RegisterResponse": {
-            "type": "object",
-            "properties": {
-                "company_id": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_domain.RoleDetails": {
-            "type": "object",
-            "properties": {
-                "company_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_system": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "permissions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/bazaar_internal_domain.Permission"
-                    }
-                }
-            }
-        },
-        "bazaar_internal_domain.RoleSummary": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "is_system": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "permissions_count": {
-                    "type": "integer"
-                },
-                "user_count": {
-                    "type": "integer"
-                }
-            }
-        },
-        "bazaar_internal_domain.UpdateCategoryResponse": {
-            "type": "object",
-            "properties": {
-                "category_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_domain.UpdateLocationResponse": {
-            "type": "object",
-            "properties": {
-                "location_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_domain.UpdateProductResponse": {
-            "type": "object",
-            "properties": {
-                "product_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_domain.User": {
-            "type": "object",
-            "properties": {
-                "company_id": {
-                    "type": "string"
-                },
-                "first_name": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "last_name": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "user_role_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_platform_httpx_dto.AddRolePermissionRequest": {
-            "type": "object",
-            "properties": {
-                "permission_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_platform_httpx_dto.AssignRoleRequest": {
-            "type": "object",
-            "properties": {
-                "role_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_platform_httpx_dto.CreateCategoryRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_platform_httpx_dto.CreateLocationRequest": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/bazaar_internal_domain.LocationType"
-                }
-            }
-        },
-        "bazaar_internal_platform_httpx_dto.CreateProductRequest": {
-            "type": "object",
-            "properties": {
-                "category_id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "sku": {
-                    "type": "string"
-                },
-                "unit": {
-                    "$ref": "#/definitions/bazaar_internal_domain.ProductUnit"
-                }
-            }
-        },
-        "bazaar_internal_platform_httpx_dto.CreateRoleRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_platform_httpx_dto.CreateUserRequest": {
-            "type": "object",
-            "properties": {
-                "first_name": {
-                    "type": "string"
-                },
-                "last_name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "user_role_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "bazaar_internal_platform_httpx_dto.Error": {
+        "bazaar_internal_platform_httpx.Error": {
             "type": "object",
             "properties": {
                 "error": {
-                    "$ref": "#/definitions/bazaar_internal_platform_httpx_dto.ErrorDetail"
+                    "$ref": "#/definitions/bazaar_internal_platform_httpx.ErrorDetail"
                 }
             }
         },
-        "bazaar_internal_platform_httpx_dto.ErrorDetail": {
+        "bazaar_internal_platform_httpx.ErrorDetail": {
             "type": "object",
             "properties": {
                 "code": {
@@ -2321,7 +1971,30 @@ const docTemplate = `{
                 }
             }
         },
-        "bazaar_internal_platform_httpx_dto.LoginRequest": {
+        "bazaar_internal_platform_identity.User": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "user_role_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_auth.LoginBody": {
             "type": "object",
             "properties": {
                 "password": {
@@ -2332,7 +2005,15 @@ const docTemplate = `{
                 }
             }
         },
-        "bazaar_internal_platform_httpx_dto.RegisterOwnerRequest": {
+        "internal_auth.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_auth.RegisterOwnerBody": {
             "type": "object",
             "properties": {
                 "company_name": {
@@ -2352,7 +2033,41 @@ const docTemplate = `{
                 }
             }
         },
-        "bazaar_internal_platform_httpx_dto.UpdateCategoryRequest": {
+        "internal_auth.RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_category.Category": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "company_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_category.CreateCategoryBody": {
             "type": "object",
             "properties": {
                 "name": {
@@ -2360,7 +2075,31 @@ const docTemplate = `{
                 }
             }
         },
-        "bazaar_internal_platform_httpx_dto.UpdateLocationRequest": {
+        "internal_category.CreateCategoryResponse": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_category.UpdateCategoryBody": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_category.UpdateCategoryResponse": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_location.CreateLocationBody": {
             "type": "object",
             "properties": {
                 "address": {
@@ -2370,11 +2109,75 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/bazaar_internal_domain.LocationType"
+                    "$ref": "#/definitions/internal_location.LocationType"
                 }
             }
         },
-        "bazaar_internal_platform_httpx_dto.UpdateProductRequest": {
+        "internal_location.CreateLocationResponse": {
+            "type": "object",
+            "properties": {
+                "location_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_location.Location": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "archived": {
+                    "type": "boolean"
+                },
+                "company_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/internal_location.LocationType"
+                }
+            }
+        },
+        "internal_location.LocationType": {
+            "type": "string",
+            "enum": [
+                "store",
+                "warehouse"
+            ],
+            "x-enum-varnames": [
+                "LocationTypeStore",
+                "LocationTypeWarehouse"
+            ]
+        },
+        "internal_location.UpdateLocationBody": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/internal_location.LocationType"
+                }
+            }
+        },
+        "internal_location.UpdateLocationResponse": {
+            "type": "object",
+            "properties": {
+                "location_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_product.CreateProductBody": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -2387,14 +2190,234 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "unit": {
-                    "$ref": "#/definitions/bazaar_internal_domain.ProductUnit"
+                    "$ref": "#/definitions/internal_product.ProductUnit"
                 }
             }
         },
-        "bazaar_internal_platform_httpx_dto.UpdateRoleRequest": {
+        "internal_product.CreateProductResponse": {
+            "type": "object",
+            "properties": {
+                "product_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_product.Product": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "category_id": {
+                    "type": "string"
+                },
+                "company_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sku": {
+                    "type": "string"
+                },
+                "unit": {
+                    "$ref": "#/definitions/internal_product.ProductUnit"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_product.ProductUnit": {
+            "type": "string",
+            "enum": [
+                "kg",
+                "meter",
+                "piece",
+                "liter"
+            ],
+            "x-enum-varnames": [
+                "ProductUnitKg",
+                "ProductUnitMeter",
+                "ProductUnitPiece",
+                "ProductUnitLiter"
+            ]
+        },
+        "internal_product.UpdateProductBody": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sku": {
+                    "type": "string"
+                },
+                "unit": {
+                    "$ref": "#/definitions/internal_product.ProductUnit"
+                }
+            }
+        },
+        "internal_product.UpdateProductResponse": {
+            "type": "object",
+            "properties": {
+                "product_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_role.AddRolePermissionBody": {
+            "type": "object",
+            "properties": {
+                "permission_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_role.AssignRoleBody": {
+            "type": "object",
+            "properties": {
+                "role_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_role.CreateRoleBody": {
             "type": "object",
             "properties": {
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_role.CreateRoleResponse": {
+            "type": "object",
+            "properties": {
+                "role_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_role.Permission": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_role.RoleDetails": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_system": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_role.Permission"
+                    }
+                }
+            }
+        },
+        "internal_role.RoleSummary": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "is_system": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "permissions_count": {
+                    "type": "integer"
+                },
+                "user_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_role.UpdateRoleBody": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_user.CreateUserBody": {
+            "type": "object",
+            "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "user_role_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_user.CreateUserResponse": {
+            "type": "object",
+            "properties": {
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_user.User": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "user_role_id": {
                     "type": "string"
                 }
             }
