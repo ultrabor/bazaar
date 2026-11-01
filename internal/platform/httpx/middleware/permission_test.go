@@ -33,7 +33,7 @@ func TestPermissionLogsOnlyFailuresAsError(t *testing.T) {
 				return tt.allowed, tt.loadErr
 			}
 			next := func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) }
-			handler := New(log, "secret", nil, load).Permission(next, "users.view")
+			handler := New(log, nil, load).Permission(next, "users.view")
 
 			req := httptest.NewRequest(http.MethodGet, "/", nil)
 			req = req.WithContext(identity.WithUser(req.Context(), &identity.User{Id: "user-1"}))

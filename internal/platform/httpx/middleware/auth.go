@@ -4,7 +4,6 @@ import (
 	"bazaar/internal/platform/httpx"
 	"bazaar/internal/platform/identity"
 	"bazaar/internal/platform/support/apperror"
-	"bazaar/internal/platform/support/validator"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -21,13 +20,7 @@ func (m *Middleware) Auth(next http.Handler) http.Handler {
 
 		token := parts[1]
 
-		userId, err := validator.ValidateToken(token, []byte(m.secretKey))
-		if err != nil {
-			httpx.WriteError(w, http.StatusUnauthorized, "invalid_token", "invalid token")
-			return
-		}
-
-		u, err := m.loadUser(r.Context(), userId)
+		u, err := m.loadUser(r.Context(), token)
 		if err != nil {
 			if errors.Is(err, apperror.ErrInvalidCred) {
 				httpx.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")

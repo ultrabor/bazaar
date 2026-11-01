@@ -14,6 +14,8 @@ type User struct {
 	FirstName  string `json:"first_name"`
 	LastName   string `json:"last_name"`
 	Phone      string `json:"phone"`
+	// SessionId is the session of the request token; logout revokes it.
+	SessionId string `json:"-"`
 }
 
 type contextKey uint8

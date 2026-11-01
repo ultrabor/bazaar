@@ -13,7 +13,7 @@ import (
 
 func TestRoutesRedirectTrailingSlash(t *testing.T) {
 	log := slog.New(slog.NewTextHandler(io.Discard, nil))
-	router := NewRouter(middleware.New(log, "secret", nil, nil), health.NewHandler(log, nil))
+	router := NewRouter(middleware.New(log, nil, nil), health.NewHandler(log, nil))
 
 	for _, path := range []string{"/user/", "/location/"} {
 		t.Run(path, func(t *testing.T) {

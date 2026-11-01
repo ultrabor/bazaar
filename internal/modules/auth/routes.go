@@ -14,6 +14,7 @@ type authService interface {
 	// and the owner user in one transaction.
 	RegisterOwner(ctx context.Context, rq RegisterRequest) (*RegisterResponse, error)
 	Login(ctx context.Context, rq LoginRequest) (*LoginResponse, error)
+	Logout(ctx context.Context, sessionId string) error
 }
 
 type Handler struct {
@@ -34,6 +35,7 @@ func (h *Handler) Routes(r chi.Router, mw *middleware.Middleware) {
 			r.Use(mw.Auth)
 
 			r.Get("/me", h.Me)
+			r.Post("/logout", h.Logout)
 		})
 	})
 }

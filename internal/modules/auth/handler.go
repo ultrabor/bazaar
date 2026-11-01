@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log/slog"
+	"net"
 	"net/http"
 	"time"
 )
@@ -113,7 +114,12 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rq := LoginRequest(body)
+	rq := LoginRequest{
+		Phone:     body.Phone,
+		Password:  body.Password,
+		UserAgent: r.UserAgent(),
+		Ip:        clientIP(r),
+	}
 
 	res, err := h.svc.Login(ctx, rq)
 
@@ -163,6 +169,42 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(re)
 }
 
+// @Summary Log out: revoke the current session
+// @Tags Auth
+// @Produce json
+// @Security BearerAuth
+// @Success 204
+// @Failure 401 {object} httpx.Error "Unauthorized"
+// @Failure 500 {object} httpx.Error "Internal error"
+// @Failure 503 {object} httpx.Error "Service unavailable"
+// @Router /auth/logout [post]
+func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
+	defer stop()
+
+	u, ok := httpx.CurrentUser(w, ctx)
+	if !ok {
+		return
+	}
+
+	err := h.svc.Logout(ctx, u.SessionId)
+	if err != nil {
+		switch {
+		case errors.Is(err, apperror.ErrInvalidCred), errors.Is(err, ErrUnauthorized):
+			httpx.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
+		case errors.Is(err, context.DeadlineExceeded):
+			httpx.WriteError(w, http.StatusServiceUnavailable, "service_unavailable", "service unavailable")
+			h.logger.Error("service unavailable", slog.Any("err", err))
+		default:
+			httpx.WriteError(w, http.StatusInternalServerError, "internal_error", "internal error")
+			h.logger.Error("logout failed", slog.Any("err", err))
+		}
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // @Summary Get current user info
 // @Tags Auth
 // @Produce json
@@ -196,4 +238,19 @@ type RegisterOwnerBody struct {
 type LoginBody struct {
 	Phone    string `json:"phone"`
 	Password string `json:"password"`
+}
+
+// clientIP returns the host part of r.RemoteAddr, or "" when it is not an
+// IP: sessions.ip is inet, so a bad value would fail the insert.
+func clientIP(r *http.Request) string {
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		host = r.RemoteAddr
+	}
+
+	if net.ParseIP(host) == nil {
+		return ""
+	}
+
+	return host
 }

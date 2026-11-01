@@ -24,9 +24,9 @@ func New(cfg config.Config, db *database.Database, logger *slog.Logger) http.Han
 	roles := role.New(db, logger)
 	users := user.New(db, logger, roles.Service())
 	permissions := permission.New(db, logger, users.Service())
-	authModule := auth.New(db, logger, roles.Service(), []byte(cfg.JWTSecret))
+	authModule := auth.New(db, logger, roles.Service(), cfg.SessionTTL)
 
-	mw := middleware.New(logger, cfg.JWTSecret, authModule.LoadUser, permissions.HasPermission)
+	mw := middleware.New(logger, authModule.LoadUser, permissions.HasPermission)
 	probes := health.NewHandler(logger, health.New(db))
 
 	return NewRouter(mw, probes,

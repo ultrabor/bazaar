@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/cast"
@@ -21,7 +22,7 @@ type Config struct {
 	PostgresDB       string
 	PostgresMaxConn  int
 
-	JWTSecret string
+	SessionTTL time.Duration
 }
 
 func EnvLoad() Config {
@@ -44,7 +45,7 @@ func EnvLoad() Config {
 	cfg.PostgresDB = cast.ToString(getOrReturnDefault("POSTGRES_DB", ""))
 	cfg.PostgresMaxConn = cast.ToInt(getOrReturnDefault("POSTGRES_MAX_CONNS", ""))
 
-	cfg.JWTSecret = cast.ToString(getOrStop("JWT_SECRET"))
+	cfg.SessionTTL = getPositiveDuration("SESSION_TTL", "720h")
 
 	return cfg
 }
@@ -65,4 +66,17 @@ func getOrStop(key string) string {
 	}
 
 	return value
+}
+
+// getPositiveDuration stops on a value without a unit: cast reads "60" as
+// 60ns, which makes every session expire at once.
+func getPositiveDuration(key, defaultValue string) time.Duration {
+	raw := cast.ToString(getOrReturnDefault(key, defaultValue))
+
+	d, err := time.ParseDuration(raw)
+	if err != nil || d <= 0 {
+		log.Fatalf("Environment variable %s=%q must be a positive duration like 720h or 30m", key, raw)
+	}
+
+	return d
 }

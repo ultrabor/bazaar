@@ -8,6 +8,7 @@ import (
 	"bazaar/internal/platform/identity"
 	"context"
 	"log/slog"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -17,8 +18,8 @@ type Module struct {
 	handler *Handler
 }
 
-func New(db *database.Database, logger *slog.Logger, roles roleService, jwtSecret []byte) *Module {
-	svc := NewService(NewRepository(db), db, roles, jwtSecret)
+func New(db *database.Database, logger *slog.Logger, roles roleService, sessionTTL time.Duration) *Module {
+	svc := NewService(NewRepository(db), db, roles, sessionTTL)
 	return &Module{svc: svc, handler: NewHandler(logger, svc)}
 }
 
@@ -28,9 +29,9 @@ func (m *Module) Service() *Service {
 }
 
 // LoadUser returns the active user of a token. It matches
-// middleware.UserLoader: a missing user is apperror.ErrInvalidCred.
-func (m *Module) LoadUser(ctx context.Context, userId string) (*identity.User, error) {
-	u, err := m.svc.GetUserById(ctx, userId)
+// middleware.UserLoader: an invalid session is apperror.ErrInvalidCred.
+func (m *Module) LoadUser(ctx context.Context, token string) (*identity.User, error) {
+	u, session, err := m.svc.LoadSession(ctx, token)
 	if err != nil {
 		return nil, err
 	}
@@ -42,6 +43,7 @@ func (m *Module) LoadUser(ctx context.Context, userId string) (*identity.User, e
 		FirstName:  u.FirstName,
 		LastName:   u.LastName,
 		Phone:      u.Phone,
+		SessionId:  session.Id,
 	}, nil
 }
 

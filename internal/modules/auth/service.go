@@ -9,14 +9,14 @@ import (
 )
 
 type Service struct {
-	repo      repository
-	tx        database.TxManager
-	roles     roleService
-	jwtSecret []byte
+	repo       repository
+	tx         database.TxManager
+	roles      roleService
+	sessionTTL time.Duration
 }
 
-func NewService(repo repository, tx database.TxManager, roles roleService, jwtSecret []byte) *Service {
-	return &Service{repo: repo, tx: tx, roles: roles, jwtSecret: jwtSecret}
+func NewService(repo repository, tx database.TxManager, roles roleService, sessionTTL time.Duration) *Service {
+	return &Service{repo: repo, tx: tx, roles: roles, sessionTTL: sessionTTL}
 }
 
 func (s *Service) RegisterOwner(ctx context.Context, rq RegisterRequest) (*RegisterResponse, error) {
@@ -75,12 +75,43 @@ func (s *Service) Login(ctx context.Context, rq LoginRequest) (*LoginResponse, e
 		return nil, apperror.ErrInvalidCred
 	}
 
-	token, err := validator.GenerateToken(user.Id, user.CompanyId, user.UserRoleId, time.Minute*30, s.jwtSecret)
+	token, err := newToken()
+	if err != nil {
+		return nil, err
+	}
+
+	// Only the hash is stored; the raw token goes to the client once.
+	_, err = s.repo.CreateSession(ctx, user.Id, hashToken(token), time.Now().Add(s.sessionTTL), rq.UserAgent, rq.Ip)
 	if err != nil {
 		return nil, err
 	}
 
 	return &LoginResponse{Token: token}, nil
+}
+
+// Logout revokes the session of the request token.
+func (s *Service) Logout(ctx context.Context, sessionId string) error {
+	if sessionId == "" {
+		return ErrUnauthorized
+	}
+
+	return s.repo.RevokeSession(ctx, sessionId)
+}
+
+// LoadSession returns the user and session of a raw token. A missing,
+// expired or revoked session is apperror.ErrInvalidCred.
+func (s *Service) LoadSession(ctx context.Context, token string) (*User, *Session, error) {
+	session, err := s.repo.GetActiveSessionByTokenHash(ctx, hashToken(token))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user, err := s.repo.GetUserById(ctx, session.UserId)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return user, session, nil
 }
 
 func (s *Service) GetUserById(ctx context.Context, userId string) (*User, error) {
@@ -101,4 +132,10 @@ type repository interface {
 	// GetUserByPhone and GetUserById return ErrInvalidCred for a missing user.
 	GetUserByPhone(ctx context.Context, phone string) (*User, error)
 	GetUserById(ctx context.Context, userId string) (*User, error)
+	CreateSession(ctx context.Context, userId, tokenHash string, expiresAt time.Time, userAgent, ip string) (string, error)
+	// GetActiveSessionByTokenHash returns ErrInvalidCred for a missing,
+	// expired or revoked session, or a deleted user.
+	GetActiveSessionByTokenHash(ctx context.Context, tokenHash string) (*Session, error)
+	// RevokeSession returns ErrInvalidCred when there is nothing to revoke.
+	RevokeSession(ctx context.Context, sessionId string) error
 }

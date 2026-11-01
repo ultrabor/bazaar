@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"time"
 )
 
 type RegisterRequest struct {
@@ -17,13 +18,28 @@ type RegisterResponse struct {
 	UserId    string `json:"user_id"`
 }
 
+// LoginRequest carries the client's user agent and IP. The handler takes
+// them from the HTTP request, never from the body.
 type LoginRequest struct {
-	Phone    string `json:"phone"`
-	Password string `json:"password"`
+	Phone     string
+	Password  string
+	UserAgent string
+	Ip        string
 }
 
 type LoginResponse struct {
 	Token string `json:"token"`
+}
+
+type Session struct {
+	Id        string     `json:"id"`
+	UserId    string     `json:"user_id"`
+	TokenHash string     `json:"-"`
+	ExpiresAt time.Time  `json:"expires_at"`
+	RevokedAt *time.Time `json:"revoked_at"`
+	CreatedAt time.Time  `json:"-"`
+	UserAgent *string    `json:"user_agent,omitempty"`
+	Ip        *string    `json:"ip,omitempty"`
 }
 
 // User is a user as auth sees it: with the password hash for login.

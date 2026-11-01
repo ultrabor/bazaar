@@ -5,6 +5,7 @@ import (
 	"bazaar/internal/platform/support/apperror"
 	"context"
 	"errors"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -87,4 +88,77 @@ func (r *Repository) GetUserById(ctx context.Context, userId string) (*User, err
 	}
 
 	return &u, nil
+}
+
+func (r *Repository) CreateSession(ctx context.Context, userId, tokenHash string, expiresAt time.Time, userAgent, ip string) (string, error) {
+	query := `
+		INSERT INTO sessions(user_id, token_hash, expires_at, user_agent, ip)
+		VALUES ($1, $2, $3, NULLIF($4, ''), NULLIF($5, '')::inet)
+		RETURNING id
+	`
+
+	var id string
+
+	err := r.db.Conn(ctx).QueryRow(ctx, query, userId, tokenHash, expiresAt, userAgent, ip).Scan(&id)
+
+	if err != nil {
+		return "", apperror.New("failed to create session", err)
+	}
+
+	return id, nil
+}
+
+func (r *Repository) GetActiveSessionByTokenHash(ctx context.Context, tokenHash string) (*Session, error) {
+	query := `
+		SELECT s.id, s.user_id, s.token_hash, s.expires_at, s.revoked_at, s.user_agent, s.ip::text
+		from sessions s
+		join users u on s.user_id = u.id
+		where s.token_hash = $1
+		and s.revoked_at is null
+		and s.expires_at > now()
+		and u.deleted_at = 0
+	`
+
+	var s Session
+
+	err := r.db.Conn(ctx).QueryRow(ctx, query, tokenHash).Scan(
+		&s.Id,
+		&s.UserId,
+		&s.TokenHash,
+		&s.ExpiresAt,
+		&s.RevokedAt,
+		&s.UserAgent,
+		&s.Ip,
+	)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, apperror.ErrInvalidCred
+		}
+
+		return nil, apperror.New("failed to get session", err)
+	}
+
+	return &s, nil
+}
+
+// RevokeSession returns ErrInvalidCred when the session is missing or
+// already revoked.
+func (r *Repository) RevokeSession(ctx context.Context, sessionId string) error {
+	query := `
+		UPDATE sessions
+		SET revoked_at = now()
+		where id = $1 and revoked_at is null
+	`
+
+	tag, err := r.db.Conn(ctx).Exec(ctx, query, sessionId)
+	if err != nil {
+		return apperror.New("failed to revoke session", err)
+	}
+
+	if tag.RowsAffected() == 0 {
+		return apperror.ErrInvalidCred
+	}
+
+	return nil
 }
