@@ -17,14 +17,14 @@ func (h *Handler) GetListPermissions(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()
 
-	jwt, ok := identity.FromContext(ctx)
+	u, ok := identity.FromContext(ctx)
 
 	if !ok {
 		httpx.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 		return
 	}
 
-	res, err := h.svc.GetUserPermissions(ctx, jwt.Id, jwt.CompanyId, r.URL.Query().Get("user_id"))
+	res, err := h.svc.GetUserPermissions(ctx, u.Id, u.CompanyId, r.URL.Query().Get("user_id"))
 
 	if err != nil {
 		status := http.StatusInternalServerError
@@ -70,7 +70,7 @@ func (h *Handler) SetPermission(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()
 
-	jwt, ok := identity.FromContext(ctx)
+	u, ok := identity.FromContext(ctx)
 
 	if !ok {
 		httpx.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
@@ -87,8 +87,8 @@ func (h *Handler) SetPermission(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rq := ChangePermissionRequest{
-		GuarantorUserId: jwt.Id,
-		CompanyId:       jwt.CompanyId,
+		GuarantorUserId: u.Id,
+		CompanyId:       u.CompanyId,
 		ApplyUserId:     body.UserId,
 		PermissionId:    body.PermissionId,
 	}
@@ -138,7 +138,7 @@ func (h *Handler) RemovePermission(w http.ResponseWriter, r *http.Request) {
 	ctx, stop := context.WithTimeout(r.Context(), 2*time.Second)
 	defer stop()
 
-	jwt, ok := identity.FromContext(ctx)
+	u, ok := identity.FromContext(ctx)
 
 	if !ok {
 		httpx.WriteError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
@@ -155,8 +155,8 @@ func (h *Handler) RemovePermission(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rq := ChangePermissionRequest{
-		GuarantorUserId: jwt.Id,
-		CompanyId:       jwt.CompanyId,
+		GuarantorUserId: u.Id,
+		CompanyId:       u.CompanyId,
 		ApplyUserId:     body.UserId,
 		PermissionId:    body.PermissionId,
 	}

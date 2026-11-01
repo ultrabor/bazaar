@@ -23,7 +23,7 @@ import (
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
-// @description Type "Bearer" followed by a space and JWT token.
+// @description Type "Bearer" followed by a space and the session token from /auth/login.
 func main() {
 	cfg := config.EnvLoad()
 
