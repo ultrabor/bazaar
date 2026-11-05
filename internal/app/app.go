@@ -6,6 +6,7 @@ package app
 import (
 	"bazaar/internal/modules/auth"
 	"bazaar/internal/modules/category"
+	"bazaar/internal/modules/inventory"
 	"bazaar/internal/modules/location"
 	"bazaar/internal/modules/permission"
 	"bazaar/internal/modules/product"
@@ -33,6 +34,7 @@ func New(cfg config.Config, db *database.Database, logger *slog.Logger) http.Han
 		authModule,
 		users,
 		location.New(db, logger),
+		inventory.New(db, logger),
 		product.New(db, logger),
 		category.New(db, logger),
 		permissions,

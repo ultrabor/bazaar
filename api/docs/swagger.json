@@ -907,6 +907,183 @@
                 }
             }
         },
+        "/location/{id}/stock": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Quantities are integers in thousandths of the product unit: 1500 is 1.5 kg. Archived locations stay readable.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Inventory"
+                ],
+                "summary": "List the stock of a location",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size, default 50, max 200",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Rows to skip",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_modules_inventory.Balance"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid pagination",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Location not found",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/location/{id}/stock/{productId}/movements": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Newest first. Qty is signed thousandths: positive for stock in, negative for stock out.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Inventory"
+                ],
+                "summary": "List stock movements of a product at a location",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product ID",
+                        "name": "productId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size, default 50, max 200",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Rows to skip",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_modules_inventory.Movement"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid pagination",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Location not found",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/product": {
             "get": {
                 "security": [
@@ -2130,6 +2307,102 @@
                     "type": "string"
                 }
             }
+        },
+        "internal_modules_inventory.Balance": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "location_id": {
+                    "type": "string"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_modules_inventory.Movement": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "location_id": {
+                    "type": "string"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "qty": {
+                    "type": "integer"
+                },
+                "reason": {
+                    "$ref": "#/definitions/internal_modules_inventory.Reason"
+                },
+                "ref_id": {
+                    "type": "string"
+                },
+                "ref_type": {
+                    "$ref": "#/definitions/internal_modules_inventory.RefType"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_modules_inventory.Reason": {
+            "type": "string",
+            "enum": [
+                "purchase",
+                "sale",
+                "return",
+                "transfer_in",
+                "transfer_out",
+                "stocktake",
+                "write_off"
+            ],
+            "x-enum-varnames": [
+                "ReasonPurchase",
+                "ReasonSale",
+                "ReasonReturn",
+                "ReasonTransferIn",
+                "ReasonTransferOut",
+                "ReasonStocktake",
+                "ReasonWriteOff"
+            ]
+        },
+        "internal_modules_inventory.RefType": {
+            "type": "string",
+            "enum": [
+                "purchase",
+                "sale",
+                "return",
+                "transfer",
+                "stocktake"
+            ],
+            "x-enum-varnames": [
+                "RefTypePurchase",
+                "RefTypeSale",
+                "RefTypeReturn",
+                "RefTypeTransfer",
+                "RefTypeStocktake"
+            ]
         },
         "internal_modules_location.CreateLocationBody": {
             "type": "object",
