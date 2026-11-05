@@ -92,6 +92,8 @@ var (
 	ErrLocationNotFound  = errors.New("location not found")
 	ErrProductNotFound   = errors.New("product not found")
 	ErrInvalidQuantity   = errors.New("invalid quantity")
+	ErrInvalidLocationID = errors.New("invalid location id")
+	ErrInvalidProductID  = errors.New("invalid product id")
 	ErrInvalidReason     = errors.New("invalid reason for this operation")
 	ErrInvalidRef        = errors.New("ref_type and ref_id must be set together")
 )

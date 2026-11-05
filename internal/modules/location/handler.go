@@ -142,6 +142,10 @@ func (h *Handler) GetLocationById(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
+		case errors.Is(err, ErrInvalidLocationID):
+			status = http.StatusBadRequest
+			code = "invalid_location_id"
+			msg = "invalid location id"
 		case errors.Is(err, ErrLocationNotFound):
 			status = http.StatusNotFound
 			code = "location_not_found"
@@ -294,6 +298,10 @@ func (h *Handler) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
+		case errors.Is(err, ErrInvalidLocationID):
+			status = http.StatusBadRequest
+			code = "invalid_location_id"
+			msg = "invalid location id"
 		case errors.Is(err, ErrLocationNotFound):
 			status = http.StatusNotFound
 			code = "location_not_found"
@@ -375,6 +383,10 @@ func (h *Handler) ArchiveLocation(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusBadRequest
 			code = "invalid_credential"
 			msg = "invalid credential"
+		case errors.Is(err, ErrInvalidLocationID):
+			status = http.StatusBadRequest
+			code = "invalid_location_id"
+			msg = "invalid location id"
 		case errors.Is(err, ErrLocationNotFound):
 			status = http.StatusNotFound
 			code = "location_not_found"

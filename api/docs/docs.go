@@ -961,7 +961,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid pagination",
+                        "description": "Invalid pagination or id",
                         "schema": {
                             "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }
@@ -1053,7 +1053,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid pagination",
+                        "description": "Invalid pagination or id",
                         "schema": {
                             "$ref": "#/definitions/bazaar_internal_platform_httpx.Error"
                         }

@@ -25,7 +25,7 @@ func TestCreateLocationRejectsInvalidType(t *testing.T) {
 func TestUpdateLocationRejectsInvalidType(t *testing.T) {
 	service := NewService(nil)
 	request := &UpdateLocationRequest{
-		LocationId: "location-id",
+		LocationId: "00000000-0000-4000-8000-000000000002",
 		CompanyId:  "company-id",
 		Name:       "Main",
 		Address:    "Address",
@@ -46,5 +46,23 @@ func TestLocationServiceRejectsNilRequest(t *testing.T) {
 	}
 	if _, err := service.UpdateLocation(context.Background(), nil); !errors.Is(err, apperror.ErrInvalidCred) {
 		t.Fatalf("UpdateLocation error = %v, want %v", err, apperror.ErrInvalidCred)
+	}
+}
+
+// NewService(nil) panics if a method reaches the repository, so these
+// tests also prove the database is never queried with a bad id.
+func TestLocationServiceRejectsNonUUIDID(t *testing.T) {
+	service := NewService(nil)
+	ctx := context.Background()
+
+	if _, err := service.GetLocationById(ctx, "abc", "company-id"); !errors.Is(err, ErrInvalidLocationID) {
+		t.Errorf("GetLocationById error = %v, want %v", err, ErrInvalidLocationID)
+	}
+	update := &UpdateLocationRequest{LocationId: "abc", CompanyId: "company-id", Name: "Main", Address: "Address", Type: LocationTypeStore}
+	if _, err := service.UpdateLocation(ctx, update); !errors.Is(err, ErrInvalidLocationID) {
+		t.Errorf("UpdateLocation error = %v, want %v", err, ErrInvalidLocationID)
+	}
+	if err := service.ArchiveLocation(ctx, "abc", "company-id"); !errors.Is(err, ErrInvalidLocationID) {
+		t.Errorf("ArchiveLocation error = %v, want %v", err, ErrInvalidLocationID)
 	}
 }

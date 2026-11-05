@@ -5,6 +5,8 @@ import (
 	"bazaar/internal/platform/support/apperror"
 	"context"
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 const MaxQty int64 = 99_999_999_999_999
@@ -66,12 +68,18 @@ func (s *Service) GetBalance(ctx context.Context, companyID, locationID, product
 	if companyID == "" || locationID == "" || productID == "" {
 		return 0, apperror.ErrInvalidCred
 	}
+	if err := validIDs(locationID, productID); err != nil {
+		return 0, err
+	}
 	return s.repo.GetBalance(ctx, companyID, locationID, productID)
 }
 
 func (s *Service) ListMovements(ctx context.Context, f MovementFilter) ([]Movement, error) {
 	if f.CompanyID == "" || f.LocationID == "" || f.ProductID == "" || f.Offset < 0 {
 		return nil, apperror.ErrInvalidCred
+	}
+	if err := validIDs(f.LocationID, f.ProductID); err != nil {
+		return nil, err
 	}
 	if err := s.repo.LocationExists(ctx, f.CompanyID, f.LocationID); err != nil {
 		return nil, err
@@ -83,6 +91,9 @@ func (s *Service) ListMovements(ctx context.Context, f MovementFilter) ([]Moveme
 func (s *Service) ListBalances(ctx context.Context, f BalanceFilter) ([]Balance, error) {
 	if f.CompanyID == "" || f.LocationID == "" || f.Offset < 0 {
 		return nil, apperror.ErrInvalidCred
+	}
+	if _, err := uuid.Parse(f.LocationID); err != nil {
+		return nil, ErrInvalidLocationID
 	}
 	if err := s.repo.LocationExists(ctx, f.CompanyID, f.LocationID); err != nil {
 		return nil, err
@@ -134,6 +145,9 @@ func validateChange(c Change, reasons map[Reason]bool) error {
 	if c.CompanyID == "" || c.LocationID == "" || c.ProductID == "" || c.UserID == "" {
 		return apperror.ErrInvalidCred
 	}
+	if err := validIDs(c.LocationID, c.ProductID); err != nil {
+		return err
+	}
 	if err := validQty(c.Qty); err != nil {
 		return err
 	}
@@ -145,6 +159,21 @@ func validateChange(c Change, reasons map[Reason]bool) error {
 	}
 	if c.RefType != "" && !refTypes[c.RefType] {
 		return ErrInvalidRef
+	}
+	if _, err := uuid.Parse(c.RefID); c.RefID != "" && err != nil {
+		return ErrInvalidRef
+	}
+	return nil
+}
+
+// validIDs rejects ids that are not UUIDs before they reach Postgres,
+// which would fail with 22P02 and surface as a 500.
+func validIDs(locationID, productID string) error {
+	if _, err := uuid.Parse(locationID); err != nil {
+		return ErrInvalidLocationID
+	}
+	if _, err := uuid.Parse(productID); err != nil {
+		return ErrInvalidProductID
 	}
 	return nil
 }

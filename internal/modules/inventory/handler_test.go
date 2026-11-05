@@ -83,6 +83,8 @@ func TestInventoryHandlerErrors(t *testing.T) {
 	}{
 		{"bad limit", "/location/l/stock?limit=abc", nil, http.StatusBadRequest, "invalid_pagination"},
 		{"negative offset", "/location/l/stock/p/movements?offset=-1", nil, http.StatusBadRequest, "invalid_pagination"},
+		{"location not a uuid", "/location/abc/stock", ErrInvalidLocationID, http.StatusBadRequest, "invalid_location_id"},
+		{"product not a uuid", "/location/l/stock/abc/movements", ErrInvalidProductID, http.StatusBadRequest, "invalid_product_id"},
 		{"unknown location", "/location/l/stock", ErrLocationNotFound, http.StatusNotFound, "location_not_found"},
 		{"foreign location movements", "/location/l/stock/p/movements", ErrLocationNotFound, http.StatusNotFound, "location_not_found"},
 		{"timeout", "/location/l/stock", context.DeadlineExceeded, http.StatusServiceUnavailable, "service_unavailable"},
@@ -99,5 +101,29 @@ func TestInventoryHandlerErrors(t *testing.T) {
 				t.Errorf("code = %q, want %q", code, tt.code)
 			}
 		})
+	}
+}
+
+func TestNonUUIDPathReturns400ThroughRealService(t *testing.T) {
+	repo := &fakeRepo{}
+	router := newInventoryRouter(NewService(repo, fakeTx{}))
+
+	paths := map[string]string{
+		"/location/abc/stock":                                "invalid_location_id",
+		"/location/" + testLocation + "/stock/abc/movements": "invalid_product_id",
+	}
+	for path, wantCode := range paths {
+		res := httpxtest.Serve(t, router, http.MethodGet, path, "")
+
+		if res.Code != http.StatusBadRequest {
+			t.Errorf("GET %s status = %d, want 400", path, res.Code)
+			continue
+		}
+		if code := httpxtest.ErrorCode(t, res); code != wantCode {
+			t.Errorf("GET %s code = %q, want %q", path, code, wantCode)
+		}
+	}
+	if repo.filter != (MovementFilter{}) || repo.bfilter != (BalanceFilter{}) {
+		t.Errorf("repository queried with an invalid id")
 	}
 }

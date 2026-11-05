@@ -3,6 +3,8 @@ package location
 import (
 	"bazaar/internal/platform/support/apperror"
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Service struct {
@@ -23,6 +25,9 @@ func (s *Service) GetCompanyLocations(ctx context.Context, companyId string) ([]
 }
 
 func (s *Service) GetLocationById(ctx context.Context, locationId, companyId string) (*Location, error) {
+	if _, err := uuid.Parse(locationId); err != nil {
+		return nil, ErrInvalidLocationID
+	}
 	return s.repo.GetLocationById(ctx, locationId, companyId)
 }
 
@@ -48,6 +53,9 @@ func (s *Service) UpdateLocation(ctx context.Context, r *UpdateLocationRequest) 
 	if r == nil || r.CompanyId == "" || r.LocationId == "" || r.Name == "" || r.Address == "" {
 		return nil, apperror.ErrInvalidCred
 	}
+	if _, err := uuid.Parse(r.LocationId); err != nil {
+		return nil, ErrInvalidLocationID
+	}
 	if !validType(r.Type) {
 		return nil, ErrInvalidLocationType
 	}
@@ -63,6 +71,9 @@ func (s *Service) UpdateLocation(ctx context.Context, r *UpdateLocationRequest) 
 func (s *Service) ArchiveLocation(ctx context.Context, locationId, companyId string) error {
 	if locationId == "" || companyId == "" {
 		return apperror.ErrInvalidCred
+	}
+	if _, err := uuid.Parse(locationId); err != nil {
+		return ErrInvalidLocationID
 	}
 
 	err := s.repo.ArchiveLocation(ctx, locationId, companyId)

@@ -47,4 +47,5 @@ var (
 	ErrLocationNotFound      = errors.New("location not found")
 	ErrLocationAlreadyExists = errors.New("location already exists")
 	ErrInvalidLocationType   = errors.New("invalid location type")
+	ErrInvalidLocationID     = errors.New("invalid location id")
 )

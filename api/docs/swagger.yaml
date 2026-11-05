@@ -984,7 +984,7 @@ paths:
               $ref: '#/definitions/internal_modules_inventory.Balance'
             type: array
         "400":
-          description: Invalid pagination
+          description: Invalid pagination or id
           schema:
             $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":
@@ -1045,7 +1045,7 @@ paths:
               $ref: '#/definitions/internal_modules_inventory.Movement'
             type: array
         "400":
-          description: Invalid pagination
+          description: Invalid pagination or id
           schema:
             $ref: '#/definitions/bazaar_internal_platform_httpx.Error'
         "401":

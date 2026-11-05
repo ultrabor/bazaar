@@ -24,7 +24,7 @@ const requestTimeout = 2 * time.Second
 // @Param limit query int false "Page size, default 50, max 200"
 // @Param offset query int false "Rows to skip"
 // @Success 200 {array} Balance
-// @Failure 400 {object} httpx.Error "Invalid pagination"
+// @Failure 400 {object} httpx.Error "Invalid pagination or id"
 // @Failure 401 {object} httpx.Error "Unauthorized"
 // @Failure 403 {object} httpx.Error "Forbidden"
 // @Failure 404 {object} httpx.Error "Location not found"
@@ -68,7 +68,7 @@ func (h *Handler) ListStock(w http.ResponseWriter, r *http.Request) {
 // @Param limit query int false "Page size, default 50, max 200"
 // @Param offset query int false "Rows to skip"
 // @Success 200 {array} Movement
-// @Failure 400 {object} httpx.Error "Invalid pagination"
+// @Failure 400 {object} httpx.Error "Invalid pagination or id"
 // @Failure 401 {object} httpx.Error "Unauthorized"
 // @Failure 403 {object} httpx.Error "Forbidden"
 // @Failure 404 {object} httpx.Error "Location not found"
@@ -128,6 +128,10 @@ func (h *Handler) writeServiceError(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, apperror.ErrInvalidCred):
 		httpx.WriteError(w, http.StatusBadRequest, "invalid_credential", "invalid credential")
+	case errors.Is(err, ErrInvalidLocationID):
+		httpx.WriteError(w, http.StatusBadRequest, "invalid_location_id", "invalid location id")
+	case errors.Is(err, ErrInvalidProductID):
+		httpx.WriteError(w, http.StatusBadRequest, "invalid_product_id", "invalid product id")
 	case errors.Is(err, ErrLocationNotFound):
 		httpx.WriteError(w, http.StatusNotFound, "location_not_found", "location not found")
 	case errors.Is(err, context.DeadlineExceeded):

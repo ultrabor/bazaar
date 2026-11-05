@@ -7,6 +7,14 @@ import (
 	"testing"
 )
 
+const (
+	testCompany  = "00000000-0000-4000-8000-000000000001"
+	testLocation = "00000000-0000-4000-8000-000000000002"
+	testProduct  = "00000000-0000-4000-8000-000000000003"
+	testUser     = "00000000-0000-4000-8000-000000000004"
+	testRef      = "00000000-0000-4000-8000-000000000005"
+)
+
 type fakeTx struct{}
 
 func (fakeTx) WithinTx(ctx context.Context, fn func(ctx context.Context) error) error {
@@ -79,10 +87,10 @@ func (f *fakeRepo) ListMovements(_ context.Context, filter MovementFilter) ([]Mo
 
 func validChange(reason Reason) Change {
 	return Change{
-		CompanyID:  "company",
-		LocationID: "location",
-		ProductID:  "product",
-		UserID:     "user",
+		CompanyID:  testCompany,
+		LocationID: testLocation,
+		ProductID:  testProduct,
+		UserID:     testUser,
 		Qty:        1500,
 		Reason:     reason,
 	}
@@ -92,7 +100,7 @@ func TestIncreaseBalanceRecordsPositiveMovement(t *testing.T) {
 	repo := &fakeRepo{}
 	svc := NewService(repo, fakeTx{})
 	c := validChange(ReasonPurchase)
-	c.RefType, c.RefID = RefTypePurchase, "purchase-1"
+	c.RefType, c.RefID = RefTypePurchase, testRef
 
 	m, err := svc.IncreaseBalance(context.Background(), c)
 
@@ -105,8 +113,8 @@ func TestIncreaseBalanceRecordsPositiveMovement(t *testing.T) {
 	if m.Qty != 1500 || m.Reason != ReasonPurchase || m.ID == "" {
 		t.Errorf("movement = %+v", m)
 	}
-	if m.RefType == nil || *m.RefType != RefTypePurchase || m.RefID == nil || *m.RefID != "purchase-1" {
-		t.Errorf("ref = %v %v, want purchase purchase-1", m.RefType, m.RefID)
+	if m.RefType == nil || *m.RefType != RefTypePurchase || m.RefID == nil || *m.RefID != testRef {
+		t.Errorf("ref = %v %v, want purchase %s", m.RefType, m.RefID, testRef)
 	}
 }
 
@@ -145,8 +153,11 @@ func TestChangeValidation(t *testing.T) {
 		{"purchase cannot decrease", false, func(c *Change) { c.Reason = ReasonPurchase }, ErrInvalidReason},
 		{"unknown reason", true, func(c *Change) { c.Reason = "gift" }, ErrInvalidReason},
 		{"ref type without id", true, func(c *Change) { c.RefType = RefTypePurchase }, ErrInvalidRef},
-		{"ref id without type", false, func(c *Change) { c.RefID = "x" }, ErrInvalidRef},
-		{"unknown ref type", true, func(c *Change) { c.RefType, c.RefID = "invoice", "x" }, ErrInvalidRef},
+		{"ref id without type", false, func(c *Change) { c.RefID = testRef }, ErrInvalidRef},
+		{"unknown ref type", true, func(c *Change) { c.RefType, c.RefID = "invoice", testRef }, ErrInvalidRef},
+		{"location not a uuid", true, func(c *Change) { c.LocationID = "abc" }, ErrInvalidLocationID},
+		{"product not a uuid", false, func(c *Change) { c.ProductID = "abc" }, ErrInvalidProductID},
+		{"ref id not a uuid", true, func(c *Change) { c.RefType, c.RefID = RefTypePurchase, "abc" }, ErrInvalidRef},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -221,18 +232,18 @@ func TestCheckStock(t *testing.T) {
 		product string
 		want    error
 	}{
-		{"enough", 2000, 1500, "product", nil},
-		{"exactly enough", 1500, 1500, "product", nil},
-		{"short", 1000, 1500, "product", ErrInsufficientStock},
-		{"no balance row", 0, 1, "product", ErrInsufficientStock},
-		{"zero qty", 2000, 0, "product", ErrInvalidQuantity},
+		{"enough", 2000, 1500, testProduct, nil},
+		{"exactly enough", 1500, 1500, testProduct, nil},
+		{"short", 1000, 1500, testProduct, ErrInsufficientStock},
+		{"no balance row", 0, 1, testProduct, ErrInsufficientStock},
+		{"zero qty", 2000, 0, testProduct, ErrInvalidQuantity},
 		{"missing product", 2000, 1, "", apperror.ErrInvalidCred},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			svc := NewService(&fakeRepo{balance: tt.balance}, fakeTx{})
 
-			err := svc.CheckStock(context.Background(), "company", "location", tt.product, tt.qty)
+			err := svc.CheckStock(context.Background(), testCompany, testLocation, tt.product, tt.qty)
 
 			if !errors.Is(err, tt.want) {
 				t.Fatalf("err = %v, want %v", err, tt.want)
@@ -245,7 +256,7 @@ func TestCheckStockPropagatesStorageError(t *testing.T) {
 	storageErr := errors.New("timeout")
 	svc := NewService(&fakeRepo{balanceErr: storageErr}, fakeTx{})
 
-	err := svc.CheckStock(context.Background(), "company", "location", "product", 1)
+	err := svc.CheckStock(context.Background(), testCompany, testLocation, testProduct, 1)
 
 	if !errors.Is(err, storageErr) {
 		t.Fatalf("err = %v, want %v", err, storageErr)
@@ -266,7 +277,7 @@ func TestListMovementsLimit(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &fakeRepo{}
 			svc := NewService(repo, fakeTx{})
-			f := MovementFilter{CompanyID: "c", LocationID: "l", ProductID: "p", Limit: tt.limit}
+			f := MovementFilter{CompanyID: testCompany, LocationID: testLocation, ProductID: testProduct, Limit: tt.limit}
 
 			if _, err := svc.ListMovements(context.Background(), f); err != nil {
 				t.Fatalf("ListMovements: %v", err)
@@ -282,8 +293,8 @@ func TestListMovementsLimit(t *testing.T) {
 func TestListMovementsValidation(t *testing.T) {
 	svc := NewService(&fakeRepo{}, fakeTx{})
 	filters := []MovementFilter{
-		{LocationID: "l", ProductID: "p"},
-		{CompanyID: "c", LocationID: "l", ProductID: "p", Offset: -1},
+		{LocationID: testLocation, ProductID: testProduct},
+		{CompanyID: testCompany, LocationID: testLocation, ProductID: testProduct, Offset: -1},
 	}
 	for _, f := range filters {
 		if _, err := svc.ListMovements(context.Background(), f); !errors.Is(err, apperror.ErrInvalidCred) {
@@ -296,7 +307,7 @@ func TestListBalancesLimit(t *testing.T) {
 	repo := &fakeRepo{}
 	svc := NewService(repo, fakeTx{})
 
-	if _, err := svc.ListBalances(context.Background(), BalanceFilter{CompanyID: "c", LocationID: "l", Limit: 1000}); err != nil {
+	if _, err := svc.ListBalances(context.Background(), BalanceFilter{CompanyID: testCompany, LocationID: testLocation, Limit: 1000}); err != nil {
 		t.Fatalf("ListBalances: %v", err)
 	}
 
@@ -308,9 +319,9 @@ func TestListBalancesLimit(t *testing.T) {
 func TestListBalancesValidation(t *testing.T) {
 	svc := NewService(&fakeRepo{}, fakeTx{})
 	filters := []BalanceFilter{
-		{LocationID: "l"},
-		{CompanyID: "c"},
-		{CompanyID: "c", LocationID: "l", Offset: -1},
+		{LocationID: testLocation},
+		{CompanyID: testCompany},
+		{CompanyID: testCompany, LocationID: testLocation, Offset: -1},
 	}
 	for _, f := range filters {
 		if _, err := svc.ListBalances(context.Background(), f); !errors.Is(err, apperror.ErrInvalidCred) {
@@ -323,13 +334,52 @@ func TestReadsRejectUnknownLocation(t *testing.T) {
 	svc := NewService(&fakeRepo{locationErr: ErrLocationNotFound}, fakeTx{})
 	ctx := context.Background()
 
-	_, balancesErr := svc.ListBalances(ctx, BalanceFilter{CompanyID: "c", LocationID: "l"})
-	_, movementsErr := svc.ListMovements(ctx, MovementFilter{CompanyID: "c", LocationID: "l", ProductID: "p"})
+	_, balancesErr := svc.ListBalances(ctx, BalanceFilter{CompanyID: testCompany, LocationID: testLocation})
+	_, movementsErr := svc.ListMovements(ctx, MovementFilter{CompanyID: testCompany, LocationID: testLocation, ProductID: testProduct})
 
 	if !errors.Is(balancesErr, ErrLocationNotFound) {
 		t.Errorf("ListBalances err = %v, want ErrLocationNotFound", balancesErr)
 	}
 	if !errors.Is(movementsErr, ErrLocationNotFound) {
 		t.Errorf("ListMovements err = %v, want ErrLocationNotFound", movementsErr)
+	}
+}
+
+func TestReadsRejectNonUUIDIDs(t *testing.T) {
+	ctx := context.Background()
+	tests := []struct {
+		name string
+		call func(svc *Service) error
+		want error
+	}{
+		{"ListBalances location", func(svc *Service) error {
+			_, err := svc.ListBalances(ctx, BalanceFilter{CompanyID: testCompany, LocationID: "abc"})
+			return err
+		}, ErrInvalidLocationID},
+		{"ListMovements location", func(svc *Service) error {
+			_, err := svc.ListMovements(ctx, MovementFilter{CompanyID: testCompany, LocationID: "abc", ProductID: testProduct})
+			return err
+		}, ErrInvalidLocationID},
+		{"ListMovements product", func(svc *Service) error {
+			_, err := svc.ListMovements(ctx, MovementFilter{CompanyID: testCompany, LocationID: testLocation, ProductID: "abc"})
+			return err
+		}, ErrInvalidProductID},
+		{"CheckStock product", func(svc *Service) error {
+			return svc.CheckStock(ctx, testCompany, testLocation, "abc", 1)
+		}, ErrInvalidProductID},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &fakeRepo{}
+
+			err := tt.call(NewService(repo, fakeTx{}))
+
+			if !errors.Is(err, tt.want) {
+				t.Fatalf("err = %v, want %v", err, tt.want)
+			}
+			if repo.filter != (MovementFilter{}) || repo.bfilter != (BalanceFilter{}) {
+				t.Errorf("repository queried with an invalid id")
+			}
+		})
 	}
 }
