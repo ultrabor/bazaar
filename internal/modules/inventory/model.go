@@ -91,6 +91,7 @@ var (
 	ErrLocationArchived  = errors.New("location is archived")
 	ErrLocationNotFound  = errors.New("location not found")
 	ErrProductNotFound   = errors.New("product not found")
+	ErrProductArchived   = errors.New("product is archived")
 	ErrInvalidQuantity   = errors.New("invalid quantity")
 	ErrInvalidLocationID = errors.New("invalid location id")
 	ErrInvalidProductID  = errors.New("invalid product id")

@@ -137,6 +137,26 @@ func TestLedgerOnDatabase(t *testing.T) {
 		})
 	})
 
+	t.Run("archived product rejects purchase but can leave stock", func(t *testing.T) {
+		inRolledBackTx(t, db, func(ctx context.Context, f *fixture) {
+			f.increase(svc, 2000)
+			f.exec(`UPDATE products SET archived = true WHERE id = $1`, f.product)
+
+			if _, err := svc.IncreaseBalance(ctx, f.change(inventory.ReasonPurchase, 1)); !errors.Is(err, inventory.ErrProductArchived) {
+				t.Errorf("purchase err = %v, want ErrProductArchived", err)
+			}
+			if _, err := svc.DecreaseBalance(ctx, f.change(inventory.ReasonSale, 500)); err != nil {
+				t.Errorf("sale of archived product: %v", err)
+			}
+			if _, err := svc.IncreaseBalance(ctx, f.change(inventory.ReasonReturn, 100)); err != nil {
+				t.Errorf("return of archived product: %v", err)
+			}
+
+			f.wantBalance(svc, 1600)
+			f.wantMovements(svc, 100, -500, 2000)
+		})
+	})
+
 	t.Run("another company cannot see or change the stock", func(t *testing.T) {
 		inRolledBackTx(t, db, func(ctx context.Context, f *fixture) {
 			f.increase(svc, 1000)

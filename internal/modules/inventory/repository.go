@@ -74,18 +74,22 @@ func (r *Repository) ListBalances(ctx context.Context, f BalanceFilter) ([]Balan
 	return balances, nil
 }
 
-func (r *Repository) ProductExists(ctx context.Context, companyID, productID string) error {
-	var exists bool
+// LockProduct holds FOR SHARE until the transaction ends, so the product
+// cannot be archived between this check and the balance change.
+func (r *Repository) LockProduct(ctx context.Context, companyID, productID string) (bool, error) {
+	var archived bool
 	err := r.db.Conn(ctx).QueryRow(ctx, `
-		SELECT EXISTS (SELECT 1 FROM products WHERE id = $1 AND company_id = $2)
-	`, productID, companyID).Scan(&exists)
+		SELECT archived FROM products
+		WHERE id = $1 AND company_id = $2
+		FOR SHARE
+	`, productID, companyID).Scan(&archived)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return false, ErrProductNotFound
+	}
 	if err != nil {
-		return fmt.Errorf("check product: %w", err)
+		return false, fmt.Errorf("lock product: %w", err)
 	}
-	if !exists {
-		return ErrProductNotFound
-	}
-	return nil
+	return archived, nil
 }
 
 func (r *Repository) Increase(ctx context.Context, companyID, locationID, productID string, qty int64) error {

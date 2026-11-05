@@ -138,7 +138,16 @@ func (s *Service) checkTargets(ctx context.Context, c Change) error {
 	if archived {
 		return ErrLocationArchived
 	}
-	return s.repo.ProductExists(ctx, c.CompanyID, c.ProductID)
+	productArchived, err := s.repo.LockProduct(ctx, c.CompanyID, c.ProductID)
+	if err != nil {
+		return err
+	}
+	// An archived product can still leave stock, come back as a return or be
+	// counted, so only new purchases are rejected.
+	if productArchived && c.Reason == ReasonPurchase {
+		return ErrProductArchived
+	}
+	return nil
 }
 
 func validateChange(c Change, reasons map[Reason]bool) error {
@@ -215,7 +224,9 @@ type repository interface {
 	LockLocation(ctx context.Context, companyID, locationID string) (bool, error)
 	LocationExists(ctx context.Context, companyID, locationID string) error
 	ListBalances(ctx context.Context, f BalanceFilter) ([]Balance, error)
-	ProductExists(ctx context.Context, companyID, productID string) error
+	// LockProduct must run inside a transaction. It returns whether the
+	// product is archived, or ErrProductNotFound.
+	LockProduct(ctx context.Context, companyID, productID string) (bool, error)
 	Increase(ctx context.Context, companyID, locationID, productID string, qty int64) error
 	Decrease(ctx context.Context, companyID, locationID, productID string, qty int64) error
 	GetBalance(ctx context.Context, companyID, locationID, productID string) (int64, error)

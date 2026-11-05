@@ -24,6 +24,7 @@ func (fakeTx) WithinTx(ctx context.Context, fn func(ctx context.Context) error) 
 type fakeRepo struct {
 	archived    bool
 	lockErr     error
+	productArch bool
 	productErr  error
 	increaseErr error
 	decreaseErr error
@@ -49,7 +50,9 @@ func (f *fakeRepo) LockLocation(context.Context, string, string) (bool, error) {
 	return f.archived, f.lockErr
 }
 
-func (f *fakeRepo) ProductExists(context.Context, string, string) error { return f.productErr }
+func (f *fakeRepo) LockProduct(context.Context, string, string) (bool, error) {
+	return f.productArch, f.productErr
+}
 
 func (f *fakeRepo) Increase(_ context.Context, _, _, _ string, qty int64) error {
 	if f.increaseErr != nil {
@@ -181,6 +184,43 @@ func TestChangeValidation(t *testing.T) {
 				t.Fatalf("err = %v, want %v", err, tt.want)
 			}
 			if repo.changed != 0 || len(repo.inserted) != 0 {
+				t.Errorf("repository touched: change %d, movements %d", repo.changed, len(repo.inserted))
+			}
+		})
+	}
+}
+
+func TestArchivedProductRejectsOnlyPurchase(t *testing.T) {
+	tests := []struct {
+		reason   Reason
+		increase bool
+		want     error
+	}{
+		{ReasonPurchase, true, ErrProductArchived},
+		{ReasonReturn, true, nil},
+		{ReasonTransferIn, true, nil},
+		{ReasonStocktake, true, nil},
+		{ReasonSale, false, nil},
+		{ReasonTransferOut, false, nil},
+		{ReasonStocktake, false, nil},
+		{ReasonWriteOff, false, nil},
+	}
+	for _, tt := range tests {
+		t.Run(string(tt.reason), func(t *testing.T) {
+			repo := &fakeRepo{productArch: true}
+			svc := NewService(repo, fakeTx{})
+
+			var err error
+			if tt.increase {
+				_, err = svc.IncreaseBalance(context.Background(), validChange(tt.reason))
+			} else {
+				_, err = svc.DecreaseBalance(context.Background(), validChange(tt.reason))
+			}
+
+			if !errors.Is(err, tt.want) {
+				t.Fatalf("err = %v, want %v", err, tt.want)
+			}
+			if tt.want != nil && (repo.changed != 0 || len(repo.inserted) != 0) {
 				t.Errorf("repository touched: change %d, movements %d", repo.changed, len(repo.inserted))
 			}
 		})
